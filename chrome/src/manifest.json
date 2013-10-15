@@ -1,0 +1,22 @@
+{
+	"manifest_version": 2,
+
+	"name": "superglot",
+	"description": "Collect all the words!",
+	"version": "0.0",
+
+	"browser_action": {
+		"default_icon": "icon.png",
+		"default_popup": "popup.html"
+	},
+
+	"background": {
+		"scripts": ["zepto.min.js", "extra.js", "background.js"]
+	},
+
+	"content_scripts": [{
+		"matches": ["file://*/*", "http://*/*", "https://*/*"],
+		"css": ["main.css"],
+		"js": ["zepto.min.js", "extra.js", "corncob.js", "main.js"]
+	}]
+}

@@ -1,0 +1,11 @@
+{
+	"folders":
+	[
+		{
+			"path": "chrome",
+			"folder_exclude_patterns": [
+				"build"
+			]
+		}
+	]
+}
