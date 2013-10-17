@@ -20,7 +20,7 @@ port.onMessage.addListener (msg) ->
 
 class Superglot
 	tokenSelector: 'span.w'
-	excludedTags: ['script', 'style', 'iframe', 'head']
+	excludedTags: ['script', 'style', 'iframe', 'head', 'code']
 
 	constructor: (@$root) ->
 

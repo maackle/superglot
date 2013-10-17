@@ -1,0 +1,15 @@
+{
+  "name": "superglot",
+  "version": "0.0.0",
+  "description": "",
+  "main": " ",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "express": "~3.4.1",
+    "mongoose": "~3.6.20"
+  }
+}
