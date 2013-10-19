@@ -1,12 +1,13 @@
 .superglot span.sg.sg-common {
-  color: #777777;
+  color: #444444;
+  background: #cccccc;
 }
 .superglot span.sg.sg-tracked {
-  background: #eeffee;
+  background: #ffcccc;
   cursor: pointer;
 }
 .superglot span.sg.sg-untracked {
-  background: #ffeeee;
+  background: #ccffcc;
   cursor: pointer;
 }
 .superglot span.sg.sg-unknown {

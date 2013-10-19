@@ -66,7 +66,15 @@ module.exports = (grunt) ->
 					}
 					{
 						src: "bower_components/zepto/zepto.min.js"
-						dest: "build/zepto.min.js"
+						dest: "build/lib/zepto.min.js"
+					}
+					{
+						src: "bower_components/async/lib/async.js"
+						dest: "build/lib/async.js"
+					}
+					{
+						src: "bower_components/underscore/underscore-min.js"
+						dest: "build/lib/underscore-min.js"
 					}
 				]
 

@@ -8,18 +8,17 @@ port.onMessage.addListener (msg) ->
 	switch msg.id
 		when 'load-words'
 			bg.words = msg.data
-			bg.words.tracked = window.corncobWords
 			$ ->
-				console.log 'DOM loaded'
+				console.debug 'DOM loaded'
 				superglot = new Superglot $('body')
 				superglot.transform()
 		else
-			console.log 'got message: ', msg
+			console.debug 'got message: ', msg
 
 
 
 class Superglot
-	tokenSelector: 'span.w'
+	tokenSelector: 'span.sg'
 	excludedTags: ['script', 'style', 'iframe', 'head', 'code']
 
 	constructor: (@$root) ->
@@ -27,8 +26,20 @@ class Superglot
 	tokenize: (text) ->
 		text.split(/\s+|(?=[^a-zA-Z\s]+)/).filter (s) -> s
 
-	classify: (word) ->
-		w = word.toLowerCase()
+	lemmatize: (word) ->
+		word.toLowerCase().replace(" ", '')
+
+	toggleClassification: (wordEl) ->
+		$el = $(wordEl)
+		if $el.hasClass 'sg-untracked'
+			$el.removeClass 'sg-untracked'
+			$el.addClass 'sg-tracked'
+		else
+			$el.removeClass 'sg-tracked'
+			$el.addClass 'sg-untracked'
+
+	classify: (lemma) ->
+		w = lemma
 		if w in bg.words.common
 			'sg-common'
 		else if w in bg.words.tracked
@@ -37,12 +48,17 @@ class Superglot
 			'sg-untracked'
 		else
 			'sg-unknown'
-
+ 
 	bindEvents: ->
 		@$root.find(@tokenSelector).on 'click', (e) =>
+			$el = $(e.currentTarget)
+			lemma = $el.data('lemma')
+			@$root.find(".sg[data-lemma=#{lemma}]").each (i, el) =>
+				@toggleClassification el
 			port.postMessage
-				action: 'mark'
-				word: $(e.currentTarget).text()
+				action: 'update-word'
+				data:
+					lemma: lemma
 
 	transform: ->
 		go = ($node) =>
@@ -52,9 +68,10 @@ class Superglot
 				if c.nodeType is TEXT_NODE_TYPE and c.length > 2
 					words = @tokenize c.data
 					tokens = words.map (w) => 
-						klass = @classify w
+						lemma = @lemmatize w
+						klass = @classify lemma
 						""" 
-						<span class="sg #{klass}">#{w}</span>
+						<span data-lemma="#{lemma}" class="sg #{klass}">#{w}</span>
 						"""
 					html = tokens.join('')
 					if onlyChild
@@ -66,4 +83,5 @@ class Superglot
 						go $(c)
 		@$root.addClass 'superglot'
 		go @$root
+		@bindEvents()
 

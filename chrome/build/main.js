@@ -14,20 +14,19 @@
     switch (msg.id) {
       case 'load-words':
         bg.words = msg.data;
-        bg.words.tracked = window.corncobWords;
         return $(function() {
           var superglot;
-          console.log('DOM loaded');
+          console.debug('DOM loaded');
           superglot = new Superglot($('body'));
           return superglot.transform();
         });
       default:
-        return console.log('got message: ', msg);
+        return console.debug('got message: ', msg);
     }
   });
 
   Superglot = (function() {
-    Superglot.prototype.tokenSelector = 'span.w';
+    Superglot.prototype.tokenSelector = 'span.sg';
 
     Superglot.prototype.excludedTags = ['script', 'style', 'iframe', 'head', 'code'];
 
@@ -41,9 +40,25 @@
       });
     };
 
-    Superglot.prototype.classify = function(word) {
+    Superglot.prototype.lemmatize = function(word) {
+      return word.toLowerCase().replace(" ", '');
+    };
+
+    Superglot.prototype.toggleClassification = function(wordEl) {
+      var $el;
+      $el = $(wordEl);
+      if ($el.hasClass('sg-untracked')) {
+        $el.removeClass('sg-untracked');
+        return $el.addClass('sg-tracked');
+      } else {
+        $el.removeClass('sg-tracked');
+        return $el.addClass('sg-untracked');
+      }
+    };
+
+    Superglot.prototype.classify = function(lemma) {
       var w;
-      w = word.toLowerCase();
+      w = lemma;
       if (__indexOf.call(bg.words.common, w) >= 0) {
         return 'sg-common';
       } else if (__indexOf.call(bg.words.tracked, w) >= 0) {
@@ -58,9 +73,17 @@
     Superglot.prototype.bindEvents = function() {
       var _this = this;
       return this.$root.find(this.tokenSelector).on('click', function(e) {
+        var $el, lemma;
+        $el = $(e.currentTarget);
+        lemma = $el.data('lemma');
+        _this.$root.find(".sg[data-lemma=" + lemma + "]").each(function(i, el) {
+          return _this.toggleClassification(el);
+        });
         return port.postMessage({
-          action: 'mark',
-          word: $(e.currentTarget).text()
+          action: 'update-word',
+          data: {
+            lemma: lemma
+          }
         });
       });
     };
@@ -78,9 +101,10 @@
           if (c.nodeType === TEXT_NODE_TYPE && c.length > 2) {
             words = _this.tokenize(c.data);
             tokens = words.map(function(w) {
-              var klass;
-              klass = _this.classify(w);
-              return " \n<span class=\"sg " + klass + "\">" + w + "</span>";
+              var klass, lemma;
+              lemma = _this.lemmatize(w);
+              klass = _this.classify(lemma);
+              return " \n<span data-lemma=\"" + lemma + "\" class=\"sg " + klass + "\">" + w + "</span>";
             });
             html = tokens.join('');
             if (onlyChild) {
@@ -99,7 +123,8 @@
         return _results;
       };
       this.$root.addClass('superglot');
-      return go(this.$root);
+      go(this.$root);
+      return this.bindEvents();
     };
 
     return Superglot;

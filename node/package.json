@@ -10,6 +10,9 @@
   "license": "BSD",
   "dependencies": {
     "express": "~3.4.1",
-    "mongoose": "~3.6.20"
-  }
+    "mongoose": "~3.6.20",
+    "underscore": "~1.5.2",
+    "async": "~0.2.9"
+  },
+  "devDependencies": {}
 }
