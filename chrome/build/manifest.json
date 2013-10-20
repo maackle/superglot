@@ -14,8 +14,8 @@
 		"scripts": [
 			"lib/zepto.min.js", 
 			"lib/async.js", 
-			"lib/underscore-min.js", 
-			"extra.js", 
+			"lib/underscore.js", 
+			"common.js", 
 			"background.js"
 		]
 	},
@@ -27,10 +27,28 @@
 			"file://*/*"
 		],
 		"css": ["main.css"],
-		"js": ["zepto.min.js", "extra.js", "corncob.js", "main.js"]
+		"js": [
+			"lib/zepto.min.js", 
+			"lib/underscore.js", 
+			"common.js", 
+			"corncob.js", 
+			"main.js"
+		]
 	}],
 
+	"icons": {
+		"16": "icon.png"
+	},
+
 	"permissions": [
+		"tabs",
+		"contextMenus",
 		"http://localhost:3000/"
+ 	],
+
+ 	"web_accessible_resources": [
+		"lib/underscore.js",
+		"lib/zepto.min.js", 
+		"lib/async.js"
  	]
 }

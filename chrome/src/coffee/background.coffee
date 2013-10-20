@@ -1,11 +1,19 @@
 API = 'http://localhost:3000/api'
 
+NLP = new nlp.NLP
 
+chrome.contextMenus.create
+	title: 'Get Stats'
+	contexts: ['selection']
+	onclick: (info, tab) ->
+		text = info.selectionText
+		tabPort[tab.id].postMessage
+			id: 'show-stats'
+			text: text
+
+tabPort = {}
 
 async.parallel [
-	# (cb) ->
-	# 	chrome.runtime.onConnect.addListener (port) ->
-	# 		cb null, port
 	(cb) ->
 		$.getJSON API+'/words', (words) ->
 			cb null, words
@@ -14,34 +22,40 @@ async.parallel [
 			cb null, user
 ], (err, results) ->
 	[allWords, user] = results
+	allLemmata = allWords.map (w) -> w.lemma
 	words = {}
 	words.common = "i you am a the he she it we they him her".split(' ')
-	words.tracked = user.words
-	words.untracked = _.difference allWords, words.tracked, words.common
+	words.known = user.lemmata
+	words.untracked = _.difference allLemmata, words.known, words.common
 
 	words.common.sort()
-	words.tracked.sort()
+	words.known.sort()
 	words.untracked.sort()
+
+	console.log words
 
 	chrome.runtime.onConnect.addListener (port) ->
 		console.log 'listening...', port
+		if port.sender.tab?
+			tabPort[port.sender.tab.id] = port
 		port.onMessage.addListener (msg) ->
 			switch msg.action
-				when 'update-word'
-					console.log 'marking ' + msg
+				when 'add-word', 'remove-word'
+					[action, verb] = msg.action.match /(\w+)-word/
 					lemma = msg.data.lemma
-					$.post API + '/api/user/words', {
-						action: 'update'
-						lemma: lemma
-					}
-					, (data) ->
-						port.postMessage
-							id: 'update-word'
-							data:
-								lemma: lemma
-								classification: 0
+					$.ajax 
+						url: API + "/user/words/#{verb}"
+						type: 'post'
+						dataType: 'json'
+						data: {
+							lemma: lemma
+						}
+						success: (data) ->
+							port.postMessage
+								id: 'update-word'
+								data: data
 				else
-					console.log 'got weird message' + msg
+					console.warn 'got weird message', msg
 		
 		port.postMessage
 			id: 'load-words'

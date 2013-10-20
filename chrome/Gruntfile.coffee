@@ -10,7 +10,7 @@ module.exports = (grunt) ->
 			# options:
 			# 	livereload: true
 			js:
-				files: ["#{src}/coffee/*.coffee"]
+				files: ["#{src}/coffee/*.coffee", "../common/*.coffee"]
 				tasks: ["coffee"]
 			css:
 				files: ["#{src}/sass/*.{sass,scss}"]
@@ -21,17 +21,24 @@ module.exports = (grunt) ->
 			copy:
 				files: ["#{src}/*"]
 				tasks: ["copy"]
+			http:
+				files: ["#{src}/**", "../common/*.coffee"]
+				tasks: ["shell:chrome-reload"]
 
 		coffee:
 			compile:
 				options:
 					join: true
 				files: 
+					"build/common.js": [
+						"../common/util.coffee"
+						"../common/nlp.coffee"
+					] 
 					"build/main.js": [
-						"#{src}/coffee/main.coffee",
+						"#{src}/coffee/main.coffee"
 					] 
 					"build/background.js": [
-						"#{src}/coffee/background.coffee",
+						"#{src}/coffee/background.coffee"
 					]
 
 		sass:
@@ -73,16 +80,21 @@ module.exports = (grunt) ->
 						dest: "build/lib/async.js"
 					}
 					{
-						src: "bower_components/underscore/underscore-min.js"
-						dest: "build/lib/underscore-min.js"
+						src: "bower_components/underscore/underscore.js"
+						dest: "build/lib/underscore.js"
 					}
 				]
+
+		shell:
+			'chrome-reload':
+				command: 'google-chrome --app=http://reload.extensions'
 
 	grunt.loadNpmTasks("grunt-contrib-coffee")
 	grunt.loadNpmTasks("grunt-contrib-watch")
 	grunt.loadNpmTasks("grunt-contrib-sass")
 	grunt.loadNpmTasks('grunt-contrib-jade')
 	grunt.loadNpmTasks('grunt-contrib-copy')
+	grunt.loadNpmTasks('grunt-shell')
 	grunt.loadNpmTasks("grunt-notify")
 
 	grunt.registerTask "default", [
@@ -90,6 +102,7 @@ module.exports = (grunt) ->
 		"coffee"
 		"sass"
 		"copy"
+		"shell:chrome-reload"
 		"watch"
 	]
 

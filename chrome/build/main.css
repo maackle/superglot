@@ -2,14 +2,14 @@
   color: #444444;
   background: #cccccc;
 }
-.superglot span.sg.sg-tracked {
-  background: #ffcccc;
-  cursor: pointer;
-}
-.superglot span.sg.sg-untracked {
+.superglot span.sg.sg-known {
   background: #ccffcc;
   cursor: pointer;
 }
-.superglot span.sg.sg-unknown {
+.superglot span.sg.sg-untracked {
+  background: #ffcccc;
+  cursor: pointer;
+}
+.superglot span.sg.sg-invalid {
   border: none;
 }

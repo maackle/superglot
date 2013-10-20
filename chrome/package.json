@@ -3,21 +3,17 @@
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-coffee": "~0.7.0",
-    "grunt-contrib-jade": "~0.8.0",
-    "grunt-contrib-sass": "~0.5.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-notify": "~0.2.13"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "grunt-contrib-sass": "~0.5.0",
+    "grunt": "~0.4.1",
     "grunt-notify": "~0.2.13",
+    "grunt-contrib-sass": "~0.5.0",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-jade": "~0.8.0",
-    "grunt-contrib-copy": "~0.4.1"
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-http": "~0.1.0",
+    "grunt-shell": "~0.5.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
