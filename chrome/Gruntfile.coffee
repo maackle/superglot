@@ -32,6 +32,7 @@ module.exports = (grunt) ->
 				files: 
 					"build/common.js": [
 						"../common/util.coffee"
+						"../common/common.coffee"
 						"../common/nlp.coffee"
 					] 
 					"build/main.js": [

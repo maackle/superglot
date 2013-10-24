@@ -8,4 +8,7 @@ exports.word = new mongoose.Schema
 
 exports.user = new mongoose.Schema
 	email: String
-	lemmata: [String]
+	lemmata: 
+		known: [String]
+		learning: [String]
+		ignored: [String]

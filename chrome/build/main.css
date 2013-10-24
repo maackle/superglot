@@ -1,9 +1,17 @@
 .superglot span.sg.sg-common {
-  color: #444444;
+  color: #996699;
+  background: #cccccc;
+}
+.superglot span.sg.sg-ignored {
+  color: #666666;
   background: #cccccc;
 }
 .superglot span.sg.sg-known {
   background: #ccffcc;
+  cursor: pointer;
+}
+.superglot span.sg.sg-learning {
+  background: #ffffcc;
   cursor: pointer;
 }
 .superglot span.sg.sg-untracked {
@@ -11,5 +19,6 @@
   cursor: pointer;
 }
 .superglot span.sg.sg-invalid {
+  color: #999999;
   border: none;
 }

@@ -10,5 +10,8 @@ binarysearch = (a, o) ->
 			u = (if (o is a[m]) then -2 else m - 1)
 	(if (u is -2) then m else -1)
 
-window?.util = {}
-(exports ? util).binarysearch = binarysearch
+if exports?
+	exports.binarysearch = binarysearch
+else
+	window.util = 
+		binarysearch: binarysearch

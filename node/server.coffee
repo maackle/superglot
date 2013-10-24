@@ -6,6 +6,7 @@ _ = require 'underscore'
 # database = (require './database')
 util = require '../common/util'
 nlp = require '../common/nlp'
+common = require '../common/common'
 schema = require './schema'
 models = require './models'
 
@@ -22,30 +23,40 @@ conn.once 'open', ->
 
 
 qfn = (fn) ->
-	(err, model) -> 
+	(err, data) -> 
 		if err?
 			console.error err
 		else
-			fn(model)
+			fn(data)
 
 withUser = (fn) ->
-	models.User.findOne null, qfn fn
+	models.User.findOne null, fn
 
 
 #######################################
 ## routes
 
-app.get '/api/words', (req, res) ->
-	# res.json [
-	# 	'walrus'
-	# 	'forget'
-	# ].map (l) -> {lemma: l}
-	# return
+# app.get '/api/words', (req, res) ->
+# 	# res.json [
+# 	# 	'walrus'
+# 	# 	'forget'
+# 	# ].map (l) -> {lemma: l}
+# 	# return
+# 	models.Word
+# 		.find({language: 'en'}, 'reading lemma')
+# 		.exec qfn (words) ->
+# 			res.json
+# 				all: words
+# 				common: "i you am a the he she it we they him her".split(' ')
+
+app.get '/api/words/lemmata', (req, res) ->
 	models.Word
-		.find({language: 'en'}, 'reading lemma')
-		# .limit(10000)
+		.find({language: 'en'}, 'lemma')
+		.sort('lemma')
 		.exec qfn (words) ->
-			res.json(words)
+			res.json
+				all: words.map (w) -> w.lemma
+				common: "i you am a the he she it we they him her".split(' ').sort()
 
 app.get '/api/user', (req, res) ->
 	models.User.findOne null, (err, user) ->
@@ -54,32 +65,22 @@ app.get '/api/user', (req, res) ->
 		else
 			res.json(user)
 
-app.post '/api/user/words/add', (req, res) ->
-	lemma = req.body.lemma
-	models.User.findOne null, (err, user) ->
+app.post '/api/user/words/apply-diffs', (req, res) ->
+	withUser (err, user) ->
 		if err
 			res.send(500, err)
 		else
-			if util.binarysearch(user.lemmata, lemma) < 0
-				user.lemmata.push lemma
-				user.lemmata.sort()
-				user.save()
-			res.json
-				lemma: lemma
-				classification: 'sg-known'
-
-app.post '/api/user/words/remove', (req, res) ->
-	models.User.findOne null, (err, user) ->
-		if err
-			res.send(500, err)
-		else		
-			lemma = req.body.lemma
-			if util.binarysearch(user.lemmata, lemma) >= 0
-				user.lemmata = user.lemmata.filter (l) -> l isnt lemma
-				user.save()
-			res.json
-				lemma: lemma
-				classification: 'sg-untracked'
+			lemmata = new common.LemmaPartition user.lemmata
+				# known: user.lemmata.known
+				# learning: user.lemmata.learning
+				# ignored: user.lemmata.ignored
+			for diff in JSON.parse req.body.diffs
+				lemmata.applyDiff diff
+				console.log 'applied diff'
+				console.log diff
+			user.lemmata = lemmata
+			user.save()
+			res.json true
 
 app.get '/dev/load-fixtures', (req, res) ->
 	fs.readFile './data/corncob_lowercase.txt', 'utf-8', (err, data) ->
@@ -97,7 +98,9 @@ app.get '/dev/load-fixtures', (req, res) ->
 		conn.collection('users').remove (err) ->
 			userFixtures = [
 				email: 'maackle.d@gmail.com'
-				lemmata: sampleWords[0..100]
+				lemmata: 
+					known: sampleWords[0...10]
+					learning: sampleWords[1000...1010]
 			]
 			models.User.create userFixtures, (err) -> 
 				console.log 'creation error' + err if err?

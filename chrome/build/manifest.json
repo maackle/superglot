@@ -31,7 +31,7 @@
 			"lib/zepto.min.js", 
 			"lib/underscore.js", 
 			"common.js", 
-			"corncob.js", 
+			// "corncob.js", 
 			"main.js"
 		]
 	}],

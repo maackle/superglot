@@ -3,13 +3,20 @@
 	span.sg
 		// border: 1px solid rgba(0, 0, 0, 0.5)
 		&.sg-common
-			color: #444
+			color: #969
+			background: #ccc
+		&.sg-ignored
+			color: #666
 			background: #ccc
 		&.sg-known
 			background: #cfc
+			cursor: pointer
+		&.sg-learning
+			background: #ffc
 			cursor: pointer
 		&.sg-untracked
 			background: #fcc
 			cursor: pointer
 		&.sg-invalid
+			color: #999
 			border: none

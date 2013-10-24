@@ -13,7 +13,8 @@
     "grunt-contrib-jade": "~0.8.0",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-http": "~0.1.0",
-    "grunt-shell": "~0.5.0"
+    "grunt-shell": "~0.5.0",
+    "mocha": "~1.13.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
