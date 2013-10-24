@@ -23,6 +23,7 @@
   async.parallel([
     function(cb) {
       return $.getJSON(API + '/words', function(words) {
+        console.log(words);
         return cb(null, words);
       });
     }, function(cb) {

@@ -18,6 +18,7 @@ port.onMessage.addListener (msg) ->
 	switch msg.id
 		when 'load-words'
 			bg.words = msg.data
+			console.log bg.words
 			superglot.transform()
 		when 'update-word'
 			{lemma, classification} = msg.data

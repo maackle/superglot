@@ -16,6 +16,7 @@ tabPort = {}
 async.parallel [
 	(cb) ->
 		$.getJSON API+'/words', (words) ->
+			console.log words
 			cb null, words
 	(cb) ->
 		$.getJSON API+'/user', (user) ->

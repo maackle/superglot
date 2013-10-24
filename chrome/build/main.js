@@ -30,6 +30,7 @@
     switch (msg.id) {
       case 'load-words':
         bg.words = msg.data;
+        console.log(bg.words);
         return superglot.transform();
       case 'update-word':
         _ref = msg.data, lemma = _ref.lemma, classification = _ref.classification;

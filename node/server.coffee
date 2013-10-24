@@ -36,14 +36,14 @@ withUser = (fn) ->
 ## routes
 
 app.get '/api/words', (req, res) ->
-	res.json [
-		'walrus'
-		'forget'
-	].map (l) -> {lemma: l}
-	return
+	# res.json [
+	# 	'walrus'
+	# 	'forget'
+	# ].map (l) -> {lemma: l}
+	# return
 	models.Word
 		.find({language: 'en'}, 'reading lemma')
-		.limit(1001)
+		# .limit(10000)
 		.exec qfn (words) ->
 			res.json(words)
 
@@ -102,6 +102,8 @@ app.get '/dev/load-fixtures', (req, res) ->
 			models.User.create userFixtures, (err) -> 
 				console.log 'creation error' + err if err?
 
+		models.Word.count (err, count) ->
+			console.log "loaded fixtures: " + count + " words"
 		res.json 
 			message: 'loaded words and fixtures'
 
