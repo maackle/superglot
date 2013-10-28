@@ -63,7 +63,7 @@
   Superglot = (function() {
     Superglot.prototype.tokenSelector = 'span.sg';
 
-    Superglot.prototype.excludedTags = ['script', 'style', 'iframe', 'head', 'code'];
+    Superglot.prototype.excludedTags = ['script', 'style', 'iframe', 'head', 'code', 'pre', 'textarea', 'input', 'svg', 'canvas'];
 
     function Superglot($root) {
       this.$root = $root;

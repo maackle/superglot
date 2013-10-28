@@ -1,16 +1,16 @@
 (function() {
-  var LemmaDiff, LemmaPartition, NLP, binarysearch, enums, util;
+  var LemmaDiff, LemmaPartition, NLP, binarysearch, enums, multiBinarySearch, util;
 
-  binarysearch = function(a, o) {
+  binarysearch = function(haystack, needle) {
     var l, m, u;
     l = 0;
-    u = a.length;
+    u = haystack.length;
     m = void 0;
     while (l <= u) {
-      if (o > a[(m = Math.floor((l + u) / 2))]) {
+      if (needle > haystack[(m = Math.floor((l + u) / 2))]) {
         l = m + 1;
       } else {
-        u = (o === a[m] ? -2 : m - 1);
+        u = (needle === haystack[m] ? -2 : m - 1);
       }
     }
     if (u === -2) {
@@ -20,18 +20,42 @@
     }
   };
 
+  multiBinarySearch = function(haystack, needles) {
+    var l, m, needle, u, _i, _len, _results;
+    l = 1;
+    _results = [];
+    for (_i = 0, _len = needles.length; _i < _len; _i++) {
+      needle = needles[_i];
+      if (!(l <= u)) {
+        continue;
+      }
+      m = void 0;
+      l -= 1;
+      u = haystack.length;
+      while (l <= u) {
+        if (needle > haystack[(m = Math.floor((l + u) / 2))]) {
+          l = m + 1;
+        } else {
+          u = (needle === haystack[m] ? -2 : m - 1);
+        }
+      }
+      _results.push(u === -2 ? m : -1);
+    }
+    return _results;
+  };
+
   if (typeof exports !== "undefined" && exports !== null) {
     exports.binarysearch = binarysearch;
+    exports.multiBinarySearch = multiBinarySearch;
   } else {
     window.util = {
-      binarysearch: binarysearch
+      binarysearch: binarysearch,
+      multiBinarySearch: multiBinarySearch
     };
   }
 
   if (typeof exports !== "undefined" && exports !== null) {
-    util = {
-      binarysearch: require('./util').binarysearch
-    };
+    util = require('./util');
   } else {
     util = window.util;
   }
@@ -43,7 +67,7 @@
   };
 
   LemmaPartition = (function() {
-    LemmaPartition.prototype.language = 'EN';
+    LemmaPartition.prototype.language = 'en';
 
     LemmaPartition.prototype.known = null;
 
@@ -53,7 +77,7 @@
 
     function LemmaPartition(_arg) {
       this.known = _arg.known, this.learning = _arg.learning, this.untracked = _arg.untracked;
-      this.ignored = "i you am a the he she it we they him her".split(' ');
+      this.ignored = "the be to of and a in that have i it for not on with he she him her his hers as you do at this but by from they we or an will my would there their what so its".split(' ');
     }
 
     LemmaPartition.prototype.applyDiff = function(diff) {
@@ -88,6 +112,20 @@
       }
       this[diff.removeFrom] = source;
       return this[diff.addTo] = target;
+    };
+
+    LemmaPartition.prototype.getCounts = function(lemmata) {
+      var count;
+      count = function(list, words) {
+        return (util.multiBinarySearch(list, words)).filter(function(i) {
+          return i >= 0;
+        });
+      };
+      return {
+        known: count(known, lemmata),
+        learning: count(learning, lemmata),
+        ignored: count(ignored, lemmata)
+      };
     };
 
     return LemmaPartition;

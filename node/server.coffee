@@ -1,25 +1,28 @@
+
 express = require 'express'
 mongoose = require 'mongoose'
 fs = require 'fs'
 _ = require 'underscore'
 
-# database = (require './database')
-util = require '../common/util'
-nlp = require '../common/nlp'
-common = require '../common/common'
-schema = require './schema'
-models = require './models'
+util = 		require '../common/util'
+nlp = 		require '../common/nlp'
+common = 	require '../common/common'
+database = 	require './local/database'
+schema = 	require './schema'
+models = 	require './models'
 
 # setup
 
 app = express()
 app.use(express.bodyParser())
 
-mongoose.connect('mongodb://localhost/superglot')
-conn = mongoose.connection
-# conn.on('error', console.error.bind(console, 'connection error:'));
+# mongoose.connect('mongodb://localhost/superglot')
+# conn = mongoose.connection
+
+conn = database.connectRemote()
 conn.once 'open', ->
 	console.log('mongodb connection opened')
+# conn.on('error', console.error.bind(console, 'connection error:'));
 
 
 qfn = (fn) ->
@@ -76,8 +79,6 @@ app.post '/api/user/words/apply-diffs', (req, res) ->
 				# ignored: user.lemmata.ignored
 			for diff in JSON.parse req.body.diffs
 				lemmata.applyDiff diff
-				console.log 'applied diff'
-				console.log diff
 			user.lemmata = lemmata
 			user.save()
 			res.json true

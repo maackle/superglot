@@ -3,8 +3,17 @@ API = 'http://localhost:3000/api'
 NLP = new nlp.NLP
 
 chrome.contextMenus.create
-	title: 'Get Stats'
+	title: "Get Stats for '%s'"
 	contexts: ['selection']
+	onclick: (info, tab) ->
+		text = info.selectionText
+		tabPort[tab.id].postMessage
+			id: 'show-stats'
+			text: text
+
+chrome.contextMenus.create
+	title: 'Get Stats'
+	contexts: ['page']
 	onclick: (info, tab) ->
 		text = info.selectionText
 		tabPort[tab.id].postMessage

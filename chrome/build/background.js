@@ -6,8 +6,21 @@
   NLP = new nlp.NLP;
 
   chrome.contextMenus.create({
-    title: 'Get Stats',
+    title: "Get Stats for '%s'",
     contexts: ['selection'],
+    onclick: function(info, tab) {
+      var text;
+      text = info.selectionText;
+      return tabPort[tab.id].postMessage({
+        id: 'show-stats',
+        text: text
+      });
+    }
+  });
+
+  chrome.contextMenus.create({
+    title: 'Get Stats',
+    contexts: ['page'],
     onclick: function(info, tab) {
       var text;
       text = info.selectionText;

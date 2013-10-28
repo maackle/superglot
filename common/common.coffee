@@ -1,7 +1,6 @@
 
 if exports?
-	util = 
-		binarysearch: require('./util').binarysearch
+	util = require('./util')
 else
 	util = window.util
 
@@ -27,13 +26,13 @@ enums =
 
 class LemmaPartition
 
-	language: 'EN'
+	language: 'en'
 	known: null
 	learning: null
 	ignored: null
 
 	constructor: ({@known, @learning, @untracked}) ->
-		@ignored = "i you am a the he she it we they him her".split(' ')
+		@ignored = "the be to of and a in that have i it for not on with he she him her his hers as you do at this but by from they we or an will my would there their what so its".split(' ')
 
 	applyDiff: (diff) ->
 		console.assert diff.removeFrom? and diff.addTo?
@@ -50,6 +49,14 @@ class LemmaPartition
 			target.sort()
 		@[diff.removeFrom] = source
 		@[diff.addTo] = target
+
+	getCounts: (lemmata) ->
+		count = (list, words) ->
+			(util.multiBinarySearch list, words).filter (i) -> i >= 0
+			
+		known: count known, lemmata
+		learning: count learning, lemmata
+		ignored: count ignored, lemmata
 
 
 class LemmaDiff

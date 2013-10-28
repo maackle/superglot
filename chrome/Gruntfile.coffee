@@ -41,6 +41,9 @@ module.exports = (grunt) ->
 					"build/background.js": [
 						"#{src}/coffee/background.coffee"
 					]
+					"build/popup.js": [
+						"#{src}/coffee/popup.coffee"
+					]
 
 		sass:
 			dist:
