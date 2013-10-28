@@ -1,5 +1,5 @@
 (function() {
-  var API, NLP, tabPort, userLemmata;
+  var API, NLP, tabPorts, userLemmata;
 
   API = 'http://localhost:3000/api';
 
@@ -11,9 +11,11 @@
     onclick: function(info, tab) {
       var text;
       text = info.selectionText;
-      return tabPort[tab.id].postMessage({
+      return tabPorts[tab.id].postMessage({
         id: 'show-stats',
-        text: text
+        data: {
+          text: text
+        }
       });
     }
   });
@@ -22,34 +24,37 @@
     title: 'Get Stats',
     contexts: ['page'],
     onclick: function(info, tab) {
-      var text;
-      text = info.selectionText;
-      return tabPort[tab.id].postMessage({
-        id: 'show-stats',
-        text: text
+      return tabPorts[tab.id].postMessage({
+        id: 'show-stats'
       });
     }
   });
 
-  tabPort = {};
+  tabPorts = {};
 
   userLemmata = {};
 
-  console.log('ready to load data');
+  console.debug('ready to load data');
 
   async.parallel([
     function(cb) {
-      var lemmata;
-      if (localStorage['superglot-lemmata'] != null) {
-        lemmata = $.parseJSON(localStorage['superglot-lemmata']);
-        console.debug('loaded lemmata from localStorage');
-        return cb(null, lemmata);
-      } else {
-        return $.getJSON(API + '/words/lemmata', function(lemmata) {
-          localStorage['superglot-lemmata'] = JSON.stringify(lemmata);
-          return cb(null, lemmata);
-        });
-      }
+      return chrome.storage.local.get('superglot-lemmata', function(storage) {
+        if (storage['superglot-lemmata'] != null) {
+          console.debug('loaded lemmata from chrome.storage.local');
+          return cb(null, storage['superglot-lemmata']);
+        } else {
+          console.debug('downloading from server...');
+          return $.getJSON(API + '/words/lemmata', function(lemmata) {
+            console.debug('downloaded lemmata from server');
+            return chrome.storage.local.set({
+              'superglot-lemmata': lemmata
+            }, function() {
+              console.debug('saved to storage: ', arguments, chrome.runtime.lastError);
+              return cb(null, lemmata);
+            });
+          });
+        }
+      });
     }, function(cb) {
       return $.getJSON(API + '/user', function(user) {
         return cb(null, user);
@@ -57,6 +62,7 @@
     }
   ], function(err, results) {
     var lemmata, user;
+    console.debug('words and user loaded');
     lemmata = results[0], user = results[1];
     userLemmata = new LemmaPartition({
       known: user.lemmata.known,
@@ -66,11 +72,11 @@
     return chrome.runtime.onConnect.addListener(function(port) {
       console.log('listening...', port);
       if (port.sender.tab != null) {
-        tabPort[port.sender.tab.id] = port;
+        tabPorts[port.sender.tab.id] = port;
       }
       port.onMessage.addListener(function(msg) {
         var diff;
-        switch (msg.action) {
+        switch (msg.id) {
           case 'word-diff':
             diff = msg.data.diff;
             return $.ajax({

@@ -76,6 +76,13 @@ module.exports = (grunt) ->
 						filter: "isFile"
 					}
 					{
+						expand: true
+						cwd: "#{src}/images/"
+						src: "*"
+						dest: 'build/images/'
+						filter: "isFile"
+					}
+					{
 						src: "bower_components/zepto/zepto.min.js"
 						dest: "build/lib/zepto.min.js"
 					}

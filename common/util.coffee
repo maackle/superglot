@@ -13,17 +13,21 @@ binarysearch = (haystack, needle) ->
 
 # haystack and needles must both be sorted
 multiBinarySearch = (haystack, needles) ->
-	l = 1
-	for needle in needles when l <= u
+	l = lastHit = -1
+	for needle in needles
+		l = lastHit
 		m = undefined
-		l -= 1
 		u = haystack.length
 		while l <= u
 			if needle > haystack[(m = Math.floor((l + u) / 2))]
 				l = m + 1
 			else
 				u = (if (needle is haystack[m]) then -2 else m - 1)
-		(if (u is -2) then m else -1)
+		if (u is -2)
+			lastHit = m
+			m
+		else
+			-1
 
 
 if exports?

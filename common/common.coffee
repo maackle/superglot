@@ -24,6 +24,13 @@ enums =
 	]
 
 
+class DocumentInfo  # currently unused
+
+	language: 'en'
+
+	constructor: ({@stats}) ->
+
+
 class LemmaPartition
 
 	language: 'en'
@@ -32,7 +39,7 @@ class LemmaPartition
 	ignored: null
 
 	constructor: ({@known, @learning, @untracked}) ->
-		@ignored = "the be to of and a in that have i it for not on with he she him her his hers as you do at this but by from they we or an will my would there their what so its".split(' ')
+		@ignored = "the be to of and a in that have i it for not on with he she him her his hers as you do at this but by from they we or an will my would there their what so its is".split(' ')
 
 	applyDiff: (diff) ->
 		console.assert diff.removeFrom? and diff.addTo?
@@ -50,13 +57,14 @@ class LemmaPartition
 		@[diff.removeFrom] = source
 		@[diff.addTo] = target
 
-	getCounts: (lemmata) ->
-		count = (list, words) ->
-			(util.multiBinarySearch list, words).filter (i) -> i >= 0
-			
-		known: count known, lemmata
-		learning: count learning, lemmata
-		ignored: count ignored, lemmata
+	getIntersections: (lemmata) ->
+		intersect = (list, words) ->
+			ixs = (util.multiBinarySearch list, words)
+			words.filter (w, i) -> ixs[i] >= 0
+
+		known: intersect @known, lemmata
+		learning: intersect @learning, lemmata
+		ignored: intersect @ignored, lemmata
 
 
 class LemmaDiff

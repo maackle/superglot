@@ -1,5 +1,5 @@
 (function() {
-  var LemmaDiff, LemmaPartition, NLP, binarysearch, enums, multiBinarySearch, util;
+  var DocumentInfo, LemmaDiff, LemmaPartition, NLP, binarysearch, enums, multiBinarySearch, util;
 
   binarysearch = function(haystack, needle) {
     var l, m, u;
@@ -21,16 +21,13 @@
   };
 
   multiBinarySearch = function(haystack, needles) {
-    var l, m, needle, u, _i, _len, _results;
-    l = 1;
+    var l, lastHit, m, needle, u, _i, _len, _results;
+    l = lastHit = -1;
     _results = [];
     for (_i = 0, _len = needles.length; _i < _len; _i++) {
       needle = needles[_i];
-      if (!(l <= u)) {
-        continue;
-      }
+      l = lastHit;
       m = void 0;
-      l -= 1;
       u = haystack.length;
       while (l <= u) {
         if (needle > haystack[(m = Math.floor((l + u) / 2))]) {
@@ -39,7 +36,12 @@
           u = (needle === haystack[m] ? -2 : m - 1);
         }
       }
-      _results.push(u === -2 ? m : -1);
+      if (u === -2) {
+        lastHit = m;
+        _results.push(m);
+      } else {
+        _results.push(-1);
+      }
     }
     return _results;
   };
@@ -66,6 +68,17 @@
     STATIC_KINDS: ['common', 'invalid']
   };
 
+  DocumentInfo = (function() {
+    DocumentInfo.prototype.language = 'en';
+
+    function DocumentInfo(_arg) {
+      this.stats = _arg.stats;
+    }
+
+    return DocumentInfo;
+
+  })();
+
   LemmaPartition = (function() {
     LemmaPartition.prototype.language = 'en';
 
@@ -77,7 +90,7 @@
 
     function LemmaPartition(_arg) {
       this.known = _arg.known, this.learning = _arg.learning, this.untracked = _arg.untracked;
-      this.ignored = "the be to of and a in that have i it for not on with he she him her his hers as you do at this but by from they we or an will my would there their what so its".split(' ');
+      this.ignored = "the be to of and a in that have i it for not on with he she him her his hers as you do at this but by from they we or an will my would there their what so its is".split(' ');
     }
 
     LemmaPartition.prototype.applyDiff = function(diff) {
@@ -114,17 +127,19 @@
       return this[diff.addTo] = target;
     };
 
-    LemmaPartition.prototype.getCounts = function(lemmata) {
-      var count;
-      count = function(list, words) {
-        return (util.multiBinarySearch(list, words)).filter(function(i) {
-          return i >= 0;
+    LemmaPartition.prototype.getIntersections = function(lemmata) {
+      var intersect;
+      intersect = function(list, words) {
+        var ixs;
+        ixs = util.multiBinarySearch(list, words);
+        return words.filter(function(w, i) {
+          return ixs[i] >= 0;
         });
       };
       return {
-        known: count(known, lemmata),
-        learning: count(learning, lemmata),
-        ignored: count(ignored, lemmata)
+        known: intersect(this.known, lemmata),
+        learning: intersect(this.learning, lemmata),
+        ignored: intersect(this.ignored, lemmata)
       };
     };
 

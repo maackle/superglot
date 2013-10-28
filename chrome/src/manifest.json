@@ -22,8 +22,8 @@
 
 	"content_scripts": [{
 		"matches": [
-			// "https://*/*",
-			// "http://*/*", 
+			"https://*/*",
+			"http://*/*", 
 			"file://*/*"
 		],
 		"css": ["main.css"],
@@ -41,6 +41,7 @@
 	},
 
 	"permissions": [
+		"storage",
 		"tabs",
 		"contextMenus",
 		"http://localhost:3000/"
@@ -49,6 +50,9 @@
  	"web_accessible_resources": [
 		"lib/underscore.js",
 		"lib/zepto.min.js", 
-		"lib/async.js"
+		"lib/async.js",
+		"images/cursor-known.png",
+		"images/cursor-learning.png",
+		"images/cursor-remove.png"
  	]
 }

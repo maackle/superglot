@@ -27,13 +27,12 @@
 
   port = chrome.runtime.connect();
 
-  port.onMessage.addListener(function(msg) {
-    var diff, kind, lemma, lemmata, stats, text, _i, _len, _ref, _results;
+  port.onMessage.addListener(function(msg, sender) {
+    var diff, kind, lemma, lemmata, stats, _i, _len, _ref, _ref1, _results;
     switch (msg.id) {
       case 'load-words':
         bg.lemmata = msg.data.lemmata;
-        bg.lemmata.user = new LemmaPartition(bg.lemmata.user);
-        return superglot.transform();
+        return bg.lemmata.user = new LemmaPartition(bg.lemmata.user);
       case 'word-diff':
         diff = msg.data.diff;
         kind = diff.addTo;
@@ -47,16 +46,32 @@
         return _results;
         break;
       case 'show-stats':
-        text = msg.text;
-        lemmata = _.uniq(NLP.lemmatize(NLP.segment(text)));
-        stats = {
-          known: _.intersection(lemmata, bg.words.known),
-          untracked: _.intersection(lemmata, bg.words.untracked),
-          invalid: _.intersection(lemmata, bg.words.invalid)
-        };
+        if (((_ref1 = msg.data) != null ? _ref1.text : void 0) != null) {
+          lemmata = (_.uniq(NLP.lemmatize(NLP.segment(msg.data.text)))).sort();
+        } else {
+          lemmata = superglot.getAllLemmata();
+        }
+        stats = bg.lemmata.user.getIntersections(lemmata);
         return console.log(stats);
       default:
         return console.warn('got invalid message: ', msg);
+    }
+  });
+
+  chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+    switch (msg.id) {
+      case 'stats-request':
+        superglot.transform();
+        return sendResponse({
+          id: 'show-stats',
+          data: {
+            stats: {
+              totalWordCount: superglot.allLemmataRaw.length,
+              uniqueWords: superglot.getAllLemmata(),
+              intersections: bg.lemmata.user.getIntersections(superglot.getAllLemmata())
+            }
+          }
+        });
     }
   });
 
@@ -67,7 +82,16 @@
 
     function Superglot($root) {
       this.$root = $root;
+      this.allLemmata = null;
+      this.allLemmataRaw = [];
     }
+
+    Superglot.prototype.getAllLemmata = function() {
+      if (this.allLemmata == null) {
+        this.allLemmata = (_.uniq(this.allLemmataRaw)).sort();
+      }
+      return this.allLemmata;
+    };
 
     Superglot.prototype.updateKind = function(lemma, kind) {
       var _this = this;
@@ -109,15 +133,26 @@
 
     Superglot.prototype.bindEvents = function() {
       var _this = this;
+      this.$root.on('mousemove', function(e) {
+        _this.$root.removeClass('is-adding-known is-adding-learning');
+        if (e.ctrlKey || e.metaKey) {
+          return _this.$root.addClass('is-adding-known');
+        } else if (e.altKey) {
+          return _this.$root.addClass('is-adding-learning');
+        }
+      });
       return this.$root.find(this.tokenSelector).on('click', function(e) {
         var $el, diff, inclusionKind, kind, lemma;
         $el = $(e.currentTarget);
         lemma = $el.data('lemma');
         kind = _this.classify(lemma);
         if (__indexOf.call(enums.STATIC_KINDS, kind) >= 0) {
-
+          return true;
+        } else if (!(e.ctrlKey || e.metaKey || e.altKey)) {
+          return true;
         } else {
-          inclusionKind = e.ctrlKey ? 'known' : 'learning';
+          e.preventDefault();
+          inclusionKind = (e.ctrlKey || e.metaKey ? 'known' : e.altKey ? 'learning' : null);
           diff = new LemmaDiff({
             lemmata: [lemma],
             removeFrom: kind,
@@ -134,15 +169,16 @@
             })()
           });
           if (!diff.idempotent()) {
-            return port.postMessage({
-              action: 'word-diff',
+            port.postMessage({
+              id: 'word-diff',
               data: {
                 diff: diff
               }
             });
           } else {
-            return console.warn('idempotent diff', diff);
+            console.warn('idempotent diff', diff);
           }
+          return false;
         }
       });
     };
@@ -150,40 +186,46 @@
     Superglot.prototype.transform = function() {
       var go,
         _this = this;
-      go = function($node) {
-        var c, contents, html, onlyChild, tokens, words, _i, _len, _ref, _results;
-        contents = $node.contents();
-        onlyChild = contents.length === 1;
-        _results = [];
-        for (_i = 0, _len = contents.length; _i < _len; _i++) {
-          c = contents[_i];
-          if (c.nodeType === 3 && c.length > 2) {
-            words = NLP.segment(c.data);
-            tokens = words.map(function(w) {
-              var kind, lemma;
-              lemma = NLP.lemmatize(w);
-              kind = _this.classify(lemma);
-              return " \n<span data-lemma=\"" + lemma + "\" class=\"sg sg-" + kind + "\">" + w + "</span>";
-            });
-            html = tokens.join('');
-            if (onlyChild) {
-              _results.push($node.html(html));
+      if (!this.$root.hasClass('superglot')) {
+        go = function($node) {
+          var c, contents, html, lemmata, onlyChild, tokens, words, _i, _len, _ref, _results;
+          contents = $node.contents();
+          onlyChild = contents.length === 1;
+          _results = [];
+          for (_i = 0, _len = contents.length; _i < _len; _i++) {
+            c = contents[_i];
+            if (c.nodeType === 3 && c.length > 2) {
+              words = NLP.segment(c.data);
+              lemmata = words.map(function(w) {
+                return NLP.lemmatize(w);
+              });
+              _this.allLemmataRaw = _this.allLemmataRaw.concat(lemmata);
+              tokens = words.map(function(w) {
+                var kind, lemma;
+                lemma = NLP.lemmatize(w);
+                kind = _this.classify(lemma);
+                return " \n<span data-lemma=\"" + lemma + "\" class=\"sg sg-" + kind + "\">" + w + "</span>";
+              });
+              html = tokens.join('');
+              if (onlyChild) {
+                _results.push($node.html(html));
+              } else {
+                _results.push($(c).after(html).remove());
+              }
             } else {
-              _results.push($(c).after(html).remove());
-            }
-          } else {
-            if (_ref = c.nodeName.toLowerCase(), __indexOf.call(_this.excludedTags, _ref) < 0) {
-              _results.push(go($(c)));
-            } else {
-              _results.push(void 0);
+              if (_ref = c.nodeName.toLowerCase(), __indexOf.call(_this.excludedTags, _ref) < 0) {
+                _results.push(go($(c)));
+              } else {
+                _results.push(void 0);
+              }
             }
           }
-        }
-        return _results;
-      };
-      this.$root.addClass('superglot');
-      go(this.$root);
-      return this.bindEvents();
+          return _results;
+        };
+        this.$root.addClass('superglot');
+        go(this.$root);
+        return this.bindEvents();
+      }
     };
 
     return Superglot;

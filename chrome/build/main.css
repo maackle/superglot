@@ -8,17 +8,26 @@
 }
 .superglot span.sg.sg-known {
   background: #ccffcc;
-  cursor: pointer;
 }
 .superglot span.sg.sg-learning {
   background: #ffffcc;
-  cursor: pointer;
 }
 .superglot span.sg.sg-untracked {
   background: #ffcccc;
-  cursor: pointer;
 }
 .superglot span.sg.sg-invalid {
   color: #999999;
   border: none;
+}
+.superglot.is-adding-known .sg.sg-learning, .superglot.is-adding-known .sg.sg-untracked {
+  cursor: url("chrome-extension://__MSG_@@extension_id__/images/cursor-known.png") 12 12, pointer;
+}
+.superglot.is-adding-known .sg.sg-known {
+  cursor: url("chrome-extension://__MSG_@@extension_id__/images/cursor-remove.png") 12 12, pointer;
+}
+.superglot.is-adding-learning .sg.sg-known, .superglot.is-adding-learning .sg.sg-untracked {
+  cursor: url("chrome-extension://__MSG_@@extension_id__/images/cursor-learning.png") 12 12, pointer;
+}
+.superglot.is-adding-learning .sg.sg-learning {
+  cursor: url("chrome-extension://__MSG_@@extension_id__/images/cursor-remove.png") 12 12, pointer;
 }

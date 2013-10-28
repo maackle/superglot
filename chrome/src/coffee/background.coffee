@@ -7,40 +7,43 @@ chrome.contextMenus.create
 	contexts: ['selection']
 	onclick: (info, tab) ->
 		text = info.selectionText
-		tabPort[tab.id].postMessage
+		tabPorts[tab.id].postMessage
 			id: 'show-stats'
-			text: text
+			data:
+				text: text
 
 chrome.contextMenus.create
 	title: 'Get Stats'
 	contexts: ['page']
 	onclick: (info, tab) ->
-		text = info.selectionText
-		tabPort[tab.id].postMessage
+		tabPorts[tab.id].postMessage
 			id: 'show-stats'
-			text: text
 
-tabPort = {}
+tabPorts = {}
 
 userLemmata = {}
 
-console.log 'ready to load data'
+console.debug 'ready to load data'
 
 async.parallel [
 	(cb) ->
-		if localStorage['superglot-lemmata']?
-			lemmata = $.parseJSON localStorage['superglot-lemmata']
-			console.debug 'loaded lemmata from localStorage'
-			cb null, lemmata
-		else
-			$.getJSON API + '/words/lemmata', (lemmata) ->
-				localStorage['superglot-lemmata'] = JSON.stringify lemmata
-				cb null, lemmata
+		chrome.storage.local.get 'superglot-lemmata', (storage) ->
+			if storage['superglot-lemmata']?
+				console.debug 'loaded lemmata from chrome.storage.local'
+				cb null, storage['superglot-lemmata']
+			else
+				console.debug 'downloading from server...'
+				$.getJSON API + '/words/lemmata', (lemmata) ->
+					console.debug 'downloaded lemmata from server'
+					chrome.storage.local.set 'superglot-lemmata': lemmata, ->
+						console.debug 'saved to storage: ', arguments, chrome.runtime.lastError
+						cb null, lemmata
 	(cb) ->
 		$.getJSON API + '/user', (user) ->
 			cb null, user
 
 ], (err, results) ->
+	console.debug 'words and user loaded'
 	[lemmata, user] = results
 
 	userLemmata = new LemmaPartition
@@ -51,9 +54,9 @@ async.parallel [
 	chrome.runtime.onConnect.addListener (port) ->
 		console.log 'listening...', port
 		if port.sender.tab?
-			tabPort[port.sender.tab.id] = port
+			tabPorts[port.sender.tab.id] = port
 		port.onMessage.addListener (msg) ->
-			switch msg.action
+			switch msg.id
 				when 'word-diff'
 					diff = msg.data.diff
 					# TODO: apply diff earlier, reverse on failure
