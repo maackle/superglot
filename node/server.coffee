@@ -1,29 +1,45 @@
 
+
+_ = require 'underscore'
+fs = require 'fs'
+url = require 'url'
 express = require 'express'
 mongoose = require 'mongoose'
-fs = require 'fs'
-_ = require 'underscore'
+
+passport = require 'passport'
+GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
 util = 		require '../common/util'
 nlp = 		require '../common/nlp'
 common = 	require '../common/common'
+settings = 	require './local/settings'
 database = 	require './local/database'
 schema = 	require './schema'
 models = 	require './models'
 
 # setup
-
 app = express()
-app.use(express.bodyParser())
-
-# mongoose.connect('mongodb://localhost/superglot')
-# conn = mongoose.connection
+app.use express.bodyParser()
+app.use passport.initialize()
+app.use passport.session()
 
 conn = database.connectRemote()
 conn.once 'open', ->
 	console.log('mongodb connection opened')
 # conn.on('error', console.error.bind(console, 'connection error:'));
 
+passport.use new GoogleStrategy
+	clientID: settings.GOOGLE_OAUTH_CLIENT_ID,
+	clientSecret: settings.GOOGLE_OAUTH_CLIENT_SECRET,
+	callbackURL: url.resolve settings.ROOT_URL, settings.GOOGLE_RETURN_URI
+, (accessToken, refreshToken, profile, done) ->
+	console.log accessToken, refreshToken, profile, done
+	models.User.findOne googleToken: accessToken, (err, user) ->
+		if err
+			models.User.create googleToken: accessToken, (err, user) ->
+				done(err, user)
+		else
+			done(err, user)
 
 qfn = (fn) ->
 	(err, data) -> 
@@ -67,6 +83,12 @@ app.get '/api/user', (req, res) ->
 			res.send(500, err)
 		else
 			res.json(user)
+
+app.get '/auth/google', passport.authenticate 'google', scope: 'email'
+
+app.get '/auth/google/callback', passport.authenticate('google', failureRedirect: '/login'), (req, res) ->
+	res.redirect('/')
+
 
 app.post '/api/user/words/apply-diffs', (req, res) ->
 	withUser (err, user) ->

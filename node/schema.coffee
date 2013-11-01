@@ -8,6 +8,7 @@ exports.word = new mongoose.Schema
 
 exports.user = new mongoose.Schema
 	email: String
+	googleToken: String
 	lemmata: 
 		known: [String]
 		learning: [String]
