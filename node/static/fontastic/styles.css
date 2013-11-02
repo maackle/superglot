@@ -40,31 +40,31 @@
 }
 
 
-.icon-fontawesome-webfont:before {
+.icon-google:before {
   content: "a";
 }
 
-.icon-fontawesome-webfont-2:before {
+.icon-menu:before {
   content: "c";
 }
 
-.icon-fontawesome-webfont-3:before {
+.icon-quote:before {
   content: "d";
 }
 
-.icon-fontawesome-webfont-1:before {
+.icon-document:before {
   content: "b";
 }
 
-.icon-fontawesome-webfont-4:before {
+.icon-gear:before {
   content: "e";
 }
 
-.icon-fontawesome-webfont-5:before {
+.icon-ellipsis:before {
   content: "f";
 }
 
-.icon-fontawesome-webfont-6:before {
+.icon-asterisk:before {
   content: "g";
 }
 
