@@ -3,6 +3,8 @@
 _ = require 'underscore'
 fs = require 'fs'
 url = require 'url'
+path = require 'path'
+compass = require 'node-compass'
 express = require 'express'
 mongoose = require 'mongoose'
 
@@ -22,6 +24,14 @@ app = express()
 app.use express.bodyParser()
 app.use passport.initialize()
 app.use passport.session()
+app.use compass
+	sass: 'stylesheets'
+	css: 'static/css'
+	project: __dirname
+	logging: true
+app.use '/static', express.static __dirname + '/static'
+# app.set 'views', __dirname + '/views'
+# app.engine 'jade', require('jade').__express
 
 conn = database.connectRemote()
 conn.once 'open', ->
@@ -67,6 +77,9 @@ withUser = (fn) ->
 # 			res.json
 # 				all: words
 # 				common: "i you am a the he she it we they him her".split(' ')
+
+app.get '/', (req, res) ->
+	res.render('home.jade')
 
 app.get '/api/words/lemmata', (req, res) ->
 	models.Word

@@ -1,0 +1,70 @@
+
+@charset "UTF-8";
+
+@font-face {
+  font-family: "superglot";
+  src:url("fonts/superglot.eot");
+  src:url("fonts/superglot.eot?#iefix") format("embedded-opentype"),
+    url("fonts/superglot.ttf") format("truetype"),
+    url("fonts/superglot.svg#superglot") format("svg"),
+    url("fonts/superglot.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+[data-icon]:before {
+  font-family: "superglot" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "superglot" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.icon-fontawesome-webfont:before {
+  content: "a";
+}
+
+.icon-fontawesome-webfont-2:before {
+  content: "c";
+}
+
+.icon-fontawesome-webfont-3:before {
+  content: "d";
+}
+
+.icon-fontawesome-webfont-1:before {
+  content: "b";
+}
+
+.icon-fontawesome-webfont-4:before {
+  content: "e";
+}
+
+.icon-fontawesome-webfont-5:before {
+  content: "f";
+}
+
+.icon-fontawesome-webfont-6:before {
+  content: "g";
+}
+
