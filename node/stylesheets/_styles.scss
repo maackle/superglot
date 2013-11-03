@@ -26,3 +26,25 @@ a {
 	font-size: 3em;
 	font-weight: 300;
 }
+
+ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+.messages {
+
+	li {
+		display: block;
+		padding: 5px;
+		&.info {
+			background: #ccf;
+		}
+		&.warn {
+			background: #ffc;
+		}
+		&.error {
+			background: #fcc;
+		}
+	}
+}

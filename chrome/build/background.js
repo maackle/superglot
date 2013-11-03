@@ -56,12 +56,16 @@
         }
       });
     }, function(cb) {
-      return $.getJSON(API + '/user', function(user) {
+      return $.getJSON(API + "/user", function(user) {
         return cb(null, user);
       });
     }
   ], function(err, results) {
     var lemmata, user;
+    if (err) {
+      console.error(err);
+      return;
+    }
     console.debug('words and user loaded');
     lemmata = results[0], user = results[1];
     userLemmata = new LemmaPartition({

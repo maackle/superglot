@@ -1,8 +1,22 @@
 !!!
 html
 	head
+		title superglot
+
+		link(href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet", type="text/css")
 		link(href="/static/fontastic/styles.css", rel="stylesheet", type="text/css")
 		link(href="/static/css/manifest.css", rel="stylesheet", type="text/css")
-		title superglot
+
+		script(src="/static/bower_components/jquery/jquery.min.js")
+		script(src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js")
 	body
+		block messages
+			if messages
+				ul.messages
+					for msg in messages.info || []
+						li.info= msg
+					for msg in messages.warn || []
+						li.warn= msg
+					for msg in messages.error || []
+						li.error= msg
 		block content

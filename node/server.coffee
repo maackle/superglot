@@ -6,9 +6,11 @@ url = require 'url'
 path = require 'path'
 compass = require 'node-compass'
 express = require 'express'
+flash = require 'express-flash'
 mongoose = require 'mongoose'
 
 passport = require 'passport'
+LocalStrategy = require('passport-local').Strategy
 GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
 util = 		require '../common/util'
@@ -22,14 +24,20 @@ models = 	require './models'
 # setup
 app = express()
 app.use express.bodyParser()
-app.use passport.initialize()
-app.use passport.session()
+app.use express.cookieParser settings.COOKIE_SECRET
+app.use express.session cookie: maxAge: 60000
+app.use flash()
 app.use compass
 	sass: 'stylesheets'
 	css: 'static/css'
 	project: __dirname
 	logging: true
 app.use '/static', express.static __dirname + '/static'
+app.use passport.initialize()
+app.use passport.session()
+app.use (req, res, next) ->
+	res.locals.user = req.user
+	next()
 # app.set 'views', __dirname + '/views'
 # app.engine 'jade', require('jade').__express
 
@@ -37,6 +45,13 @@ conn = database.connectRemote()
 conn.once 'open', ->
 	console.log('mongodb connection opened')
 # conn.on('error', console.error.bind(console, 'connection error:'));
+
+passport.use new LocalStrategy (username, password, done) ->
+	models.User.findOne (email: username), (err, user) ->
+		if err then return done(err)
+		else if not user then return done null, false, message: "email not found: #{ username }"
+		else
+			return done null, user
 
 passport.use new GoogleStrategy
 	clientID: settings.GOOGLE_OAUTH_CLIENT_ID,
@@ -46,10 +61,24 @@ passport.use new GoogleStrategy
 	console.log accessToken, refreshToken, profile, done
 	models.User.findOne googleToken: accessToken, (err, user) ->
 		if err
-			models.User.create googleToken: accessToken, (err, user) ->
+			email = profile.emails[0]
+			models.User.create 
+				email: email
+				googleToken: accessToken
+			, (err, user) ->
 				done(err, user)
 		else
 			done(err, user)
+
+passport.serializeUser (user, done) ->
+	console.log user.id
+	done null, user.id
+
+passport.deserializeUser (id, done) ->
+	console.log 'id:', id
+	models.User.findById id, (err, user) ->
+		console.log err, user
+		done null, user
 
 qfn = (fn) ->
 	(err, data) -> 
@@ -65,21 +94,20 @@ withUser = (fn) ->
 #######################################
 ## routes
 
-# app.get '/api/words', (req, res) ->
-# 	# res.json [
-# 	# 	'walrus'
-# 	# 	'forget'
-# 	# ].map (l) -> {lemma: l}
-# 	# return
-# 	models.Word
-# 		.find({language: 'en'}, 'reading lemma')
-# 		.exec qfn (words) ->
-# 			res.json
-# 				all: words
-# 				common: "i you am a the he she it we they him her".split(' ')
-
 app.get '/', (req, res) ->
 	res.render('home.jade')
+
+app.get '/login', (req, res) ->
+	res.render('auth/login.jade')
+
+app.post '/login', passport.authenticate 'local',
+	successRedirect: '/'
+	failureRedirect: '/login'
+	failureFlash: true
+
+app.get '/logout', (req, res) ->
+	req.logout()
+	res.redirect '/'
 
 app.get '/api/words/lemmata', (req, res) ->
 	models.Word
@@ -96,6 +124,13 @@ app.get '/api/user', (req, res) ->
 			res.send(500, err)
 		else
 			res.json(user)
+	
+	# TODO
+	# chrome.cookies.get 
+	# 	url: 'http://superglot.com'
+	# 	name: 'connect.sid'
+	# , (cookie) ->
+	# 	console.log 'READ THE COOKIE', cookie
 
 app.get '/auth/google', passport.authenticate 'google', scope: 'email'
 

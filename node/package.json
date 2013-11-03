@@ -16,7 +16,10 @@
     "passport": "~0.1.17",
     "passport-google-oauth": "~0.1.5",
     "jade": "~0.35.0",
-    "node-compass": "~0.2.3"
+    "node-compass": "~0.2.3",
+    "passport-local": "~0.1.6",
+    "bcrypt": "~0.7.7",
+    "express-flash": "0.0.2"
   },
   "devDependencies": {}
 }

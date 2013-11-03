@@ -19,6 +19,7 @@ chrome.contextMenus.create
 		tabPorts[tab.id].postMessage
 			id: 'show-stats'
 
+
 tabPorts = {}
 
 userLemmata = {}
@@ -39,10 +40,24 @@ async.parallel [
 						console.debug 'saved to storage: ', arguments, chrome.runtime.lastError
 						cb null, lemmata
 	(cb) ->
-		$.getJSON API + '/user', (user) ->
+		$.getJSON API + "/user", (user) ->
 			cb null, user
+		#  TODO
+		# chrome.cookies.get 
+		# 	url: 'http://superglot.com'
+		# 	name: 'connect.sid'
+		# , (cookie) ->
+		# 	if cookie
+		# 		sid = cookie.value
+		# 		$.getJSON API + "/user", (user) ->
+		# 			cb null, user
+		# 	else
+		# 		cb "no session cookie", null
 
 ], (err, results) ->
+	if err
+		console.error err
+		return
 	console.debug 'words and user loaded'
 	[lemmata, user] = results
 
@@ -55,6 +70,7 @@ async.parallel [
 		console.log 'listening...', port
 		if port.sender.tab?
 			tabPorts[port.sender.tab.id] = port
+
 		port.onMessage.addListener (msg) ->
 			switch msg.id
 				when 'word-diff'
