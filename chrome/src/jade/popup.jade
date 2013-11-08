@@ -1,8 +1,8 @@
-script(src="lib/zepto.min.js")
+script(src="lib/jquery.min.js")
+script(src="common.js")
 script(src="popup.js")
 
 style.
-
 	body {
 		width: 300px;
 		font-size: 18px;
@@ -21,29 +21,49 @@ style.
 
 	}
 
-h1 page stats
+	.case {
+		display: none;
+	}
 
-h2.known
-	span.percent-known 
-	| % known
+.case.logged-out
 
-h2.learning
-	span.percent-learning 
-	| % learning
+	h1 log in
 
-table.table
-	tr
-		td total words:
-		td.total-all
-	tr
-		td unique words:
-		td.total-unique
-	tr
-		td known:
-		td.total-known
-	tr
-		td learning:
-		td.total-learning
-	tr
-		td ignored:
-		td.total-ignored
+	form(method="post", action="http://localhost:3000/login")
+		label username:
+		input(type="text", name="username")
+		label password:
+		input(type="text", name="password")
+		input(type="submit", value="login")
+
+.case.logged-in
+
+	h1 page stats
+
+	h2.known
+		span.percent-known
+		| % known
+
+	h2.learning
+		span.percent-learning
+		| % learning
+
+	table.table
+		tr
+			td total words:
+			td.total-all
+		tr
+			td unique words:
+			td.total-unique
+		tr
+			td known:
+			td.total-known
+		tr
+			td learning:
+			td.total-learning
+		tr
+			td ignored:
+			td.total-ignored
+
+.case.error
+	h1 error!

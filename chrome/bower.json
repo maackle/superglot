@@ -15,8 +15,8 @@
     "tests"
   ],
   "dependencies": {
-    "zepto": "~1.0.0",
     "async": "~0.2.5",
-    "underscore": "~1.5.2"
+    "jquery": "~2.0.3",
+    "lodash": "~2.2.1"
   }
 }

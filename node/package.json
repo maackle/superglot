@@ -11,7 +11,6 @@
   "dependencies": {
     "express": "~3.4.1",
     "mongoose": "~3.6.20",
-    "underscore": "~1.5.2",
     "async": "~0.2.9",
     "passport": "~0.1.17",
     "passport-google-oauth": "~0.1.5",
@@ -19,7 +18,8 @@
     "node-compass": "~0.2.3",
     "passport-local": "~0.1.6",
     "bcrypt": "~0.7.7",
-    "express-flash": "0.0.2"
+    "express-flash": "0.0.2",
+    "lodash": "~2.2.1"
   },
   "devDependencies": {}
 }

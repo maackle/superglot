@@ -1,5 +1,5 @@
 (function() {
-  var DocumentInfo, LemmaDiff, LemmaPartition, NLP, binarysearch, enums, multiBinarySearch, util;
+  var API_URL, DocumentInfo, LemmaDiff, LemmaPartition, NLP, SITE_URL, binarysearch, enums, multiBinarySearch, util;
 
   binarysearch = function(haystack, needle) {
     var l, m, u;
@@ -61,6 +61,10 @@
   } else {
     util = window.util;
   }
+
+  SITE_URL = 'http://localhost:3000';
+
+  API_URL = SITE_URL + '/api';
 
   enums = {
     KINDS: ['known', 'learning', 'ignored', 'common', 'untracked'],
@@ -165,6 +169,10 @@
   (typeof exports !== "undefined" && exports !== null ? exports : window).LemmaDiff = LemmaDiff;
 
   (typeof exports !== "undefined" && exports !== null ? exports : window).enums = enums;
+
+  (typeof exports !== "undefined" && exports !== null ? exports : window).SITE_URL = SITE_URL;
+
+  (typeof exports !== "undefined" && exports !== null ? exports : window).API_URL = API_URL;
 
   NLP = (function() {
     function NLP() {}

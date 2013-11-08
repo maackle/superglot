@@ -1,6 +1,6 @@
 
 
-_ = require 'underscore'
+_ = require 'lodash'
 fs = require 'fs'
 url = require 'url'
 path = require 'path'
@@ -16,10 +16,11 @@ GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 util = 		require '../common/util'
 nlp = 		require '../common/nlp'
 common = 	require '../common/common'
-settings = 	require './local/settings'
-database = 	require './local/database'
+settings = 	require './settings'
+database = 	require './database'
 schema = 	require './schema'
 models = 	require './models'
+{qfn, withDummyUser, requireUser} = require './helpers'
 
 # setup
 app = express()
@@ -41,7 +42,7 @@ app.use (req, res, next) ->
 # app.set 'views', __dirname + '/views'
 # app.engine 'jade', require('jade').__express
 
-conn = database.connectRemote()
+conn = database.connectLocal()
 conn.once 'open', ->
 	console.log('mongodb connection opened')
 # conn.on('error', console.error.bind(console, 'connection error:'));
@@ -62,7 +63,7 @@ passport.use new GoogleStrategy
 	models.User.findOne googleToken: accessToken, (err, user) ->
 		if err
 			email = profile.emails[0]
-			models.User.create 
+			models.User.create
 				email: email
 				googleToken: accessToken
 			, (err, user) ->
@@ -79,16 +80,6 @@ passport.deserializeUser (id, done) ->
 	models.User.findById id, (err, user) ->
 		console.log err, user
 		done null, user
-
-qfn = (fn) ->
-	(err, data) -> 
-		if err?
-			console.error err
-		else
-			fn(data)
-
-withUser = (fn) ->
-	models.User.findOne null, fn
 
 
 #######################################
@@ -119,18 +110,7 @@ app.get '/api/words/lemmata', (req, res) ->
 				common: "i you am a the he she it we they him her".split(' ').sort()
 
 app.get '/api/user', (req, res) ->
-	models.User.findOne null, (err, user) ->
-		if err
-			res.send(500, err)
-		else
-			res.json(user)
-	
-	# TODO
-	# chrome.cookies.get 
-	# 	url: 'http://superglot.com'
-	# 	name: 'connect.sid'
-	# , (cookie) ->
-	# 	console.log 'READ THE COOKIE', cookie
+	res.json(req.user or null)
 
 app.get '/auth/google', passport.authenticate 'google', scope: 'email'
 
@@ -139,7 +119,7 @@ app.get '/auth/google/callback', passport.authenticate('google', failureRedirect
 
 
 app.post '/api/user/words/apply-diffs', (req, res) ->
-	withUser (err, user) ->
+	withDummyUser (err, user) ->
 		if err
 			res.send(500, err)
 		else
@@ -156,7 +136,7 @@ app.post '/api/user/words/apply-diffs', (req, res) ->
 app.get '/dev/load-fixtures', (req, res) ->
 	fs.readFile './data/corncob_lowercase.txt', 'utf-8', (err, data) ->
 		sampleWords = data.split(/\r?\n/)#[1000..10000]
-		
+
 		conn.collection('words').remove (err) ->
 			wordFixtures = ({
 				reading: w
@@ -169,16 +149,16 @@ app.get '/dev/load-fixtures', (req, res) ->
 		conn.collection('users').remove (err) ->
 			userFixtures = [
 				email: 'maackle.d@gmail.com'
-				lemmata: 
+				lemmata:
 					known: sampleWords[0...10]
 					learning: sampleWords[1000...1010]
 			]
-			models.User.create userFixtures, (err) -> 
+			models.User.create userFixtures, (err) ->
 				console.log 'creation error' + err if err?
 
 		models.Word.count (err, count) ->
 			console.log "loaded fixtures: " + count + " words"
-		res.json 
+		res.json
 			message: 'loaded words and fixtures'
 
 
@@ -188,3 +168,7 @@ app.get '/dev/load-fixtures', (req, res) ->
 
 app.listen(3000)
 console.log('Listening on port 3000')
+
+
+
+

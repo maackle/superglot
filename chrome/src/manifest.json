@@ -12,10 +12,10 @@
 
 	"background": {
 		"scripts": [
-			"lib/zepto.min.js", 
-			"lib/async.js", 
-			"lib/underscore.js", 
-			"common.js", 
+			"lib/jquery.js",
+			"lib/async.js",
+			"lib/lodash.min.js",
+			"common.js",
 			"background.js"
 		]
 	},
@@ -23,15 +23,14 @@
 	"content_scripts": [{
 		"matches": [
 			"https://*/*",
-			"http://*/*", 
+			"http://*/*",
 			"file://*/*"
 		],
 		"css": ["main.css"],
 		"js": [
-			"lib/zepto.min.js", 
-			"lib/underscore.js", 
-			"common.js", 
-			// "corncob.js", 
+			"lib/lodash.min.js",
+			"lib/jquery.js",
+			"common.js",
 			"main.js"
 		]
 	}],
@@ -50,8 +49,8 @@
  	],
 
  	"web_accessible_resources": [
-		"lib/underscore.js",
-		"lib/zepto.min.js", 
+		"lib/jquery.js",
+		"lib/lodash.min.js",
 		"lib/async.js",
 		"images/cursor-known.png",
 		"images/cursor-learning.png",

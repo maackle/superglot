@@ -200,11 +200,12 @@
                 return NLP.lemmatize(w);
               });
               _this.allLemmataRaw = _this.allLemmataRaw.concat(lemmata);
+              console.debug('tokens', tokens);
               tokens = words.map(function(w) {
                 var kind, lemma;
                 lemma = NLP.lemmatize(w);
                 kind = _this.classify(lemma);
-                return " \n<span data-lemma=\"" + lemma + "\" class=\"sg sg-" + kind + "\">" + w + "</span>";
+                return "<span data-lemma=\"" + lemma + "\" class=\"sg sg-" + kind + "\">" + w + "</span>";
               });
               html = tokens.join('');
               if (onlyChild) {

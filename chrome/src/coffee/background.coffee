@@ -1,4 +1,4 @@
-API = 'http://localhost:3000/api'
+API = API_URL
 
 NLP = new nlp.NLP
 
@@ -30,8 +30,8 @@ async.parallel [
 	(cb) ->
 		chrome.storage.local.get 'superglot-lemmata', (storage) ->
 			if storage['superglot-lemmata']?
-				console.debug 'loaded lemmata from chrome.storage.local'
 				cb null, storage['superglot-lemmata']
+				console.debug 'loaded lemmata from chrome.storage.local'
 			else
 				console.debug 'downloading from server...'
 				$.getJSON API + '/words/lemmata', (lemmata) ->
@@ -43,7 +43,7 @@ async.parallel [
 		$.getJSON API + "/user", (user) ->
 			cb null, user
 		#  TODO
-		# chrome.cookies.get 
+		# chrome.cookies.get
 		# 	url: 'http://superglot.com'
 		# 	name: 'connect.sid'
 		# , (cookie) ->
@@ -76,13 +76,13 @@ async.parallel [
 				when 'word-diff'
 					diff = msg.data.diff
 					# TODO: apply diff earlier, reverse on failure
-					$.ajax 
+					$.ajax
 						url: API + "/user/words/apply-diffs"
 						type: 'post'
 						dataType: 'json'
 						data:
 							diffs: JSON.stringify [diff]
-						
+
 						success: (data) ->
 							console.log 'applying diff', diff
 							console.log userLemmata
@@ -90,14 +90,14 @@ async.parallel [
 							console.log userLemmata
 							port.postMessage
 								id: 'word-diff'
-								data: 
+								data:
 									diff: diff
 				else
 					console.warn 'got weird message', msg
-		
+
 		port.postMessage
 			id: 'load-words'
-			data: 
+			data:
 				lemmata:
 					all: lemmata.all
 					common: lemmata.common

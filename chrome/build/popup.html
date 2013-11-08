@@ -1,5 +1,6 @@
 
-<script src="lib/zepto.min.js"></script>
+<script src="lib/jquery.min.js"></script>
+<script src="common.js"></script>
 <script src="popup.js"></script>
 <style>
   body {
@@ -20,29 +21,48 @@
   
   }
   
+  .case {
+   display: none;
+  }
+  
 </style>
-<h1>page stats</h1>
-<h2 class="known"><span class="percent-known"> </span>% known</h2>
-<h2 class="learning"><span class="percent-learning"> </span>% learning</h2>
-<table class="table">
-  <tr>
-    <td>total words:</td>
-    <td class="total-all"></td>
-  </tr>
-  <tr>
-    <td>unique words:</td>
-    <td class="total-unique"></td>
-  </tr>
-  <tr>
-    <td>known:</td>
-    <td class="total-known"></td>
-  </tr>
-  <tr>
-    <td>learning:</td>
-    <td class="total-learning"></td>
-  </tr>
-  <tr>
-    <td>ignored:</td>
-    <td class="total-ignored"></td>
-  </tr>
-</table>
+<div class="case logged-out">
+  <h1>log in</h1>
+  <form method="post" action="http://localhost:3000/login">
+    <label>username:</label>
+    <input type="text" name="username"/>
+    <label>password:</label>
+    <input type="text" name="password"/>
+    <input type="submit" value="login"/>
+  </form>
+</div>
+<div class="case logged-in">
+  <h1>page stats</h1>
+  <h2 class="known"><span class="percent-known"></span>% known</h2>
+  <h2 class="learning"><span class="percent-learning"></span>% learning</h2>
+  <table class="table">
+    <tr>
+      <td>total words:</td>
+      <td class="total-all"></td>
+    </tr>
+    <tr>
+      <td>unique words:</td>
+      <td class="total-unique"></td>
+    </tr>
+    <tr>
+      <td>known:</td>
+      <td class="total-known"></td>
+    </tr>
+    <tr>
+      <td>learning:</td>
+      <td class="total-learning"></td>
+    </tr>
+    <tr>
+      <td>ignored:</td>
+      <td class="total-ignored"></td>
+    </tr>
+  </table>
+</div>
+<div class="case error">
+  <h1>error!</h1>
+</div>

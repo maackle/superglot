@@ -4,8 +4,10 @@ if exports?
 else
 	util = window.util
 
+SITE_URL = 'http://localhost:3000'
+API_URL = SITE_URL + '/api'
 
-enums = 
+enums =
 	KINDS: [
 		'known'
 		'learning'
@@ -76,3 +78,5 @@ class LemmaDiff
 (exports ? window).LemmaPartition = LemmaPartition
 (exports ? window).LemmaDiff = LemmaDiff
 (exports ? window).enums = enums
+(exports ? window).SITE_URL = SITE_URL
+(exports ? window).API_URL = API_URL

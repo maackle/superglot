@@ -46,12 +46,12 @@ chrome.runtime.onMessage.addListener (msg, sender, sendResponse) ->
 			sendResponse
 				id: 'show-stats'
 				data:
-					stats: 
+					stats:
 						totalWordCount: superglot.allLemmataRaw.length
 						uniqueWords: superglot.getAllLemmata()
 						intersections: bg.lemmata.user.getIntersections superglot.getAllLemmata()
 
-			
+
 class Superglot
 	tokenSelector: 'span.sg'
 	excludedTags: ['script', 'style', 'iframe', 'head', 'code', 'pre', 'textarea', 'input', 'svg', 'canvas']
@@ -77,7 +77,7 @@ class Superglot
 		else if w in bg.lemmata.user.learning then 'learning'
 		else if util.binarysearch(bg.lemmata.all, w) >= 0 then 'untracked'
 		else 'invalid'
- 
+
 	bindEvents: ->
 		@$root.on 'mousemove', (e) =>
 			@$root.removeClass 'is-adding-known is-adding-learning'
@@ -94,7 +94,7 @@ class Superglot
 			else
 				e.preventDefault()
 				inclusionKind = (
-					if e.ctrlKey or e.metaKey then 'known' 
+					if e.ctrlKey or e.metaKey then 'known'
 					else if e.altKey then 'learning'
 					else null
 				)
@@ -113,7 +113,7 @@ class Superglot
 				else
 					console.warn 'idempotent diff', diff
 				return false
-		
+
 
 	transform: ->
 		if not @$root.hasClass 'superglot'
@@ -125,10 +125,11 @@ class Superglot
 						words = NLP.segment c.data
 						lemmata = words.map (w) => NLP.lemmatize w
 						@allLemmataRaw = @allLemmataRaw.concat lemmata
-						tokens = words.map (w) => 
+						console.debug 'tokens', tokens
+						tokens = words.map (w) =>
 							lemma = NLP.lemmatize w
 							kind = @classify lemma
-							""" 
+							"""
 							<span data-lemma="#{lemma}" class="sg sg-#{kind}">#{w}</span>
 							"""
 						html = tokens.join('')

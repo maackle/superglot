@@ -29,15 +29,15 @@ module.exports = (grunt) ->
 			compile:
 				options:
 					join: true
-				files: 
+				files:
 					"build/common.js": [
 						"../common/util.coffee"
 						"../common/common.coffee"
 						"../common/nlp.coffee"
-					] 
+					]
 					"build/main.js": [
 						"#{src}/coffee/main.coffee"
-					] 
+					]
 					"build/background.js": [
 						"#{src}/coffee/background.coffee"
 					]
@@ -83,16 +83,16 @@ module.exports = (grunt) ->
 						filter: "isFile"
 					}
 					{
-						src: "bower_components/zepto/zepto.min.js"
-						dest: "build/lib/zepto.min.js"
+						src: "bower_components/jquery/jquery.js"
+						dest: "build/lib/jquery.js"
 					}
 					{
 						src: "bower_components/async/lib/async.js"
 						dest: "build/lib/async.js"
 					}
 					{
-						src: "bower_components/underscore/underscore.js"
-						dest: "build/lib/underscore.js"
+						src: "bower_components/lodash/dist/lodash.min.js"
+						dest: "build/lib/lodash.min.js"
 					}
 				]
 

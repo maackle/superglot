@@ -1,7 +1,7 @@
 (function() {
   var API, NLP, tabPorts, userLemmata;
 
-  API = 'http://localhost:3000/api';
+  API = API_URL;
 
   NLP = new nlp.NLP;
 
@@ -40,8 +40,8 @@
     function(cb) {
       return chrome.storage.local.get('superglot-lemmata', function(storage) {
         if (storage['superglot-lemmata'] != null) {
-          console.debug('loaded lemmata from chrome.storage.local');
-          return cb(null, storage['superglot-lemmata']);
+          cb(null, storage['superglot-lemmata']);
+          return console.debug('loaded lemmata from chrome.storage.local');
         } else {
           console.debug('downloading from server...');
           return $.getJSON(API + '/words/lemmata', function(lemmata) {
