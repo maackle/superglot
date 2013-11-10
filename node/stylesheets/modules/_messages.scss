@@ -1,0 +1,19 @@
+.messages {
+
+	li {
+		display: block;
+		padding: 5px;
+		&.info {
+			background: #ccf;
+		}
+		&.success {
+			background: #cfc;
+		}
+		&.warn {
+			background: #ffc;
+		}
+		&.error {
+			background: #fcc;
+		}
+	}
+}

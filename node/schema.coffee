@@ -13,13 +13,20 @@ user = new mongoose.Schema
 	email: String
 	googleId: String
 	googleToken: String
-	lemmata: 
+	lemmata:
 		known: [String]
 		learning: [String]
 		ignored: [String]
+
+document = new mongoose.Schema
+	title: String
+	lemmata: [String]
+	source: String
+	plaintext: String
 
 user.methods.checkPassword = (password) ->
 	"TODO"
 
 exports.word = word
 exports.user = user
+exports.document = document

@@ -1,0 +1,14 @@
+extends ../_base
+
+block content
+	.container
+		.col-sm-4
+			h2 known
+			ul
+				for lemma in user.lemmata.known
+					li= lemma
+		.col-sm-4
+			h2 learning
+			ul
+				for lemma in user.lemmata.learning
+					li= lemma

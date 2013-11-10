@@ -12,7 +12,8 @@ exports.requireUser = (req, res, next) ->
 	if req.user
 		next()
 	else
-		res.json 401, 'must log in first'
+		req.flash 'warn', 'Please log in first'
+		res.redirect '/login'
 
 exports.withDummyUser = (fn) ->
 	models.User.findOne null, fn

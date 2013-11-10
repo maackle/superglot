@@ -19,7 +19,11 @@
     "passport-local": "~0.1.6",
     "bcrypt": "~0.7.7",
     "express-flash": "0.0.2",
-    "lodash": "~2.2.1"
+    "lodash": "~2.2.1",
+    "connect-mongo": "~0.4.0",
+    "forms": "~0.3.0",
+    "htmlparser2": "~3.3.0",
+    "request": "~2.27.0"
   },
   "devDependencies": {}
 }

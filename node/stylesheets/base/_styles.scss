@@ -2,9 +2,13 @@ $primary-color: #08a;
 $link-color: $primary-color;
 
 html, body {
-	background: #eee;
+	// background: #eee;
 	font-family: Quicksand, Arial, sans-serif;
 	text-align: center;
+}
+
+.container {
+	text-align: left;
 }
 
 a {
@@ -32,19 +36,3 @@ ul {
 	padding-left: 0;
 }
 
-.messages {
-
-	li {
-		display: block;
-		padding: 5px;
-		&.info {
-			background: #ccf;
-		}
-		&.warn {
-			background: #ffc;
-		}
-		&.error {
-			background: #fcc;
-		}
-	}
-}
