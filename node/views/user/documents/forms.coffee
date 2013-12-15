@@ -6,6 +6,7 @@ add = forms.create
 		required: true
 	url: fields.string()
 	body: fields.string
+		required: true
 		widget: forms.widgets.textarea()
 
 exports.add = add

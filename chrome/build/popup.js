@@ -10,7 +10,7 @@
   });
 
   xhrUser.done(function(user) {
-    console.log('user', user);
+    console.log('USeR', user);
     if (user != null) {
       return chrome.tabs.query({
         active: true,
@@ -22,6 +22,7 @@
           id: 'stats-request'
         }, function(response) {
           var ignored, known, learning, mkPercent, stats, totalCount, uniqueCount, _ref;
+          console.log(response);
           mkPercent = function(r) {
             var p;
             p = 100 * r;

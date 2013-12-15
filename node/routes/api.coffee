@@ -1,4 +1,6 @@
 models = require '../models'
+common = require '../../common/common'
+helpers = require '../helpers'
 
 exports.setup = (app, conn, passport) ->
 
@@ -14,18 +16,14 @@ exports.setup = (app, conn, passport) ->
 	app.get '/api/user', (req, res) ->
 		res.json(req.user or null)
 
-	app.post '/api/user/words/apply-diffs', (req, res) ->
-		withDummyUser (err, user) ->
-			if err
-				res.send(500, err)
-			else
-				lemmata = new common.LemmaPartition user.lemmata
-					# known: user.lemmata.known
-					# learning: user.lemmata.learning
-					# ignored: user.lemmata.ignored
-				for diff in JSON.parse req.body.diffs
-					lemmata.applyDiff diff
-				user.lemmata = lemmata
-				user.save()
-				res.json true
-
+	app.post '/api/user/words/apply-diffs', helpers.requireUser, (req, res) ->
+		user = req.user
+		lemmata = new common.LemmaPartition user.lemmata
+			# known: user.lemmata.known
+			# learning: user.lemmata.learning
+			# ignored: user.lemmata.ignored
+		for diff in JSON.parse req.body.diffs
+			lemmata.applyDiff diff
+		user.lemmata = lemmata
+		user.save()
+		res.json true

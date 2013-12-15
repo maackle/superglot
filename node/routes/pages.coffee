@@ -7,7 +7,7 @@ helpers = require '../helpers'
 documents =
 	forms: require '../views/user/documents/forms'
 
-makeDocument = (form) ->
+makeDocument = (form, fn) ->
 	{title, url, body} = form.data
 	plaintext = ''
 	source = null
@@ -22,18 +22,25 @@ makeDocument = (form) ->
 
 		onend: ->
 
-	make = ({title, lemmata, plaintext, source}) ->
+	make = ({title, plaintext, source}) ->
+		lemmata = NLP.lemmatize NLP.segment plaintext
+		console.log 'aaarg', arguments
+		console.log 'emmmmala', lemmata
 		models.Document.create
 			title: title
 			lemmata: lemmata
 			plaintext: plaintext
 			source: source
+		, fn
 
+	descriptor = null
 
-	if body
-		source = null
-		plaintext = body
-		make form.data
+	if body?
+		{title, body} = form.data
+		descriptor = 
+			title: title
+			source: null
+			plaintext: body
 	else if url
 		source = url
 		request url, (err, res, body) ->
@@ -43,16 +50,18 @@ makeDocument = (form) ->
 			else
 				parser.write body  # updates plaintext
 				parser.end()
-
-				lemmata = NLP.lemmatize NLP.segment plaintext
-				make
+				
+				descriptor = 
 					title: title
-					lemmata: lemmata
-					source: source
 					plaintext: plaintext
+					source: source
+	else
+		console.error "no source for document"
 
-				console.log "TIT", title, source
-				console.log lemmata
+	if descriptor?
+		doc = make descriptor, fn
+	else
+		console.error "no descriptor"
 
 
 exports.setup = (app, conn) ->
@@ -67,17 +76,23 @@ exports.setup = (app, conn) ->
 
 	app.get '/documents', helpers.requireUser, (req, res) ->
 		form = documents.forms.add
-		res.render 'user/documents.jade',
-			formHTML: form.toHTML()
+		models.Document.find (err, docs) ->
+			console.log "finding", err, docs
+			res.render 'user/documents.jade',
+				formHTML: form.toHTML()
+				documents: docs
 
 	app.post '/documents', helpers.requireUser, (req, res) ->
 		form = documents.forms.add
 		form.handle req,
 			success: (form) ->
-				doc = makeDocument form
-
-				req.flash 'success', 'added a document'
-				res.redirect '/documents'
+				doc = makeDocument form, (err, doc) ->
+					if err
+						console.error "problem creating document"
+						req.flash 'error', 'problem creating document'
+					else
+						req.flash 'success', 'added a document'
+					res.redirect '/documents'
 			error: (form) ->
 				res.render 'user/documents.jade',
 					formHTML: form.toHTML()

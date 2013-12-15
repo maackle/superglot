@@ -34,5 +34,8 @@ a {
 ul {
 	list-style: none;
 	padding-left: 0;
+	&.bulleted {
+		list-style: square inside;
+	}
 }
 

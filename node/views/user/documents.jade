@@ -6,6 +6,14 @@ block content
 
 		h1 Documents
 
+		h2 Everyone's Documents
+		ul.documents-list.bulleted
+			for doc in documents
+				li
+					span.title= doc.title
+					span.count  (#{doc.lemmata.length} words)
+
+		h2 Add a Document
 		form(role="form", method="post")
 			!= formHTML
 			.form-group

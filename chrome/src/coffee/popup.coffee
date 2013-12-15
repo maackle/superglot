@@ -6,7 +6,7 @@ xhrUser = $.ajax
 	dataType: 'json'
 
 xhrUser.done (user) ->
-	console.log 'user', user
+	console.log 'USeR', user
 	if user?
 		chrome.tabs.query  # get the active tab
 			active: true
@@ -16,6 +16,7 @@ xhrUser.done (user) ->
 			chrome.tabs.sendMessage tab.id,
 				id: 'stats-request'
 			, (response) ->
+				console.log response
 				mkPercent = (r) ->
 					p = 100 * r
 					if p < 10 then p.toFixed(1) else parseInt(p)
