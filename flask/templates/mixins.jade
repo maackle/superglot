@@ -1,0 +1,12 @@
+mixin formfield(field, placeholder="")
+	.form-group(class=('has-error' if field.errors else ''))
+		= field.label(class="control-label")
+		!= field(class="form-control", placeholder=placeholder)
+		ul.errors
+			for error in field.errors
+				li= error
+
+mixin formsubmit(value="Submit")
+	.form-group.form-submit
+		input.btn.btn-primary(type="submit", value=value)
+		

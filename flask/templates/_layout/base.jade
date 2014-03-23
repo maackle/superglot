@@ -1,0 +1,34 @@
+doctype 5
+
+html
+	head
+		title superglot
+		link(rel="stylesheet", href="/static/build/main.css")
+	body
+		block navbar
+			nav.navbar
+				if current_user.is_authenticated()
+					p Hello #{current_user.email}
+						a(href=url_for('auth.logout')) log out
+				else
+					p
+						a(href=url_for('auth.login')) log in
+						a(href=url_for('auth.register')) register
+				p
+					a(href=url_for('home')) home
+					a(href=url_for('frontend.add_document')) add document
+			hr
+
+		block messages
+			- var messages = (flashes or []) + get_flashed_messages(with_categories=true)
+			.container
+				.messages
+					for category, message in messages
+						div(class="alert alert-dismissable alert-#{category}")
+							button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
+							= message
+
+		block main_content
+
+		script.
+			document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':54739/livereload.js?snipver=1"></' + 'script>');

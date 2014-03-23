@@ -1,0 +1,11 @@
+extends _layout/base.jade
+
+- from 'mixins.jade' import formfield, formsubmit
+
+block main_content
+	h1 add document
+
+	form(method="post")
+		!= form.csrf_token
+		+formfield(form.url)
+		+formsubmit

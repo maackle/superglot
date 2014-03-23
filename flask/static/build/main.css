@@ -1,0 +1,12 @@
+/* line 2, ../styles/main.scss */
+body {
+  background: white;
+}
+
+/* line 7, ../styles/main.scss */
+.navbar a {
+  display: inline-block;
+  background: yellow;
+  padding: 5px;
+  margin-right: 10px;
+}

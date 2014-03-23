@@ -5,3 +5,6 @@ bower_components
 .sass-cache
 .hg
 local/
+
+__pycache__
+.flask-cache
