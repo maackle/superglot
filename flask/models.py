@@ -1,73 +1,48 @@
 from flask import session
+from mongoengine import *
 from flask.ext.login import UserMixin
-from bson.objectid import ObjectId
 
-from database import db
+# class DictBackedObject(object):
 
-users = db.users
+# 	collection = None
 
-class DictBackedObject(object):
+# 	def __init__(self, data={}, **kwargs):
+# 		# self._data = data
+# 		for key, val in data.items():
+# 			setattr(self, key, val)
+# 		for key, val in kwargs.items():
+# 			setattr(self, key, val)
 
-	collection = None
+# 	def save(self):
+# 		self.collection.save(self.__dict__)
 
-	def __init__(self, data={}, **kwargs):
-		# self._data = data
-		for key, val in data.items():
-			setattr(self, key, val)
-		for key, val in kwargs.items():
-			setattr(self, key, val)
+email_field = StringField(max_length=128, required=True)
+lemmata_field = ListField(StringField(max_length=256))
 
-	def save(self):
-		self.collection.save(self.__dict__)
+class User(Document, UserMixin):
 
-
-class User(UserMixin, DictBackedObject):
-
-	collection = db.users
-
-	def __init__(self, email, password, lemmata=[], **kwargs):
-		super().__init__(email=email, password=password, lemmata=set(lemmata), **kwargs)
+	email = email_field
+	password = StringField(max_length=32, required=True)
+	lemmata = lemmata_field
 
 	def get_id(self):
-		return str(self._id)
-
-	def save(self):
-		data = self.__dict__
-		data['lemmata'] = list(data['lemmata'])
-		self.collection.save(data)
-
-	@staticmethod
-	def get(uid):
-		data = users.find_one(ObjectId(uid))
-		return User(**data)
+		return str(self.id)
 
 	@staticmethod
 	def authenticate(email, password):
-		data = users.find_one({
-			'email': email,
-			'password': password,
-			})
-		if data:
-			return User(**data)
-		else:
-			return None
+		user = User.objects(email=email, password=password).first()
+		return user
 
-	@staticmethod
-	def create(email, password):
-		return users.insert({
-			'email': email,
-			'password': password,
-			'lemmata': [],
-			})
+class Word(Document):
+
+	reading = StringField(max_length=128)
+	lemma = StringField(max_length=128)
+	language = StringField(max_length=8)
 
 
-class Word(DictBackedObject):
-	pass
-	# def __init__(self, reading, lemma, language):
-	# 	super().__init__(reading, lemma, language, **kwargs)
-
-
-class Document(DictBackedObject):
-	pass
-	# def __init__(self, title, plaintext, lemmata, source):
-	# 	super().__init__(title, plaintext, lemmata, source, **kwargs)
+class TextArticle(Document):
+	
+	title = StringField(max_length=256)
+	plaintext = StringField()
+	lemmata = lemmata_field
+	source = StringField()

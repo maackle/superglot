@@ -5,13 +5,15 @@ from flask import Flask, render_template, request, redirect, session, flash, url
 from flask.ext.assets import Environment, Bundle
 from flask.ext.login import current_user
 import requests
+import mongoengine
+from flask.ext.mongoengine import MongoEngine
 
 from controllers.api import blueprint as api
 from controllers.auth import login_manager, blueprint as auth
 from controllers.frontend import blueprint as frontend
-from database import db
 from models import User
 from cache import cache
+
 
 requests.packages.urllib3.add_stderr_logger()
 
@@ -32,6 +34,9 @@ cache.init_app(app, config={
 	'CACHE_THRESHOLD': 1000000,
 	'CACHE_DEFAULT_TIMEOUT': 60*60*60*24,  # one day
 	})
+
+mongoengine.connect('superglot')
+db = MongoEngine(app)
 
 login_manager.init_app(app)
 

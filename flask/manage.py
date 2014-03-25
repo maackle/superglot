@@ -1,8 +1,7 @@
 import sys
 from flask.ext.script import Manager
 
-from application import app
-from database import db
+from application import app, db
 from models import User
 import nlp
 

@@ -14,7 +14,7 @@ def home():
 	return render_template('home.jade')
 
 @blueprint.route('/docs/add/', methods=['GET', 'POST'])
-def add_document():
+def document_create():
 	form = AddDocumentForm(url='http://michaeldougherty.info')
 	if form.validate_on_submit():
 		text = util.get_remote_text(form.url.data)
@@ -22,6 +22,11 @@ def add_document():
 		for lemma in lemmata:
 			current_user.lemmata.add(lemma)
 		current_user.save()
-		return str(current_user.__dict__)
 	else:
-		return render_template('frontend/add_document.jade', form=form)
+		return render_template('frontend/document_create.jade', form=form)
+
+
+@blueprint.route('/docs/', methods=['GET', 'POST'])
+def document_list():
+	
+	return render_template('frontend/document_list.jade')

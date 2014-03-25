@@ -16,7 +16,8 @@ html
 						a(href=url_for('auth.register')) register
 				p
 					a(href=url_for('home')) home
-					a(href=url_for('frontend.add_document')) add document
+					if current_user.is_authenticated()
+						a(href=url_for('frontend.document_create')) add document
 			hr
 
 		block messages

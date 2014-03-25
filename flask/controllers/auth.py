@@ -8,7 +8,7 @@ login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(userid):
-	user = User.get(userid)
+	user = User.objects(id=userid).first()
 	return user
 
 blueprint = Blueprint('auth', __name__, template_folder='templates')
@@ -49,10 +49,11 @@ def register():
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			user = User.create(**data)
+			user = User(email=data['email'], password=data['password']).save()
 			flash("Created user.")
 			return redirect(url_for('auth.login'))
 		else:
+			print(form.data)
 			flash('problem creating user', 'danger')
 			return render_template("auth/register.jade", form=form)
 	else:
