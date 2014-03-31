@@ -4,10 +4,13 @@ from flask import session
 from flask.ext.login import UserMixin
 from mongoengine import *
 from flask.ext.mongoengine import Document
-
-
 email_field = lambda: StringField(max_length=128, required=True)
 password_field = lambda: StringField(max_length=32, required=True)
+
+word_reading_field = lambda: StringField(max_length=128)
+word_lemma_field = lambda: StringField(max_length=128)
+word_language_field = lambda: StringField(max_length=8)
+
 lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True))
 
 # class UserLemmaList(EmbeddedDocument):
@@ -37,13 +40,9 @@ class Word(Document):
 		}]
 	}
 
-	reading = StringField(max_length=128)
-	lemma = StringField(max_length=128)
-	language = StringField(max_length=8)
-
-	@staticmethod
-	def find_by_reading(reading):
-		return Word.objects(reading=reading).first()
+	reading = word_reading_field()
+	lemma = word_lemma_field()
+	language = word_language_field()
 
 	def __str__(self):
 		return "Word({})".format(self.reading)
@@ -105,4 +104,18 @@ class TextArticle(Document):
 	words = words_field()
 	user = ReferenceField(User)
 	date_modified = DateTimeField(default=datetime.datetime.now)
+
+	def sorted_words(self):
+		return sorted(self.words, key=lambda word: word.reading.lower())
+
+	def sorted_lemmata(self):
+		return sorted(set(map(lambda x: x.lemma, self.words)), key=str.lower)
+
+
+class WordOccurrence(Document):
+
+	reading = word_reading_field()
+	word = ReferenceField(Word)
+	article = ReferenceField(TextArticle)
+	position = IntField()
 

@@ -1,4 +1,5 @@
 @import 'bootstrap';
+@import 'compass';
 
 body {
 	background: white;
@@ -12,6 +13,23 @@ body {
 // 	max-width: 80%;
 // 	margin: auto;
 // }
+
+ul {
+	list-style: none;
+	text-align: justify;
+
+	&.inline-list {
+		li {
+			@include border-radius(4px);
+			border: 1px solid #ccc;
+			display: inline-block;
+			background: #eee;
+			padding: 2px 4px;
+			margin: 2px auto;
+
+		}
+	}
+}
 
 .navbar {
 	a {

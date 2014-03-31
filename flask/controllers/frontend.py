@@ -14,10 +14,10 @@ import util
 
 
 def make_words(tokens):
-	for token in set(tokens):
+	for reading, lemma in set(tokens):
 		(word, created) = Word.objects.get_or_create(
-			reading=str(token),
-			lemma=token.lemma.lower(),
+			reading=reading,
+			lemma=lemma,
 			language='en',
 		)
 		yield word
@@ -38,9 +38,8 @@ def word_list():
 @login_required
 def add_words(partition):
 	def words(partition):
-		for token in set(nlp.tokenize(request.form['words'])):
-			word = Word.find_by_reading(token)
-			print(word)
+		for reading, lemma in set(nlp.tokenize(request.form['words'])):
+			word = Word.objects(reading=reading, lemma=lemma).first()
 			if word:
 				yield word.id
 	new_words = list(words(partition))
@@ -63,25 +62,29 @@ def document_list():
 @login_required
 def document_read(doc_id):
 	doc = TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
-	return render_template('frontend/document_read.jade', doc=doc)
+	return render_template('frontend/document_read.jade', 
+		doc=doc, 
+		sorted_words=doc.sorted_words())
+
 
 @blueprint.route('/docs/add/', methods=['GET', 'POST'])
 @login_required
 def document_create():
 	form = AddDocumentForm(url='http://michaeldougherty.info')
 	if form.validate_on_submit():
-		ignored_tags = ['script', 'code', 'head', 'iframe']
+		ignored_tags = ['script', 'style', 'code', 'head', 'iframe']
 		url = form.url.data
 		req = util.get_page(url)
 		soup = BeautifulSoup(req.text)
 		title = soup.title.string if soup.title else url
 
+		# remove noisy content-empty tags
 		for tag in ignored_tags:
 			for t in soup(tag):
 				t.decompose()
 
-		text = "\n".join(soup.stripped_strings)
-		tokens = nlp.tokenize(text)
+		plaintext = "\n".join(soup.stripped_strings)
+		tokens = nlp.tokenize(plaintext)
 		words = list(make_words(tokens))
 		num_words_before = Word.objects.count()
 		user = User.objects(id=current_user.id).first()
@@ -89,36 +92,30 @@ def document_create():
 		duplicates = set()
 		added = set()
 
-		try:
-			(article, created) = TextArticle.objects.get_or_create(
-				title=title,
-				source=url,
-				user=user,
-				defaults={
-					'words': words,
-					'plaintext': text,
-					}
-				)
-			# TextArticle.objects.insert(article)
-
-		except NotUniqueError as e:
-			pass
-
-		# try:
-		# 	# words = Word.objects.insert(list(make_words(tokens)), load_bulk=False, write_concern={'continueOnInsertSDFError': True})
-		# except NotUniqueError as e:
-		# 	print(e)
-		# 	pass
+		(article, created) = TextArticle.objects.get_or_create(
+			source=url,
+			user=user,
+			defaults={
+				'title': title,
+				'words': words,
+				'plaintext': plaintext,
+				}
+			)
+		if not created:
+			article.words = words
+			article.title = title
+			article.plaintext = plaintext
+			article.save()
 
 		num_words_after = Word.objects.count()
 		num_added = num_words_after - num_words_before
-		# User.objects(id=current_user.id).update_one(add_to_set__lemmata__known=lemmata)
-		# current_user.reload()
-		# current_user.lemmata.extend(lemmata)
-		# current_user.save()
 		
-		return str((num_added, num_words_after)) + text
-		# return str(map(str, Word.objects()))
+		if created:
+			flash("Added {}".format(title), 'success')
+		else:
+			flash("Updated {}".format(title), 'success')
+
+		return redirect(url_for('frontend.document_list'))
 	else:
 		return render_template('frontend/document_create.jade', form=form)
 

@@ -3,6 +3,12 @@ extends _layout/base.jade
 - from 'mixins.jade' import formfield, formsubmit
 
 block main_content
-	h1 document #{doc.title}
-	
+	h1= doc.title
+	h3 words
+	p
+		i #{sorted_words|length} total
+	ul.inline-list
+		for word in sorted_words
+			li #{word.reading}
+	h3 raw
 	pre= doc.plaintext

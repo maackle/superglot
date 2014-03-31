@@ -7590,12 +7590,29 @@ button.close {
     display: none !important;
   }
 }
-/* line 3, ../styles/main.scss */
+/* line 4, ../styles/main.scss */
 body {
   background: white;
 }
 
 /* line 17, ../styles/main.scss */
+ul {
+  list-style: none;
+  text-align: justify;
+}
+/* line 22, ../styles/main.scss */
+ul.inline-list li {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  display: inline-block;
+  background: #eee;
+  padding: 2px 4px;
+  margin: 2px auto;
+}
+
+/* line 35, ../styles/main.scss */
 .navbar a {
   display: inline-block;
   background: yellow;

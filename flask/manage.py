@@ -15,7 +15,7 @@ def populate():
 			word = line.strip()
 			db.words.insert({
 				'reading': word,
-				'lemma': nlp.lemmatize_word(word),
+				'lemma': nlp.lemmatize_word(word),  # TODO: can't do POS-enabled lemmatize here, so what?
 				'language': 'en',
 			})
 			if (i % 1000) == 0:

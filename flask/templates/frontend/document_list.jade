@@ -9,7 +9,7 @@ block main_content
 			li
 				= doc.title
 				|  | 
-				a(href=url_for('frontend.document_read', doc_id=doc.id), target="_blank") read
+				a(href=url_for('frontend.document_read', doc_id=doc.id)) read
 				|  | 
 				a(href=doc.source, target="_blank") original
 				|  | 
