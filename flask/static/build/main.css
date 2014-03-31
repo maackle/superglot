@@ -7619,3 +7619,8 @@ ul.inline-list li {
   padding: 5px;
   margin-right: 10px;
 }
+
+/* line 43, ../styles/main.scss */
+.form-submit {
+  margin-top: 15px;
+}
