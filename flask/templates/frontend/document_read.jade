@@ -1,0 +1,8 @@
+extends _layout/base.jade
+
+- from 'mixins.jade' import formfield, formsubmit
+
+block main_content
+	h1 document #{doc.title}
+	
+	pre= doc.plaintext

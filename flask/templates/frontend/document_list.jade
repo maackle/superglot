@@ -4,3 +4,13 @@ extends _layout/base.jade
 
 block main_content
 	h1 documents
+	ul
+		for doc in docs
+			li
+				= doc.title
+				|  | 
+				a(href=url_for('frontend.document_read', doc_id=doc.id), target="_blank") read
+				|  | 
+				a(href=doc.source, target="_blank") original
+				|  | 
+				i (#{doc.words|length} words)

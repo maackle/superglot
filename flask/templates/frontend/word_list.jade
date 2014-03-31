@@ -1,0 +1,25 @@
+extends _layout/base.jade
+
+- from 'mixins.jade' import formfield, formsubmit
+
+block main_content
+	h1 words
+
+	h2 add words?
+	h3 known
+	form(method="POST", action=url_for('frontend.add_words', partition='known'))
+		textarea(name="words")
+		+formsubmit('add words')
+	h3 learning
+	form(method="POST", action=url_for('frontend.add_words', partition='learning'))
+		textarea(name="words")
+		+formsubmit('add words')
+
+	h2 known
+	ul
+		for word in words.known
+			li= word
+	h2 learning
+	ul
+		for word in words.learning
+			li= word

@@ -53,6 +53,11 @@ module.exports = (grunt) ->
 					sassDir: '<%= paths.src %>/styles'
 					cssDir: '<%= paths.dest %>/'
 					environment: 'development'
+					require: [
+						'susy'
+						'bootstrap-sass'
+						# 'breakpoint'
+					]
 
 		copy:
 			dist:

@@ -35,7 +35,7 @@ cache.init_app(app, config={
 	'CACHE_DEFAULT_TIMEOUT': 60*60*60*24,  # one day
 	})
 
-mongoengine.connect('superglot')
+# mongoengine.connect('superglot')
 db = MongoEngine(app)
 
 login_manager.init_app(app)
