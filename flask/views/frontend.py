@@ -7,8 +7,9 @@ from flask.ext.login import current_user, login_required
 from mongoengine.errors import NotUniqueError
 
 from forms import AddDocumentForm
-from models import User, Word, TextArticle
-from controllers import api
+from models import User, UserWordList, Word, TextArticle
+from views import api
+from util import sorted_words
 import nlp
 import util
 
@@ -31,8 +32,9 @@ def home():
 @blueprint.route('/words/', methods=['GET', 'POST'])
 @login_required
 def word_list():
-	print(current_user.words)
-	return render_template('frontend/word_list.jade', words=current_user.words)
+	words = current_user.words
+	words.sort()
+	return render_template('frontend/word_list.jade', words=words)
 
 @blueprint.route('/words/add/<partition>/', methods=['POST'])
 @login_required
@@ -62,9 +64,24 @@ def document_list():
 @login_required
 def document_read(doc_id):
 	doc = TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
+
+	def annotate(word):
+		group = None
+		for name in UserWordList.group_names:
+			if word in getattr(current_user.words, name):
+				print(word, name)
+				group = name
+
+		return {
+			'word': word,
+			'group': group,
+		}
+
+	annotated_words = map(annotate, doc.sorted_words())
+	
 	return render_template('frontend/document_read.jade', 
 		doc=doc, 
-		sorted_words=doc.sorted_words())
+		annotated_words=annotated_words)
 
 
 @blueprint.route('/docs/add/', methods=['GET', 'POST'])

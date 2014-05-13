@@ -30,18 +30,16 @@ module.exports = (grunt) ->
 				options:
 					join: true
 				files:
-					"build/common.js": [
-						"../common/util.coffee"
-						"../common/common.coffee"
-						"../common/nlp.coffee"
-					]
 					"build/main.js": [
+						"#{src}/coffee/common.coffee"
 						"#{src}/coffee/main.coffee"
 					]
 					"build/background.js": [
+						"#{src}/coffee/common.coffee"
 						"#{src}/coffee/background.coffee"
 					]
 					"build/popup.js": [
+						"#{src}/coffee/common.coffee"
 						"#{src}/coffee/popup.coffee"
 					]
 

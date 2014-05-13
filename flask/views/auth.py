@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.ext.login import LoginManager, login_user, logout_user, login_required
 
 from forms import LoginForm, RegisterForm
-from models import User
+from models import User, UserWordList
 
 login_manager = LoginManager()
 
@@ -49,7 +49,10 @@ def register():
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			user = User(email=data['email'], password=data['password']).save()
+			user = User(
+				email=data['email'], 
+				password=data['password'],
+				words=UserWordList.default()).save()
 			flash("Created user.")
 			return redirect(url_for('auth.login'))
 		else:

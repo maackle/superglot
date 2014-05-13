@@ -10,6 +10,9 @@ def get_page(url):
 	return req	
 
 
+def sorted_words(words):
+	return sorted(words, key=lambda word: word.reading.lower())
+
 def get_remote_article(url):
 
 	forbidden_tags = ['script', 'code', 'head']

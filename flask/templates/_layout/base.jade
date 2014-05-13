@@ -4,6 +4,8 @@ html
 	head
 		title superglot
 		link(rel="stylesheet", href="/static/build/main.css")
+		link(rel="stylesheet", href="/static/fonts/fonts.css")
+		script(src="/static/bower/jquery/dist/jquery.min.js")
 	body
 		.container
 			block navbar
@@ -34,5 +36,7 @@ html
 
 			block main_content
 
-			script.
-				document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':54739/livereload.js?snipver=1"></' + 'script>');
+			block scripts
+
+				script.
+					document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':54739/livereload.js?snipver=1"></' + 'script>');

@@ -1,9 +1,11 @@
 (function() {
-  var API, NLP, tabPorts, userLemmata;
+  var API, API_URL, SITE_URL, tabPorts, userLemmata;
+
+  SITE_URL = 'http://localhost:5005';
+
+  API_URL = SITE_URL + '/chrome';
 
   API = API_URL;
-
-  NLP = new nlp.NLP;
 
   chrome.contextMenus.create({
     title: "Get Stats for '%s'",

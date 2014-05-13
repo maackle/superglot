@@ -19,10 +19,10 @@ block main_content
 				+formsubmit('add words')
 
 	h2 known
-	ul
+	ul.inline-list
 		for word in words.known
-			li= word
+			li= word.reading
 	h2 learning
-	ul
+	ul.inline-list
 		for word in words.learning
-			li= word
+			li= word.reading

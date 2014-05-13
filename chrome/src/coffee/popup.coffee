@@ -6,7 +6,6 @@ xhrUser = $.ajax
 	dataType: 'json'
 
 xhrUser.done (user) ->
-	console.log 'USeR', user
 	if user?
 		chrome.tabs.query  # get the active tab
 			active: true

@@ -1,7 +1,5 @@
 API = API_URL
 
-NLP = new nlp.NLP
-
 chrome.contextMenus.create
 	title: "Get Stats for '%s'"
 	contexts: ['selection']

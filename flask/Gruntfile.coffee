@@ -4,7 +4,7 @@ module.exports = (grunt) ->
 
 		paths:
 			templates: "templates"
-			src: "static"
+			src: "assets"
 			dest: "static/build"
 
 		pkg: grunt.file.readJSON("package.json")

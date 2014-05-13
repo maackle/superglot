@@ -7590,29 +7590,57 @@ button.close {
     display: none !important;
   }
 }
-/* line 4, ../styles/main.scss */
+/* line 5, ../../assets/styles/main.scss */
 body {
   background: white;
+  font-family: 'Open Sans';
+  font-size: 62.5%;
+  font-size: 2rem;
 }
 
-/* line 17, ../styles/main.scss */
+/* line 12, ../../assets/styles/main.scss */
+h1, h2, h3, h4 {
+  font-family: ChunkFive;
+  text-transform: uppercase;
+}
+
+/* line 17, ../../assets/styles/main.scss */
+h1 {
+  font-size: 5rem;
+}
+
+/* line 20, ../../assets/styles/main.scss */
+h2 {
+  font-size: 4rem;
+}
+
+/* line 23, ../../assets/styles/main.scss */
+h3 {
+  font-size: 3rem;
+}
+
+/* line 26, ../../assets/styles/main.scss */
+h4 {
+  font-size: 2rem;
+}
+
+/* line 39, ../../assets/styles/main.scss */
 ul {
   list-style: none;
   text-align: justify;
 }
-/* line 22, ../styles/main.scss */
+/* line 44, ../../assets/styles/main.scss */
 ul.inline-list li {
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid #ccc;
   display: inline-block;
-  background: #eee;
   padding: 2px 4px;
   margin: 2px auto;
 }
 
-/* line 35, ../styles/main.scss */
+/* line 56, ../../assets/styles/main.scss */
 .navbar a {
   display: inline-block;
   background: yellow;
@@ -7620,7 +7648,24 @@ ul.inline-list li {
   margin-right: 10px;
 }
 
-/* line 43, ../styles/main.scss */
+/* line 64, ../../assets/styles/main.scss */
 .form-submit {
   margin-top: 15px;
+}
+
+/* line 70, ../../assets/styles/main.scss */
+.annotated-word-list li {
+  -moz-transition: background-color 150ms;
+  -o-transition: background-color 150ms;
+  -webkit-transition: background-color 150ms;
+  transition: background-color 150ms;
+  cursor: pointer;
+}
+/* line 74, ../../assets/styles/main.scss */
+.annotated-word-list li[data-group="known"] {
+  background: #aaeeaa;
+}
+/* line 77, ../../assets/styles/main.scss */
+.annotated-word-list li[data-group="learning"] {
+  background: #eeeeaa;
 }

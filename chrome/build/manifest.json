@@ -6,7 +6,7 @@
 	"version": "0.0",
 
 	"browser_action": {
-		"default_icon": "icon.png",
+		"default_icon": "images/icon.png",
 		"default_popup": "popup.html"
 	},
 
@@ -15,7 +15,6 @@
 			"lib/jquery.js",
 			"lib/async.js",
 			"lib/lodash.min.js",
-			"common.js",
 			"background.js"
 		]
 	},
@@ -30,13 +29,12 @@
 		"js": [
 			"lib/lodash.min.js",
 			"lib/jquery.js",
-			"common.js",
 			"main.js"
 		]
 	}],
 
 	"icons": {
-		"16": "icon.png"
+		"16": "images/icon.png"
 	},
 
 	"permissions": [
@@ -44,7 +42,7 @@
 		"tabs",
 		"cookies",
 		"contextMenus",
-		"http://localhost:3000/",
+		"http://localhost:5005/",
 		"http://superglot.com/"
  	],
 

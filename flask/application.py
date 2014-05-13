@@ -8,9 +8,10 @@ import requests
 import mongoengine
 from flask.ext.mongoengine import MongoEngine
 
-from controllers.api import blueprint as api
-from controllers.auth import login_manager, blueprint as auth
-from controllers.frontend import blueprint as frontend
+from views.api import blueprint as api
+from views.chrome_api import blueprint as chrome_api
+from views.auth import login_manager, blueprint as auth
+from views.frontend import blueprint as frontend
 from models import User
 from cache import cache
 
@@ -22,6 +23,7 @@ app = Flask(__name__)
 app.config.from_object('config.settings')
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(chrome_api, url_prefix='/chrome')
 app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(frontend, url_prefix='')
 

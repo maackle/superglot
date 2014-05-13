@@ -1,6 +1,10 @@
 (function() {
-  var NLP, Superglot, bg, port, superglot, wordCollection,
+  var API_URL, NLP, SITE_URL, Superglot, bg, port, superglot, wordCollection,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  SITE_URL = 'http://localhost:5005';
+
+  API_URL = SITE_URL + '/chrome';
 
   superglot = {};
 

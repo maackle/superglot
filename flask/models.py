@@ -1,6 +1,6 @@
 import datetime
 
-from flask import session
+from flask import session, jsonify
 from flask.ext.login import UserMixin
 from mongoengine import *
 from flask.ext.mongoengine import Document
@@ -51,9 +51,30 @@ words_field = lambda: ListField(ReferenceField(Word))
 
 class UserWordList(EmbeddedDocument):
 
+	group_names = {'known', 'learning', 'ignored'}
+
 	known = words_field()
 	learning = words_field()
 	ignored = words_field()
+
+	def has_word(self, word):
+		for name in self.group_names:
+			if word in getattr(self, name):
+				return True
+		return False
+
+	def sort(self):
+		self.known.sort(key= lambda w: w.lemma)
+		self.learning.sort(key= lambda w: w.lemma)
+		self.ignored.sort(key= lambda w: w.lemma)
+
+	@staticmethod
+	def default():
+		return UserWordList(
+			known=[],
+			learning=[],
+			ignored=[],
+			)
 
 	def __str__(self):
 		return str({
@@ -86,9 +107,43 @@ class User(Document, UserMixin):
 		# 	]
 	}
 
+	def get_lemmata(self):
+		ret = {}
+		for partition in self.words:
+			ret[partition] = list(map(lambda x: x.lemma, self.words[partition]))
+		return ret
+
+	def json(self):
+		return jsonify({
+			'email': self.email,
+			'lemmata': self.get_lemmata(),
+		})
 
 	def get_id(self):
 		return str(self.id)
+
+	def update_word(self, word, new_group_name):
+		other_group_names = self.words.group_names - set(new_group_name)
+		new_partition = getattr(self.words, new_group_name)
+		old_group_name = None
+
+		if word in new_partition:
+			return None
+		else:
+			for group_name in other_group_names:
+				old_partition = getattr(self.words, group_name)
+				if word in old_partition:
+					User.objects(id=self.id).update_one(**{
+						"pull__words__{}".format(group_name): word.id
+					})
+					old_group_name = group_name
+
+			User.objects(id=self.id).update_one(**{
+				"add_to_set__words__{}".format(new_group_name): [word.id,]
+			})
+			self.reload()
+			return (old_group_name, new_group_name)
+			
 
 	@staticmethod
 	def authenticate(email, password):
@@ -106,7 +161,8 @@ class TextArticle(Document):
 	date_modified = DateTimeField(default=datetime.datetime.now)
 
 	def sorted_words(self):
-		return sorted(self.words, key=lambda word: word.reading.lower())
+		from util import sorted_words
+		return sorted_words(self.words)
 
 	def sorted_lemmata(self):
 		return sorted(set(map(lambda x: x.lemma, self.words)), key=str.lower)

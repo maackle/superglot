@@ -1,5 +1,9 @@
 (function() {
-  var API, xhrUser;
+  var API, API_URL, SITE_URL, xhrUser;
+
+  SITE_URL = 'http://localhost:5005';
+
+  API_URL = SITE_URL + '/chrome';
 
   API = API_URL;
 
@@ -10,7 +14,6 @@
   });
 
   xhrUser.done(function(user) {
-    console.log('USeR', user);
     if (user != null) {
       return chrome.tabs.query({
         active: true,
