@@ -24,7 +24,7 @@ block main_content
 					newGroup = 'learning'
 				else
 					newGroup = 'known'
-				$.get '/api/user/words/update/', {
+				$.post '/api/user/words/update/', {
 					lemma: lemma
 					group: newGroup
 				}, (data) ->

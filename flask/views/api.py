@@ -15,11 +15,11 @@ blueprint = Blueprint('api', __name__, template_folder='templates')
 def index():
 	return 'API v1.0'
 
-@blueprint.route('/user/words/update/', methods=['get',])
+@blueprint.route('/user/words/update/', methods=['POST',])
 @login_required
 def update_word():
-	lemma = request.args.get('lemma')
-	group = request.args.get('group')
+	lemma = request.form.get('lemma')
+	group = request.form.get('group')
 
 	word = Word.objects(lemma=lemma).first()
 
