@@ -1,19 +1,22 @@
+CoffeeScript==1.0.9
 Flask==0.10.1
 Flask-Assets==0.9
--e git+https://github.com/thadeusb/flask-cache@18cd9ebdb20e4d0f8f0900b971fcb8d48e27737d#egg=Flask_Cache-origin/master
+-e git+https://github.com/thadeusb/flask-cache@18cd9ebdb20e4d0f8f0900b971fcb8d48e27737d#egg=Flask_Cache-origin/HEAD
 Flask-Login==0.2.10
 Flask-Script==0.6.7
 Flask-WTF==0.9.5
 Jinja2==2.7.2
 MarkupSafe==0.19
+PyExecJS==1.0.4
 PyYAML==3.10
 WTForms==1.0.5
 Werkzeug==0.9.4
 beautifulsoup4==4.3.2
--e git+git@github.com:maackle/flask-mongoengine.git@b3547546ea7805b1f12c2da656bb4c9bd5190c37#egg=flask_mongoengine-origin/master
+-e git+git@github.com:maackle/flask-mongoengine.git@b3547546ea7805b1f12c2da656bb4c9bd5190c37#egg=flask_mongoengine-origin/HEAD
+gunicorn==18.0
 itsdangerous==0.23
 mongoengine==0.8.7
-pyjade==2.2.0
+-e git+git@github.com:SyrusAkbary/pyjade.git@c397ba21f94673f26d383fbff1bd734b53d501a5#egg=pyjade-master
 pymongo==2.6.3
 requests==2.2.1
 six==1.5.2
