@@ -7669,3 +7669,8 @@ ul.inline-list li {
 .annotated-word-list li[data-group="learning"] {
   background: #eeeeaa;
 }
+/* line 80, ../../assets/styles/main.scss */
+.annotated-word-list li[data-group="ignored"] {
+  background: #dddddd;
+  cursor: not-allowed;
+}

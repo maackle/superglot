@@ -44,7 +44,14 @@ def add_words(partition):
 			word = Word.objects(reading=reading, lemma=lemma).first()
 			if word:
 				yield word.id
+
 	new_words = list(words(partition))
+	for name in UserWordList.group_names:
+		for word_id in new_words:
+			if word_id in map(lambda w: w.id, getattr(current_user.words, name)):
+				User.objects(id=current_user.id).update_one(**{
+					"pull__words__{}".format(name): word_id
+				})
 	User.objects(id=current_user.id).update_one(**{
 		"add_to_set__words__{}".format(partition): new_words
 	})
@@ -57,21 +64,27 @@ def add_words(partition):
 @login_required
 def document_list():
 	docs = list(TextArticle.objects(user=current_user.id))
-	return render_template('frontend/document_list.jade', docs=docs)
+	stats = [doc.word_stats(current_user.words) for doc in docs]
+	return render_template('frontend/document_list.jade', doc_pairs=zip(docs, stats))
 
 
 @blueprint.route('/docs/<doc_id>/read', methods=['GET', 'POST'])
 @login_required
 def document_read(doc_id):
 	doc = TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
+	stats = doc.word_stats(current_user.words)
 
 	def annotate(word):
 		group = None
 		for name in UserWordList.group_names:
 			if word in getattr(current_user.words, name):
-				print(word, name)
 				group = name
+				break
 
+		if not group:
+			print(word)
+
+		print(sorted(list(map(lambda w: w.lemma, current_user.words.known))))
 		return {
 			'word': word,
 			'group': group,
@@ -81,6 +94,7 @@ def document_read(doc_id):
 	
 	return render_template('frontend/document_read.jade', 
 		doc=doc, 
+		stats=stats,
 		annotated_words=annotated_words)
 
 

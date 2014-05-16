@@ -6,10 +6,10 @@ block main_content
 	h1= doc.title
 	h3 words
 	p
-		i #{sorted_words|length} total
+		i #{stats.total} total
 	ul.inline-list.document-words.annotated-word-list
-		for word in annotated_words
-			li(data-group=word.group, data-lemma=word.word.lemma) #{word.word.reading}
+		for a_word in annotated_words
+			li(data-group=a_word.group, data-lemma=a_word.word.lemma) #{a_word.word.reading}
 	h3 raw
 	pre= doc.plaintext
 
@@ -18,6 +18,8 @@ block main_content
 		$ ->
 			$('.document-words li').click (e) ->
 				$el = $(this)
+				if $el.attr('data-group') == 'ignored'
+					return false
 				lemma = $el.data('lemma')
 				group = $el.attr('data-group')
 				if group == 'known'
@@ -29,6 +31,4 @@ block main_content
 					group: newGroup
 				}, (data) ->
 					if data
-						$el.attr('data-group', newGroup)
-						console.log newGroup
-						
+						$("[data-lemma='"+lemma+ "']").attr('data-group', newGroup)

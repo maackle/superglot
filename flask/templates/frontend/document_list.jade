@@ -5,7 +5,7 @@ extends _layout/base.jade
 block main_content
 	h1 documents
 	ul
-		for doc in docs
+		for doc, stats in doc_pairs
 			li
 				= doc.title
 				|  | 
@@ -13,4 +13,10 @@ block main_content
 				|  | 
 				a(href=doc.source, target="_blank") original
 				|  | 
-				i (#{doc.words|length} words)
+				ul.stats 
+					li
+						= doc.words|length
+						|  words
+					li
+						= "%2.0f"|format(stats.percents.known) 
+						| % known

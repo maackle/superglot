@@ -77,6 +77,10 @@ ul {
 		&[data-group="learning"] {
 			background: $color-learning;
 		}
+		&[data-group="ignored"] {
+			background: $color-ignored;
+			cursor: not-allowed;
+		}
 	}
 	
 }

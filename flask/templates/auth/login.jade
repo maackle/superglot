@@ -7,5 +7,5 @@ block main_content
 	form(method="post")
 		!= form.csrf_token
 		+formfield(form.email)
-		+formfield(form.password)
+		+formfield(form.password, type="password")
 		input(type="submit")

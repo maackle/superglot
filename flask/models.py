@@ -4,6 +4,9 @@ from flask import session, jsonify
 from flask.ext.login import UserMixin
 from mongoengine import *
 from flask.ext.mongoengine import Document
+
+from decorators import memoized
+
 email_field = lambda: StringField(max_length=128, required=True)
 password_field = lambda: StringField(max_length=32, required=True)
 
@@ -44,6 +47,9 @@ class Word(Document):
 	lemma = word_lemma_field()
 	language = word_language_field()
 
+	def __eq__(self, other):
+		return self.lemma == other.lemma  # and self.reading.lower() == other.reading.lower()
+
 	def __str__(self):
 		return "Word({})".format(self.reading)
 
@@ -51,7 +57,7 @@ words_field = lambda: ListField(ReferenceField(Word))
 
 class UserWordList(EmbeddedDocument):
 
-	group_names = {'known', 'learning', 'ignored'}
+	group_names = {'ignored', 'learning', 'known'}
 
 	known = words_field()
 	learning = words_field()
@@ -166,6 +172,21 @@ class TextArticle(Document):
 
 	def sorted_lemmata(self):
 		return sorted(set(map(lambda x: x.lemma, self.words)), key=str.lower)
+
+	def word_stats(self, wordlist):
+		stats = {
+			'counts': {},
+			'percents': {},
+			'total': len(self.words),
+		}
+
+		for name in UserWordList.group_names:
+			group = getattr(wordlist, name)
+			num = len([word for word in group if (word in self.words)])
+			stats['counts'][name] = num
+			stats['percents'][name] = float(100 * num / stats['total'])
+		return stats
+
 
 
 class WordOccurrence(Document):

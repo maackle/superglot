@@ -7,22 +7,33 @@ block main_content
 
 	h2 add words?
 	.row
-		.col-sm-6
+		.col-sm-4
 			h3 known
 			form(method="POST", action=url_for('frontend.add_words', partition='known'))
 				textarea(name="words", rows=7).form-control
-				+formsubmit('add words')
-		.col-sm-6
+				+formsubmit('add/move words')
+		.col-sm-4
 			h3 learning
 			form(method="POST", action=url_for('frontend.add_words', partition='learning'))
 				textarea(name="words", rows=7).form-control
-				+formsubmit('add words')
+				+formsubmit('add/move words')
+		.col-sm-4
+			h3 ignored
+			form(method="POST", action=url_for('frontend.add_words', partition='ignored'))
+				textarea(name="words", rows=7).form-control
+				+formsubmit('add/move words')
 
 	h2 known
 	ul.inline-list
 		for word in words.known
 			li= word.reading
+			
 	h2 learning
 	ul.inline-list
 		for word in words.learning
+			li= word.reading	
+					
+	h2 ignored
+	ul.inline-list
+		for word in words.ignored
 			li= word.reading
