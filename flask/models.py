@@ -16,18 +16,10 @@ word_language_field = lambda: StringField(max_length=8)
 
 lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True))
 
-# class UserLemmaList(EmbeddedDocument):
 
-# 	known = lemmata_field()
-# 	learning = lemmata_field()
-# 	ignored = lemmata_field()
+class CreationStamp:
 
-# 	def __str__(self):
-# 		return str({
-# 			'known': self.known,
-# 			'learning': self.learning,
-# 			'ignored': self.ignored,
-# 			})
+	date_created = DateTimeField(default=datetime.datetime.now())
 
 
 class Word(Document):
@@ -46,6 +38,7 @@ class Word(Document):
 	reading = word_reading_field()
 	lemma = word_lemma_field()
 	language = word_language_field()
+	recognized = BooleanField(default=True)
 
 	def __eq__(self, other):
 		return self.lemma == other.lemma  # and self.reading.lower() == other.reading.lower()
@@ -54,6 +47,7 @@ class Word(Document):
 		return "Word({})".format(self.reading)
 
 words_field = lambda: ListField(ReferenceField(Word))
+
 
 class UserWordList(EmbeddedDocument):
 
@@ -90,7 +84,7 @@ class UserWordList(EmbeddedDocument):
 			})
 
 
-class User(Document, UserMixin):
+class User(Document, UserMixin, CreationStamp):
 
 	email = email_field()
 	password = password_field()
@@ -157,7 +151,7 @@ class User(Document, UserMixin):
 		return user
 
 
-class TextArticle(Document):
+class TextArticle(Document, CreationStamp):
 	
 	title = StringField(max_length=256)
 	plaintext = StringField()

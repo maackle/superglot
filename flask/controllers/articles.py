@@ -8,7 +8,7 @@ from mongoengine.errors import NotUniqueError
 
 from forms import AddDocumentForm
 from models import User, UserWordList, Word, TextArticle
-from views import api
+from controllers import api
 from util import sorted_words
 import nlp
 import util
@@ -27,14 +27,14 @@ blueprint = Blueprint('frontend', __name__, template_folder='templates')
 
 @blueprint.route('/')
 def home():
-	return render_template('home.jade')
+	return render_template('views/home.jade')
 
 @blueprint.route('/words/', methods=['GET', 'POST'])
 @login_required
 def word_list():
 	words = current_user.words
 	words.sort()
-	return render_template('frontend/word_list.jade', words=words)
+	return render_template('views/frontend/word_list.jade', words=words)
 
 @blueprint.route('/words/add/<partition>/', methods=['POST'])
 @login_required
@@ -65,7 +65,7 @@ def add_words(partition):
 def document_list():
 	docs = list(TextArticle.objects(user=current_user.id))
 	stats = [doc.word_stats(current_user.words) for doc in docs]
-	return render_template('frontend/document_list.jade', doc_pairs=zip(docs, stats))
+	return render_template('views/frontend/document_list.jade', doc_pairs=zip(docs, stats))
 
 
 @blueprint.route('/docs/<doc_id>/read', methods=['GET', 'POST'])
@@ -92,7 +92,7 @@ def document_read(doc_id):
 
 	annotated_words = map(annotate, doc.sorted_words())
 	
-	return render_template('frontend/document_read.jade', 
+	return render_template('views/frontend/document_read.jade', 
 		doc=doc, 
 		stats=stats,
 		annotated_words=annotated_words)
@@ -148,5 +148,5 @@ def document_create():
 
 		return redirect(url_for('frontend.document_list'))
 	else:
-		return render_template('frontend/document_create.jade', form=form)
+		return render_template('views/frontend/document_create.jade', form=form)
 

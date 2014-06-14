@@ -8,10 +8,10 @@ import requests
 import mongoengine
 from flask.ext.mongoengine import MongoEngine
 
-from views.api import blueprint as api
-from views.chrome_api import blueprint as chrome_api
-from views.auth import login_manager, blueprint as auth
-from views.frontend import blueprint as frontend
+from controllers.api import blueprint as api
+from controllers.chrome_api import blueprint as chrome_api
+from controllers.auth import login_manager, blueprint as auth
+from controllers.frontend import blueprint as frontend
 from models import User
 from cache import cache
 

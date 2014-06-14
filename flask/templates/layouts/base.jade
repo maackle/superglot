@@ -7,24 +7,10 @@ html
 		link(rel="stylesheet", href="/static/fonts/fonts.css")
 		script(src="/static/bower/jquery/dist/jquery.min.js")
 	body
-		.container
-			block navbar
-				nav.navbar
-					if current_user.is_authenticated()
-						p Hello #{current_user.email}
-							a(href=url_for('auth.logout')) log out
-					else
-						p
-							a(href=url_for('auth.login')) log in
-							a(href=url_for('auth.register')) register
-					p
-						a(href=url_for('home')) home
-						if current_user.is_authenticated()
-							a(href=url_for('frontend.document_list')) list documents
-							a(href=url_for('frontend.document_create')) add document
-							a(href=url_for('frontend.word_list')) list words
-				hr
+		block navbar
+			include partials/navbar.jade
 
+		.container
 			block messages
 				- var messages = (flashes or []) + get_flashed_messages(with_categories=true)
 				.container

@@ -1,0 +1,19 @@
+nav.navbar: .container
+	a(href="/"): h1.brand superglot
+	ul.left
+		if current_user.is_authenticated()
+			li
+				a(href=url_for('frontend.document_list')) list texts
+				//- ul.subnav
+				//- 	li: a(href=url_for('frontend.document_list')) list
+				//- 	li: a(href=url_for('frontend.document_create')) new
+			li
+				a(href=url_for('frontend.document_create')) add text
+			li
+				a(href=url_for('frontend.word_list')) vocabulary
+	ul.right
+		if current_user.is_authenticated()
+			li: a(href=url_for('auth.logout')) log out
+		else
+			li: a(href=url_for('auth.login')) log in
+			li: a(href=url_for('auth.register')) register

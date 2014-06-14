@@ -7593,14 +7593,13 @@ button.close {
 /* line 5, ../../assets/styles/main.scss */
 body {
   background: white;
-  font-family: 'Open Sans';
+  font-family: 'Myriad Pro', 'Helvetica', 'Arial', sans-serif;
   font-size: 62.5%;
   font-size: 2rem;
 }
 
 /* line 12, ../../assets/styles/main.scss */
 h1, h2, h3, h4 {
-  font-family: ChunkFive;
   text-transform: uppercase;
 }
 
@@ -7624,12 +7623,13 @@ h4 {
   font-size: 2rem;
 }
 
-/* line 39, ../../assets/styles/main.scss */
+/* line 34, ../../assets/styles/main.scss */
 ul {
   list-style: none;
   text-align: justify;
+  margin: 0;
 }
-/* line 44, ../../assets/styles/main.scss */
+/* line 40, ../../assets/styles/main.scss */
 ul.inline-list li {
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
@@ -7640,20 +7640,78 @@ ul.inline-list li {
   margin: 2px auto;
 }
 
+/* line 50, ../../assets/styles/main.scss */
+.navbar {
+  height: 5rem;
+  border-bottom: 1px solid #555;
+  position: relative;
+}
 /* line 56, ../../assets/styles/main.scss */
 .navbar a {
+  text-decoration: none;
+}
+/* line 60, ../../assets/styles/main.scss */
+.navbar li a {
+  line-height: 5rem;
+}
+/* line 64, ../../assets/styles/main.scss */
+.navbar .brand {
+  line-height: 5rem;
+  margin: auto 0;
+  padding: 0;
+  float: left;
+  font-size: 3.75rem;
+}
+/* line 73, ../../assets/styles/main.scss */
+.navbar ul.left {
+  float: left;
+}
+/* line 74, ../../assets/styles/main.scss */
+.navbar ul.right {
+  float: right;
+}
+/* line 77, ../../assets/styles/main.scss */
+.navbar li {
   display: inline-block;
-  background: yellow;
+}
+/* line 81, ../../assets/styles/main.scss */
+.navbar li:hover ul {
+  visibility: visible;
+  height: 4rem;
+}
+/* line 88, ../../assets/styles/main.scss */
+.navbar li a:hover {
+  background: #ddd;
+}
+/* line 94, ../../assets/styles/main.scss */
+.navbar a {
   padding: 5px;
   margin-right: 10px;
 }
+/* line 100, ../../assets/styles/main.scss */
+.navbar ul > li > ul {
+  -moz-transition: height, 300ms;
+  -o-transition: height, 300ms;
+  -webkit-transition: height, 300ms;
+  transition: height, 300ms;
+  width: 100%;
+  line-height: 4rem;
+  background: #222;
+  color: white;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  overflow: hidden;
+  height: 0;
+  visibility: hidden;
+}
 
-/* line 64, ../../assets/styles/main.scss */
+/* line 116, ../../assets/styles/main.scss */
 .form-submit {
   margin-top: 15px;
 }
 
-/* line 70, ../../assets/styles/main.scss */
+/* line 122, ../../assets/styles/main.scss */
 .annotated-word-list li {
   -moz-transition: background-color 150ms;
   -o-transition: background-color 150ms;
@@ -7661,15 +7719,15 @@ ul.inline-list li {
   transition: background-color 150ms;
   cursor: pointer;
 }
-/* line 74, ../../assets/styles/main.scss */
+/* line 126, ../../assets/styles/main.scss */
 .annotated-word-list li[data-group="known"] {
   background: #aaeeaa;
 }
-/* line 77, ../../assets/styles/main.scss */
+/* line 129, ../../assets/styles/main.scss */
 .annotated-word-list li[data-group="learning"] {
   background: #eeeeaa;
 }
-/* line 80, ../../assets/styles/main.scss */
+/* line 132, ../../assets/styles/main.scss */
 .annotated-word-list li[data-group="ignored"] {
   background: #dddddd;
   cursor: not-allowed;

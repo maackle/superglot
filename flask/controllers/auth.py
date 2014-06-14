@@ -17,7 +17,7 @@ blueprint = Blueprint('auth', __name__, template_folder='templates')
 def login():
 	form = LoginForm()
 	ctx = dict(form=form)
-	template = "auth/login.jade"
+	template = "views/auth/login.jade"
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
@@ -58,6 +58,6 @@ def register():
 		else:
 			print(form.data)
 			flash('problem creating user', 'danger')
-			return render_template("auth/register.jade", form=form)
+			return render_template("views/auth/register.jade", form=form)
 	else:
-		return render_template("auth/register.jade", form=form)
+		return render_template("views/auth/register.jade", form=form)

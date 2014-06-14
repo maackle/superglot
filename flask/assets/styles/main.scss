@@ -4,13 +4,13 @@
 
 body {
 	background: white;
-	font-family: 'Open Sans';
+	font-family: 'Myriad Pro', 'Helvetica', 'Arial', sans-serif;
 	font-size: 62.5%;
 	font-size: 2rem;
 } 
 
 h1, h2, h3, h4 {
-	font-family: ChunkFive;
+	// font-family: ChunkFive;
 	text-transform: uppercase;
 }
 
@@ -31,14 +31,10 @@ h4 {
 
 }
 
-// .container {
-// 	max-width: 80%;
-// 	margin: auto;
-// }
-
 ul {
 	list-style: none;
 	text-align: justify;
+	margin: 0;
 
 	&.inline-list {
 		li {
@@ -47,17 +43,73 @@ ul {
 			display: inline-block;
 			padding: 2px 4px;
 			margin: 2px auto;
-
 		}
 	}
 }
 
 .navbar {
+	height: $navbar-height;
+	border-bottom: 1px solid #555;
+	// box-shadow: 0 1px 5px rgba(black, 0.3);
+	position: relative;
+
 	a {
+		text-decoration: none;
+	}
+
+	li a {
+		line-height: $navbar-height;
+	}
+
+	.brand {
+		line-height: $navbar-height;
+		margin: auto 0;
+		padding: 0;
+		float: left;
+		font-size: $navbar-height * 0.75;
+	}
+
+	ul {
+		&.left { float: left; }
+		&.right { float: right; }
+	}
+
+	li {
 		display: inline-block;
-		background: yellow;
+
+		&:hover {
+			ul {
+				// display: block;
+				visibility: visible;
+				height: $subnav-height;
+			}
+		}
+
+		a:hover {
+			
+			background: #ddd;
+		}
+	}
+
+	a {
 		padding: 5px;
 		margin-right: 10px;
+	}
+
+
+	ul > li > ul {
+		@include transition(height, 300ms);
+		width: 100%;
+		line-height: $subnav-height;
+		background: #222;
+		color: white;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		overflow: hidden;
+		// opacity: 0;
+		height: 0;
+		visibility: hidden;
 	}
 }
 
