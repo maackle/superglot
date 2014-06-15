@@ -3,33 +3,5 @@ extends layouts/base.jade
 block main_content
 	h1 Vocabulary
 
-	.vocab-stats
-		p You know #{ words.known|length } words
-		p You are learning #{ words.learning|length } words
-
-	h2 add words?
-	.row
-		.col-sm-4
-			h3 known
-			form(method="POST", action=url_for('frontend.add_words', partition='known'))
-				textarea(name="words", rows=7).form-control
-				+formsubmit('add/move words')
-		.col-sm-4
-			h3 learning
-			form(method="POST", action=url_for('frontend.add_words', partition='learning'))
-				textarea(name="words", rows=7).form-control
-				+formsubmit('add/move words')
-		.col-sm-4
-			h3 ignored
-			form(method="POST", action=url_for('frontend.add_words', partition='ignored'))
-				textarea(name="words", rows=7).form-control
-				+formsubmit('add/move words')
-
-	h2 known
-	+vocab_list(words.known)
+	+vocab_list(words)
 			
-	h2 learning
-	+vocab_list(words.learning)
-					
-	h2 ignored
-	+vocab_list(words.ignored)

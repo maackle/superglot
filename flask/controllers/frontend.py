@@ -40,10 +40,17 @@ def home():
 
 @blueprint.route('/words/', methods=['GET', 'POST'])
 @login_required
-def word_list():
+def word_list_all():
 	words = current_user.words
 	words.sort()
+	return render_template('views/frontend/vocabulary_show.jade', words=words)
 
+@blueprint.route('/words/<partition>/', methods=['GET', 'POST'])
+@login_required
+def word_list(partition):
+	if partition in ('known', 'learning', 'ignored',):
+		words = getattr(current_user.words, partition)
+	words.sort()
 	return render_template('views/frontend/word_list.jade', words=words)
 
 @blueprint.route('/words/add/<partition>/', methods=['POST'])
@@ -69,7 +76,7 @@ def add_words(partition):
 	})
 	current_user.reload()
 	flash('Added some words')
-	return redirect(url_for('frontend.word_list'))
+	return redirect(url_for('frontend.word_list_all'))
 
 
 @blueprint.route('/docs/', methods=['GET', 'POST'])

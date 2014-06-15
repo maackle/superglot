@@ -1,9 +1,11 @@
 extends layouts/base.jade
 
-- from 'mixins.jade' import formfield, formsubmit
-
 block main_content
 	h1 Vocabulary
+
+	.vocab-stats
+		p You know #{ words.known|length } words
+		p You are learning #{ words.learning|length } words
 
 	h2 add words?
 	.row
@@ -24,16 +26,10 @@ block main_content
 				+formsubmit('add/move words')
 
 	h2 known
-	ul.inline-list
-		for word in words.known
-			li= word.reading
+	+vocab_list(words.known)
 			
 	h2 learning
-	ul.inline-list
-		for word in words.learning
-			li= word.reading	
+	+vocab_list(words.learning)
 					
 	h2 ignored
-	ul.inline-list
-		for word in words.ignored
-			li= word.reading
+	+vocab_list(words.ignored)

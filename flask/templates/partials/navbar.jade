@@ -10,7 +10,7 @@ nav.navbar: .container
 			li
 				a(href=url_for('frontend.document_create')) add text
 			li
-				a(href=url_for('frontend.word_list')) vocabulary
+				a(href=url_for('frontend.word_list_all')) vocabulary
 	ul.right
 		if current_user.is_authenticated()
 			li: a(href=url_for('auth.logout')) log out
