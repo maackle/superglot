@@ -12,16 +12,25 @@ from controllers import api
 from util import sorted_words
 import nlp
 import util
+import formatting
 
 
 def make_words(tokens):
+	# TODO: add warning if reading is case-insensitively the same, in case the user really wants
+	# to add an acronym or something
 	for reading, lemma in set(tokens):
-		(word, created) = Word.objects.get_or_create(
-			reading=reading,
-			lemma=lemma,
-			language='en',
-		)
-		yield word
+		try:
+			(word, created) = Word.objects(reading__iexact=reading).get_or_create(
+				lemma=lemma,
+				language='en',
+				defaults={
+					'reading': reading,
+				}
+			)
+			yield word
+		except Word.MultipleObjectsReturned:
+			pass
+
 
 blueprint = Blueprint('frontend', __name__, template_folder='templates')
 
@@ -34,26 +43,29 @@ def home():
 def word_list():
 	words = current_user.words
 	words.sort()
+
 	return render_template('views/frontend/word_list.jade', words=words)
 
 @blueprint.route('/words/add/<partition>/', methods=['POST'])
 @login_required
 def add_words(partition):
-	def words(partition):
-		for reading, lemma in set(nlp.tokenize(request.form['words'])):
-			word = Word.objects(reading=reading, lemma=lemma).first()
-			if word:
-				yield word.id
+	# def words(partition):
+	# 	for reading, lemma in set(nlp.tokenize(request.form['words'])):
+	# 		(word, created) = Word.objects.get_or_create(reading=reading, lemma=lemma)
+	# 		if word:
+	# 			yield word.id
 
-	new_words = list(words(partition))
+	# new_words = list(words(partition))
+	new_words = make_words(nlp.tokenize(request.form['words']))
+	new_word_ids = [w.id for w in new_words]
 	for name in UserWordList.group_names:
-		for word_id in new_words:
+		for word_id in new_word_ids:
 			if word_id in map(lambda w: w.id, getattr(current_user.words, name)):
 				User.objects(id=current_user.id).update_one(**{
 					"pull__words__{}".format(name): word_id
 				})
 	User.objects(id=current_user.id).update_one(**{
-		"add_to_set__words__{}".format(partition): new_words
+		"add_to_set__words__{}".format(partition): new_word_ids
 	})
 	current_user.reload()
 	flash('Added some words')

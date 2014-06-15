@@ -1,5 +1,14 @@
 doctype 5
 
+- from 'mixins.jade' import formfield, formsubmit, grouped_columned_vocab_list, simple_vocab_list
+
+//- needs to be defined in the template unfortunately
+mixin vocab_list(words)
+	if words|length > 100
+		+grouped_columned_vocab_list(formatting.alpha_headings(words))
+	else
+		+simple_vocab_list(words)
+
 html
 	head
 		title superglot

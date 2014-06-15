@@ -14,4 +14,16 @@ mixin formfield(field, placeholder="", type=None)
 mixin formsubmit(value="Submit")
 	.form-group.form-submit
 		input.btn.btn-primary(type="submit", value=value)
-		
+
+
+mixin grouped_columned_vocab_list(groups)
+	ul.vocab-list.grouped.columned
+		for key, group in groups
+			li.heading= key
+			for word in group
+				li= word.reading
+
+mixin simple_vocab_list(words)
+	ul.vocab-list.simple
+		for word in words
+			li= word.reading

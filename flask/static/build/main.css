@@ -7683,12 +7683,12 @@ ul.inline-list li {
 .navbar li a:hover {
   background: #ddd;
 }
-/* line 94, ../../assets/styles/main.scss */
+/* line 93, ../../assets/styles/main.scss */
 .navbar a {
   padding: 5px;
   margin-right: 10px;
 }
-/* line 100, ../../assets/styles/main.scss */
+/* line 99, ../../assets/styles/main.scss */
 .navbar ul > li > ul {
   -moz-transition: height, 300ms;
   -o-transition: height, 300ms;
@@ -7706,12 +7706,34 @@ ul.inline-list li {
   visibility: hidden;
 }
 
-/* line 116, ../../assets/styles/main.scss */
+/* line 115, ../../assets/styles/main.scss */
 .form-submit {
   margin-top: 15px;
 }
 
-/* line 122, ../../assets/styles/main.scss */
+/* line 123, ../../assets/styles/main.scss */
+.vocab-list li {
+  padding: 0 1.5rem;
+}
+/* line 131, ../../assets/styles/main.scss */
+.vocab-list.grouped.columned {
+  -moz-columns: 16rem 5;
+  -webkit-columns: 16rem 5;
+  columns: 16rem 5;
+  -moz-column-gap: 0;
+  -webkit-column-gap: 0;
+  column-gap: 0;
+}
+/* line 136, ../../assets/styles/main.scss */
+.vocab-list.grouped.columned li.heading {
+  text-align: center;
+  font-weight: bold;
+  margin: 0.5rem 1.5rem 0.5rem;
+  font-size: 1.1em;
+  border-bottom: 2px solid #cd9038;
+}
+
+/* line 150, ../../assets/styles/main.scss */
 .annotated-word-list li {
   -moz-transition: background-color 150ms;
   -o-transition: background-color 150ms;
@@ -7719,15 +7741,15 @@ ul.inline-list li {
   transition: background-color 150ms;
   cursor: pointer;
 }
-/* line 126, ../../assets/styles/main.scss */
+/* line 154, ../../assets/styles/main.scss */
 .annotated-word-list li[data-group="known"] {
   background: #aaeeaa;
 }
-/* line 129, ../../assets/styles/main.scss */
+/* line 157, ../../assets/styles/main.scss */
 .annotated-word-list li[data-group="learning"] {
   background: #eeeeaa;
 }
-/* line 132, ../../assets/styles/main.scss */
+/* line 160, ../../assets/styles/main.scss */
 .annotated-word-list li[data-group="ignored"] {
   background: #dddddd;
   cursor: not-allowed;

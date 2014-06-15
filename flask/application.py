@@ -42,6 +42,16 @@ db = MongoEngine(app)
 
 login_manager.init_app(app)
 
+
+@app.context_processor
+def add_modules():
+	import formatting
+
+	return {
+		'formatting': formatting,
+	}
+
+
 @app.route('/')
 def home():
 	return redirect(url_for('frontend.home'))

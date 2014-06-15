@@ -40,6 +40,9 @@ class Word(Document):
 	language = word_language_field()
 	recognized = BooleanField(default=True)
 
+	def pair(self):
+		return (self.reading, self.lemma)
+
 	def __eq__(self, other):
 		return self.lemma == other.lemma  # and self.reading.lower() == other.reading.lower()
 

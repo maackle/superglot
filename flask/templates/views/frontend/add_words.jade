@@ -1,9 +1,0 @@
-extends layouts/base.jade
-
-- from 'mixins.jade' import formfield, formsubmit
-
-block main_content
-	h1 add words
-	form(method="POST").pure-form
-		textarea(name="words")
-		+formsubmit('add words')

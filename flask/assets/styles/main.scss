@@ -86,7 +86,6 @@ ul {
 		}
 
 		a:hover {
-			
 			background: #ddd;
 		}
 	}
@@ -115,6 +114,35 @@ ul {
 
 .form-submit {
 	margin-top: 15px;
+}
+
+.vocab-list {
+
+	$padding: 1.5rem;
+
+	li {
+		padding: 0 $padding;
+	}
+	
+	&.simple {
+		
+	}
+	
+	&.grouped.columned {
+		@include columns(16rem 5);
+		@include column-gap(0);
+		// @include column-rule(1px, solid, #ddd);
+
+		li.heading {
+			// background: #eee;
+			text-align: center;
+			font-weight: bold;
+			margin: 0.5rem $padding 0.5rem;
+			font-size: 1.1em;
+			// background: $color-primary-light;
+			border-bottom: 2px solid $color-primary;
+		}
+	}
 }
 
 .annotated-word-list {
