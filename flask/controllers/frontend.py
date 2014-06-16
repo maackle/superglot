@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.ext.login import current_user, login_required
 from mongoengine.errors import NotUniqueError
 
-from forms import AddDocumentForm
+from forms import AddArticleForm
 from models import User, UserWordList, Word, TextArticle
 from controllers import api
 from util import sorted_words
@@ -50,7 +50,7 @@ def word_list_all():
 def word_list(partition):
 	if partition in ('known', 'learning', 'ignored',):
 		words = getattr(current_user.words, partition)
-	words.sort()
+	words.sort(key=Word.sort_key)
 	return render_template('views/frontend/word_list.jade', words=words)
 
 @blueprint.route('/words/add/<partition>/', methods=['POST'])
@@ -79,17 +79,17 @@ def add_words(partition):
 	return redirect(url_for('frontend.word_list_all'))
 
 
-@blueprint.route('/docs/', methods=['GET', 'POST'])
+@blueprint.route('/texts/', methods=['GET', 'POST'])
 @login_required
-def document_list():
+def article_list():
 	docs = list(TextArticle.objects(user=current_user.id))
 	stats = [doc.word_stats(current_user.words) for doc in docs]
-	return render_template('views/frontend/document_list.jade', doc_pairs=zip(docs, stats))
+	return render_template('views/frontend/article_list.jade', doc_pairs=zip(docs, stats))
 
 
-@blueprint.route('/docs/<doc_id>/read', methods=['GET', 'POST'])
+@blueprint.route('/texts/<doc_id>/read', methods=['GET', 'POST'])
 @login_required
-def document_read(doc_id):
+def article_read(doc_id):
 	doc = TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
 	stats = doc.word_stats(current_user.words)
 
@@ -111,22 +111,29 @@ def document_read(doc_id):
 
 	annotated_words = map(annotate, doc.sorted_words())
 	
-	return render_template('views/frontend/document_read.jade', 
+	return render_template('views/frontend/article_read.jade', 
 		doc=doc, 
 		stats=stats,
 		annotated_words=annotated_words)
 
 
-@blueprint.route('/docs/add/', methods=['GET', 'POST'])
+@blueprint.route('/texts/add/', methods=['GET', 'POST'])
 @login_required
-def document_create():
-	form = AddDocumentForm(url='http://michaeldougherty.info')
+def article_create():
+	form = AddArticleForm(url='http://michaeldougherty.info')
 	if form.validate_on_submit():
 		ignored_tags = ['script', 'style', 'code', 'head', 'iframe']
 		url = form.url.data
 		req = util.get_page(url)
 		soup = BeautifulSoup(req.text)
-		title = soup.title.string if soup.title else url
+		if soup.title:
+			title = soup.title.string
+		elif form.title:
+			title = form.title.data
+		elif url:
+			title = url
+		else:
+			title = "[UNTITLED]"
 
 		# remove noisy content-empty tags
 		for tag in ignored_tags:
@@ -165,7 +172,7 @@ def document_create():
 		else:
 			flash("Updated {}".format(title), 'success')
 
-		return redirect(url_for('frontend.document_list'))
+		return redirect(url_for('frontend.article_list'))
 	else:
-		return render_template('views/frontend/document_create.jade', form=form)
+		return render_template('views/frontend/article_create.jade', form=form)
 

@@ -49,6 +49,8 @@ class Word(Document):
 	def __str__(self):
 		return "Word({})".format(self.reading)
 
+Word.sort_key = lambda w: w.lemma
+
 words_field = lambda: ListField(ReferenceField(Word))
 
 
@@ -67,9 +69,9 @@ class UserWordList(EmbeddedDocument):
 		return False
 
 	def sort(self):
-		self.known.sort(key= lambda w: w.lemma)
-		self.learning.sort(key= lambda w: w.lemma)
-		self.ignored.sort(key= lambda w: w.lemma)
+		self.known.sort(key=Word.sort_key)
+		self.learning.sort(key=Word.sort_key)
+		self.ignored.sort(key=Word.sort_key)
 
 	@staticmethod
 	def default():

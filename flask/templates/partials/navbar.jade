@@ -3,12 +3,12 @@ nav.navbar: .container
 	ul.left
 		if current_user.is_authenticated()
 			li
-				a(href=url_for('frontend.document_list')) list texts
+				a(href=url_for('frontend.article_list')) list texts
 				//- ul.subnav
-				//- 	li: a(href=url_for('frontend.document_list')) list
-				//- 	li: a(href=url_for('frontend.document_create')) new
+				//- 	li: a(href=url_for('frontend.article_list')) list
+				//- 	li: a(href=url_for('frontend.article_create')) new
 			li
-				a(href=url_for('frontend.document_create')) add text
+				a(href=url_for('frontend.article_create')) add text
 			li
 				a(href=url_for('frontend.word_list_all')) vocabulary
 	ul.right

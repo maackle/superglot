@@ -1,0 +1,16 @@
+
+
+# 5/14
+
+## view arbitrary word lists
+
+- by partition
+- by document(s)
+- by word group
+- by preset vocabulary list
+
+## word list features
+
+- word frequency, for learning importance
+- for multiple document view, promote most common words
+

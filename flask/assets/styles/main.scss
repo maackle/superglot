@@ -11,7 +11,7 @@ body {
 
 h1, h2, h3, h4 {
 	// font-family: ChunkFive;
-	text-transform: uppercase;
+	// text-transform: uppercase;
 }
 
 h1 {
@@ -27,8 +27,16 @@ h4 {
 	font-size: 2rem;
 }
 
+.align-center { text-align: center; }
+
 .container {
 
+}
+
+.table {
+	th {
+		text-align: center;
+	}
 }
 
 ul {
@@ -145,6 +153,27 @@ ul {
 	}
 }
 
+.vocab-progress-bar {
+	width: 100%;
+	height: $vocab-progress-bar-height;
+	border: 1px solid black;
+	border-radius: 5px;
+	background: $color-other;
+	overflow: hidden;
+
+	.partition {
+		height: $vocab-progress-bar-height;
+		float: left;
+	}
+
+	.known {
+		background: $color-known;
+	}
+	.learning {
+		background: $color-learning;
+	}
+}
+
 .annotated-word-list {
 
 	li {
@@ -163,4 +192,13 @@ ul {
 		}
 	}
 	
+}
+
+.article-search {
+	margin: 1rem auto;
+	float: right;
+}
+
+.big-search-input {
+	padding: 0.75rem 2rem;
 }

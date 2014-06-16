@@ -27,3 +27,9 @@ mixin simple_vocab_list(words)
 	ul.vocab-list.simple
 		for word in words
 			li= word.reading
+
+mixin vocab_progress_bar(stats)
+	.vocab-progress-bar
+		.partition.known(style="width: #{ "%2f%%"|format(stats.percents.known) }")
+		.partition.learning(style="width: #{ "%2f%%"|format(stats.percents.learning) }")
+		//- .partition.other(style="width: #{ "%2f%%"|format(100 - stats.percents.known - stats.percents.learning) }")
