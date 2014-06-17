@@ -20,14 +20,15 @@ block main_content
 					//- Action
 		tbody
 			for doc, stats in doc_pairs
-				td= doc.title
-				td
-					+vocab_progress_bar(stats)
-				td.align-center= doc.words|length
-				td.align-center= "%2.0f%%"|format(stats.percents.known)
-				td.align-center= "%2.0f%%"|format(stats.percents.learning)
-				td
-					a(href=url_for('frontend.article_read', doc_id=doc.id)) read
-					|  | 
-					a(href=doc.source, target="_blank") original
+				tr
+					td= doc.title
+					td
+						+vocab_progress_bar(stats)
+					td.align-center= doc.words|length
+					td.align-center= "%2.0f%%"|format(stats.percents.known)
+					td.align-center= "%2.0f%%"|format(stats.percents.learning)
+					td
+						a(href=url_for('frontend.article_read', doc_id=doc.id)) read
+						|  | 
+						a(href=doc.source, target="_blank") original
 		

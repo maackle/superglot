@@ -21,6 +21,13 @@ requests.packages.urllib3.add_stderr_logger()
 app = Flask(__name__)
 
 app.config.from_object('config.settings')
+try:
+	app.config.from_envvar('SUPERGLOT_SETTINGS')
+	print("Loaded config from envvar SUPERGLOT_SETTINGS")
+except:
+	app.config.from_object('config.development')
+	print("Loaded DEVELOPMENT config")
+
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.register_blueprint(api, url_prefix='/api')
 app.register_blueprint(chrome_api, url_prefix='/chrome')

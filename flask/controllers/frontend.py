@@ -100,10 +100,6 @@ def article_read(doc_id):
 				group = name
 				break
 
-		if not group:
-			print(word)
-
-		print(sorted(list(map(lambda w: w.lemma, current_user.words.known))))
 		return {
 			'word': word,
 			'group': group,
