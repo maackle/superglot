@@ -12,7 +12,10 @@ block main_content
 			li(data-group=a_word.group, data-lemma=a_word.word.lemma) #{a_word.word.reading}
 
 	for o in doc.occurrences
-		li #{ o.word.reading } : #{ o.locations }
+		h4= o.word.reading
+		ul
+			for s in o.sentences
+				li= doc.sentence(s)
 	h3 raw
 	pre= doc.plaintext
 

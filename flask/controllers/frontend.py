@@ -123,7 +123,7 @@ def article_create():
 		url = form.url.data
 		req = util.get_page(url)
 		soup = BeautifulSoup(req.text)
-		
+
 		if soup.title:
 			title = soup.title.string
 		elif form.title.data:
@@ -138,21 +138,22 @@ def article_create():
 			for t in soup(tag):
 				t.decompose()
 
-		plaintext = "\n___\n".join(soup.stripped_strings)
-		tokens = nlp.tokenize(plaintext)
-		words = list(make_words(tokens))
-		occurrences = []
-		if False:  # TODO: this doesn't work so well, need to tokenize and get indices simultaneously
-			for word in words:
+		plaintext = "\n".join(soup.stripped_strings)
+		all_tokens = nlp.tokenize(plaintext)
+		all_words = list(make_words(all_tokens))
+		sentence_positions = []
+		occurrences = {}
+		for i, sentence in enumerate(nlp.get_sentences(plaintext)):
+			sentence_tokens = nlp.tokenize(sentence.string)
+			sentence_words = list(make_words(sentence_tokens))
+			sentence_positions.append((sentence.start, sentence.end))
+			for word in sentence_words:
 				reading = word.reading
 				location = 0
-				occurrence = WordOccurrence(word=word)
-				while location >= 0:
-					location = plaintext.find(reading, location+1)
-					if location >= 0:
-						occurrence.locations.append(location)
-				if len(occurrence.locations) > 0:
-					occurrences.append(occurrence)
+				if not word.id in occurrences:
+					occurrences[word.id] = WordOccurrence(word=word)
+				occurrences[word.id].locations.append(sentence.start)
+				occurrences[word.id].sentences.append(i)
 
 		num_words_before = Word.objects.count()
 		user = User.objects(id=current_user.id).first()
@@ -160,21 +161,24 @@ def article_create():
 		duplicates = set()
 		added = set()
 
+		occ = list(occurrences.values())
 		(article, created) = TextArticle.objects.get_or_create(
 			source=url,
 			user=user,
 			defaults={
 				'title': title,
-				'words': words,
+				'words': all_words,
 				'plaintext': plaintext,
-				'occurrences': occurrences,
+				'occurrences': occ,
+				'sentence_positions': sentence_positions,
 				}
 			)
 		if not created:
-			article.words = words
+			article.words = all_words
 			article.title = title
 			article.plaintext = plaintext
-			article.occurrences = occurrences
+			article.occurrences = occ
+			article.sentence_positions = sentence_positions
 			article.save()
 
 		num_words_after = Word.objects.count()

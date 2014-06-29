@@ -1,8 +1,13 @@
 from textblob import TextBlob, Word
 
+
+def get_sentences(text):
+	return TextBlob(text).sentences
+
 def tokenize(text):
 	# TODO: keep track of occurence positions
 	blob = TextBlob(text)
+	sentences = blob.sentences
 	tags = blob.tags
 	words = blob.words
 

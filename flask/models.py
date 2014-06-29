@@ -204,6 +204,7 @@ class WordOccurrence(EmbeddedDocument):
 
 	word = ReferenceField(Word)
 	locations = ListField(IntField())
+	sentences = ListField(IntField())
 	# reading = word_reading_field()
 	# article = ReferenceField(TextArticle)
 
@@ -216,7 +217,12 @@ class TextArticle(Document, CreationStamp):
 	words = words_field()
 	user = ReferenceField(User)
 	occurrences = ListField(EmbeddedDocumentField(WordOccurrence))
+	sentence_positions = ListField(ListField(IntField()))  # list of doubles
 	date_modified = DateTimeField(default=datetime.datetime.now)
+
+	def sentence(self, index):
+		a,b = self.sentence_positions[index]
+		return self.plaintext[a:b]
 
 	def sorted_words(self):
 		from util import sorted_words
