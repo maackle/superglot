@@ -6,29 +6,35 @@ block main_content
 
 	form.article-search
 		input.big-search-input(placeholder="Search by Name")
+
 	h1 Texts
 
-	table.table
-		thead
-			tr
-				th Title
-				th Comprehension
-				th Total
-				th Known
-				th Learning
-				th 
-					//- Action
-		tbody
-			for doc, stats in doc_pairs
+	if doc_pairs|length > 0
+
+		table.table
+			thead
 				tr
-					td= doc.title
-					td
-						+vocab_progress_bar(stats)
-					td.align-center= doc.words|length
-					td.align-center= "%2.0f%%"|format(stats.percents.known)
-					td.align-center= "%2.0f%%"|format(stats.percents.learning)
-					td
-						a(href=url_for('frontend.article_read', doc_id=doc.id)) read
-						|  | 
-						a(href=doc.source, target="_blank") original
-		
+					th Title
+					th Comprehension
+					th Total
+					th Known
+					th Learning
+					th 
+						//- Action
+			tbody
+				for doc, stats in doc_pairs
+					tr
+						td= doc.title
+						td
+							+vocab_progress_bar(stats)
+						td.align-center= doc.words|length
+						td.align-center= "%2.0f%%"|format(stats.percents.known)
+						td.align-center= "%2.0f%%"|format(stats.percents.learning)
+						td
+							a(href=url_for('frontend.article_read', doc_id=doc.id)) read
+							|  | 
+							a(href=doc.source, target="_blank") original
+	else
+		.callout-notice
+			h3 You have nothing to read!
+			p Go <a href="#{ url_for('frontend.article_create') }">add some texts</a>, and they will show up here.

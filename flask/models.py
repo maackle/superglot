@@ -12,7 +12,7 @@ password_field = lambda: StringField(max_length=32, required=True)
 
 word_reading_field = lambda: StringField(max_length=128)
 word_lemma_field = lambda: StringField(max_length=128)
-word_language_field = lambda: StringField(max_length=8)
+language_field = lambda: StringField(max_length=8, default="en-US")
 
 lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True))
 
@@ -37,7 +37,7 @@ class Word(Document):
 
 	reading = word_reading_field()
 	lemma = word_lemma_field()
-	language = word_language_field()
+	language = language_field()
 	recognized = BooleanField(default=True)
 
 	def pair(self):
@@ -88,12 +88,55 @@ class UserWordList(EmbeddedDocument):
 			'ignored': self.ignored,
 			})
 
+class UserWordList(EmbeddedDocument):
+
+	group_names = {'ignored', 'learning', 'known'}
+
+	known = words_field()
+	learning = words_field()
+	ignored = words_field()
+
+	def has_word(self, word):
+		for name in self.group_names:
+			if word in getattr(self, name):
+				return True
+		return False
+
+	def sort(self):
+		self.known.sort(key=Word.sort_key)
+		self.learning.sort(key=Word.sort_key)
+		self.ignored.sort(key=Word.sort_key)
+
+	@staticmethod
+	def default():
+		return UserWordList(
+			known=[],
+			learning=[],
+			ignored=[],
+			)
+
+	def __str__(self):
+		return str({
+			'known': self.known,
+			'learning': self.learning,
+			'ignored': self.ignored,
+			})
+
+
+class VocabWord(EmbeddedDocument):
+
+	word = ReferenceField(Word)
+	label = StringField()
+
 
 class User(Document, UserMixin, CreationStamp):
 
 	email = email_field()
 	password = password_field()
+	vocabulary = ListField(EmbeddedDocumentField(VocabWord))
 	words = EmbeddedDocumentField(UserWordList)
+	target_languages = ListField(language_field())
+	target_language = language_field()
 
 	meta = {
 		'index_options': {
@@ -104,6 +147,7 @@ class User(Document, UserMixin, CreationStamp):
 			'+words.known', 
 			'+words.learning', 
 			'+words.ignored',
+			'+vocabulary',
 			]
 		# 'indexes': [
 		# 	{'unique': True, 'fields': ['+words.known'] }, 
@@ -156,6 +200,14 @@ class User(Document, UserMixin, CreationStamp):
 		return user
 
 
+class WordOccurrence(EmbeddedDocument):
+
+	word = ReferenceField(Word)
+	locations = ListField(IntField())
+	# reading = word_reading_field()
+	# article = ReferenceField(TextArticle)
+
+
 class TextArticle(Document, CreationStamp):
 	
 	title = StringField(max_length=256)
@@ -163,6 +215,7 @@ class TextArticle(Document, CreationStamp):
 	source = StringField()
 	words = words_field()
 	user = ReferenceField(User)
+	occurrences = ListField(EmbeddedDocumentField(WordOccurrence))
 	date_modified = DateTimeField(default=datetime.datetime.now)
 
 	def sorted_words(self):
@@ -186,12 +239,4 @@ class TextArticle(Document, CreationStamp):
 			stats['percents'][name] = float(100 * num / stats['total'])
 		return stats
 
-
-
-class WordOccurrence(Document):
-
-	reading = word_reading_field()
-	word = ReferenceField(Word)
-	article = ReferenceField(TextArticle)
-	position = IntField()
 

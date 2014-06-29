@@ -7,7 +7,7 @@ from flask.ext.login import current_user, login_required
 from mongoengine.errors import NotUniqueError
 
 from forms import AddArticleForm
-from models import User, UserWordList, Word, TextArticle
+from models import User, UserWordList, Word, TextArticle, WordOccurrence
 from controllers import api
 from util import sorted_words
 import nlp
@@ -84,7 +84,7 @@ def add_words(partition):
 def article_list():
 	docs = list(TextArticle.objects(user=current_user.id))
 	stats = [doc.word_stats(current_user.words) for doc in docs]
-	return render_template('views/frontend/article_list.jade', doc_pairs=zip(docs, stats))
+	return render_template('views/frontend/article_list.jade', doc_pairs=list(zip(docs, stats)))
 
 
 @blueprint.route('/texts/<doc_id>/read', methods=['GET', 'POST'])
@@ -106,6 +106,7 @@ def article_read(doc_id):
 		}
 
 	annotated_words = map(annotate, doc.sorted_words())
+	# print(doc.occurrences)
 	
 	return render_template('views/frontend/article_read.jade', 
 		doc=doc, 
@@ -122,9 +123,10 @@ def article_create():
 		url = form.url.data
 		req = util.get_page(url)
 		soup = BeautifulSoup(req.text)
+		
 		if soup.title:
 			title = soup.title.string
-		elif form.title:
+		elif form.title.data:
 			title = form.title.data
 		elif url:
 			title = url
@@ -136,9 +138,22 @@ def article_create():
 			for t in soup(tag):
 				t.decompose()
 
-		plaintext = "\n".join(soup.stripped_strings)
+		plaintext = "\n___\n".join(soup.stripped_strings)
 		tokens = nlp.tokenize(plaintext)
 		words = list(make_words(tokens))
+		occurrences = []
+		if False:  # TODO: this doesn't work so well, need to tokenize and get indices simultaneously
+			for word in words:
+				reading = word.reading
+				location = 0
+				occurrence = WordOccurrence(word=word)
+				while location >= 0:
+					location = plaintext.find(reading, location+1)
+					if location >= 0:
+						occurrence.locations.append(location)
+				if len(occurrence.locations) > 0:
+					occurrences.append(occurrence)
+
 		num_words_before = Word.objects.count()
 		user = User.objects(id=current_user.id).first()
 
@@ -152,12 +167,14 @@ def article_create():
 				'title': title,
 				'words': words,
 				'plaintext': plaintext,
+				'occurrences': occurrences,
 				}
 			)
 		if not created:
 			article.words = words
 			article.title = title
 			article.plaintext = plaintext
+			article.occurrences = occurrences
 			article.save()
 
 		num_words_after = Word.objects.count()

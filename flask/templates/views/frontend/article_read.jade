@@ -5,14 +5,16 @@ extends layouts/base.jade
 block main_content
 	h1= doc.title
 	h3 words
-	p
+	p 
 		i #{stats.total} total
 	ul.inline-list.document-words.annotated-word-list
 		for a_word in annotated_words
 			li(data-group=a_word.group, data-lemma=a_word.word.lemma) #{a_word.word.reading}
+
+	for o in doc.occurrences
+		li #{ o.word.reading } : #{ o.locations }
 	h3 raw
 	pre= doc.plaintext
-
 
 	:coffeescript
 		$ ->

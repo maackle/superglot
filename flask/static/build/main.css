@@ -7793,3 +7793,12 @@ ul.inline-list li {
 .big-search-input {
   padding: 0.75rem 2rem;
 }
+
+/* line 206, ../../assets/styles/main.scss */
+.callout-notice {
+  background: #ffd;
+  border: 1px dotted #333;
+  padding: 2rem 5rem;
+  margin: 2rem auto;
+  width: 50%;
+}
