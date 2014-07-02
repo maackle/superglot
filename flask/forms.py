@@ -32,7 +32,9 @@ RegisterForm = model_form(User, Form, only=('email', 'password', 'target_languag
 
 
 class AddArticleForm(Form):
+    title = StringField('Title')
     url = StringField('URL', [
+        validators.Optional(),
         validators.URL()
         ])
-    title = StringField('Title')
+    plaintext = TextAreaField('Text')

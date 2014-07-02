@@ -1,1 +1,38 @@
-check out EmbeddedDocument for lemmata lists
+
+
+PARSING DOCUMENTS
+=================
+
+Differentiate style tags from structure tags for plaintext sentence structure
+	- allow <i>, <a>, <span>, etc. to stay on same line, same sentence
+	- force newline for <div>
+
+Content detection
+	- Ignore navbar
+	- Find actual content
+
+
+PARSING WORDS
+=============
+
+Problem cases
+-------------
+
+Moby Dick ch 1
+	me—since
+	it—would
+	fowls;—though
+	wanting?—Water—there
+
+
+DOCUMENT DETAIL
+===============
+
+Stats for documents need to account for duplicate words (100% comprehension currently not possible)
+
+
+
+PRE-LAUNCH
+==========
+
+background job for adding document

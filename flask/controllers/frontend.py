@@ -117,43 +117,62 @@ def article_read(doc_id):
 @blueprint.route('/texts/add/', methods=['GET', 'POST'])
 @login_required
 def article_create():
-	form = AddArticleForm(url='http://michaeldougherty.info')
-	if form.validate_on_submit():
+
+	def read_page(url):
 		ignored_tags = ['script', 'style', 'code', 'head', 'iframe']
-		url = form.url.data
 		req = util.get_page(url)
 		soup = BeautifulSoup(req.text)
-
-		if soup.title:
-			title = soup.title.string
-		elif form.title.data:
-			title = form.title.data
-		elif url:
-			title = url
-		else:
-			title = "[UNTITLED]"
 
 		# remove noisy content-empty tags
 		for tag in ignored_tags:
 			for t in soup(tag):
 				t.decompose()
 
-		plaintext = "\n".join(soup.stripped_strings)
+		strings = (soup.stripped_strings)
+		strings = (map(lambda x: re.sub(r"\s+", ' ', x), strings))
+		plaintext = "\n".join(strings)
+
+	form = AddArticleForm()
+	if form.validate_on_submit():
+		url = form.url.data
+		title = form.title.data
+
+		if form.plaintext.data:
+			plaintext = form.plaintext.data
+			
+		if url:
+			(page_text, page_title) = read_page(url)
+			if not plaintext:
+				plaintext = page_text
+			if not title:
+				title = page_title
+
+		if not title:
+			if url:
+				title = url
+			else:
+				title = '[untitled]'
+
+
+		# with open('dump.txt', 'w') as f:
+		# 	f.write(plaintext)
+		# 	for i, s in enumerate(soup.stripped_strings):
+		# 		f.write("{}: {}\n\n".format(i, s))
 		all_tokens = nlp.tokenize(plaintext)
 		all_words = list(make_words(all_tokens))
 		sentence_positions = []
 		occurrences = {}
-		for i, sentence in enumerate(nlp.get_sentences(plaintext)):
-			sentence_tokens = nlp.tokenize(sentence.string)
-			sentence_words = list(make_words(sentence_tokens))
-			sentence_positions.append((sentence.start, sentence.end))
-			for word in sentence_words:
-				reading = word.reading
-				location = 0
-				if not word.id in occurrences:
-					occurrences[word.id] = WordOccurrence(word=word)
-				occurrences[word.id].locations.append(sentence.start)
-				occurrences[word.id].sentences.append(i)
+		# for i, sentence in enumerate(nlp.get_sentences(plaintext)):
+		# 	sentence_tokens = nlp.tokenize(sentence.string)
+		# 	sentence_words = list(make_words(sentence_tokens))
+		# 	sentence_positions.append((sentence.start, sentence.end))
+		# 	for word in sentence_words:
+		# 		reading = word.reading
+		# 		location = 0
+		# 		if not word.id in occurrences:
+		# 			occurrences[word.id] = WordOccurrence(word=word)
+		# 		occurrences[word.id].locations.append(sentence.start)
+		# 		occurrences[word.id].sentences.append(i)
 
 		num_words_before = Word.objects.count()
 		user = User.objects(id=current_user.id).first()

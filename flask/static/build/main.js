@@ -1,6 +1,15 @@
 (function() {
   $(function() {
-    return $('.annotated-word-list li').click(function(e) {
+    var markWords;
+    markWords = function(lemmata, group, after) {
+      var lemmataString;
+      lemmataString = lemmata.join("\n");
+      return $.post('/api/user/words/update/', {
+        lemmata: lemmataString,
+        group: group
+      }, after);
+    };
+    $('.annotated-word-list li').click(function(e) {
       var $el, group, lemma, newGroup;
       $el = $(this);
       if ($el.attr('data-group') === 'ignored') {
@@ -13,13 +22,23 @@
       } else {
         newGroup = 'known';
       }
-      return $.post('/api/user/words/update/', {
-        lemma: lemma,
-        group: newGroup
-      }, function(data) {
+      return markWords([lemma], newGroup, function(data) {
         if (data) {
           return $("[data-lemma='" + lemma + "']").attr('data-group', newGroup);
         }
+      });
+    });
+    return $('.annotated-word-list .controls .mark-all').click(function(e) {
+      var $affected, group, lemmata;
+      group = $(this).attr('data-group');
+      $affected = $('.annotated-word-list li').filter(function(i, el) {
+        return $(el).attr('data-group') !== group;
+      });
+      lemmata = $affected.map(function(i, el) {
+        return $(el).attr('data-lemma');
+      }).get();
+      return markWords(lemmata, group, function(data) {
+        return $affected.attr('data-group', group);
       });
     });
   });

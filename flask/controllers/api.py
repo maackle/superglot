@@ -18,15 +18,21 @@ def index():
 @blueprint.route('/user/words/update/', methods=['POST',])
 @login_required
 def update_word():
-	lemma = request.form.get('lemma')
+	lemmata = request.form.get('lemmata').split('\n')
 	group = request.form.get('group')
 
-	word = Word.objects(lemma=lemma).first()
+	changes = []
 
-	change = current_user.update_word(word, group)
-	
-	if change:
-		(old, new) = change
-		return jsonify({'from': old, 'to': new})
-	else:
-		return 'false'
+	for lemma in lemmata:
+
+		word = Word.objects(lemma=lemma).first()
+		change = current_user.update_word(word, group)
+		
+		if change:
+			(old, new) = change
+			changes.append({'from': old, 'to': new})
+		else:
+			changes.append('false')
+	print(changes)
+
+	return jsonify({'changes': changes})

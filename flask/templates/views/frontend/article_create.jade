@@ -8,5 +8,6 @@ block main_content
 	form(method="post").pure-form
 		!= form.csrf_token
 		+formfield(form.url)
+		+formfield(form.plaintext)
 		+formfield(form.title)
 		+formsubmit
