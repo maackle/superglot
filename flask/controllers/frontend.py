@@ -153,26 +153,21 @@ def article_create():
 			else:
 				title = '[untitled]'
 
-
-		# with open('dump.txt', 'w') as f:
-		# 	f.write(plaintext)
-		# 	for i, s in enumerate(soup.stripped_strings):
-		# 		f.write("{}: {}\n\n".format(i, s))
 		all_tokens = nlp.tokenize(plaintext)
 		all_words = list(make_words(all_tokens))
 		sentence_positions = []
 		occurrences = {}
-		# for i, sentence in enumerate(nlp.get_sentences(plaintext)):
-		# 	sentence_tokens = nlp.tokenize(sentence.string)
-		# 	sentence_words = list(make_words(sentence_tokens))
-		# 	sentence_positions.append((sentence.start, sentence.end))
-		# 	for word in sentence_words:
-		# 		reading = word.reading
-		# 		location = 0
-		# 		if not word.id in occurrences:
-		# 			occurrences[word.id] = WordOccurrence(word=word)
-		# 		occurrences[word.id].locations.append(sentence.start)
-		# 		occurrences[word.id].sentences.append(i)
+		for i, sentence in enumerate(nlp.get_sentences(plaintext)):
+			sentence_tokens = nlp.tokenize(sentence.string)
+			sentence_words = list(make_words(sentence_tokens))
+			sentence_positions.append((sentence.start, sentence.end))
+			for word in sentence_words:
+				reading = word.reading
+				location = 0
+				if not word.id in occurrences:
+					occurrences[word.id] = WordOccurrence(word=word)
+				occurrences[word.id].locations.append(sentence.start)
+				occurrences[word.id].sentences.append(i)
 
 		num_words_before = Word.objects.count()
 		user = User.objects(id=current_user.id).first()
