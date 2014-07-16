@@ -19,7 +19,8 @@ password_field = PasswordField('Password', [
         ])
 
 LoginForm = model_form(User, Form, only=('email', 'password',))
-RegisterForm = model_form(User, Form, only=('email', 'password', 'target_language'))
+RegisterForm = model_form(User, Form, only=('email', 'password', 'native_language', 'target_language'))
+UserSettingsForm = model_form(User, Form, only=('email', 'native_language', 'target_language'))
 
 # class LoginForm(Form):
 #     email = email_field

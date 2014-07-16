@@ -7656,10 +7656,6 @@ ul.inline-list li {
   text-decoration: none;
 }
 /* line 68, ../../assets/styles/main.scss */
-.navbar li a {
-  line-height: 5rem;
-}
-/* line 72, ../../assets/styles/main.scss */
 .navbar .brand {
   line-height: 5rem;
   margin: auto 0;
@@ -7667,25 +7663,29 @@ ul.inline-list li {
   float: left;
   font-size: 3.75rem;
 }
-/* line 81, ../../assets/styles/main.scss */
-.navbar ul.left {
+/* line 77, ../../assets/styles/main.scss */
+.navbar .container > ul.left {
   float: left;
 }
-/* line 82, ../../assets/styles/main.scss */
-.navbar ul.right {
+/* line 78, ../../assets/styles/main.scss */
+.navbar .container > ul.right {
   float: right;
 }
-/* line 85, ../../assets/styles/main.scss */
-.navbar li {
+/* line 80, ../../assets/styles/main.scss */
+.navbar .container > ul > li {
   display: inline-block;
 }
-/* line 89, ../../assets/styles/main.scss */
-.navbar li:hover ul {
+/* line 84, ../../assets/styles/main.scss */
+.navbar .container > ul > li:hover ul.subnav {
   visibility: visible;
   height: 4rem;
 }
-/* line 96, ../../assets/styles/main.scss */
-.navbar li a:hover {
+/* line 91, ../../assets/styles/main.scss */
+.navbar .container > ul > li > a {
+  line-height: 5rem;
+}
+/* line 95, ../../assets/styles/main.scss */
+.navbar .container > ul > li a:hover {
   background: #ddd;
 }
 /* line 101, ../../assets/styles/main.scss */
@@ -7694,7 +7694,7 @@ ul.inline-list li {
   margin-right: 10px;
 }
 /* line 107, ../../assets/styles/main.scss */
-.navbar ul > li > ul {
+.navbar ul > li > ul.subnav {
   -moz-transition: height, 300ms;
   -o-transition: height, 300ms;
   -webkit-transition: height, 300ms;
@@ -7790,11 +7790,16 @@ ul.inline-list li {
 }
 
 /* line 202, ../../assets/styles/main.scss */
+.add-text-button {
+  margin-left: 30px;
+}
+
+/* line 206, ../../assets/styles/main.scss */
 .big-search-input {
   padding: 0.75rem 2rem;
 }
 
-/* line 206, ../../assets/styles/main.scss */
+/* line 210, ../../assets/styles/main.scss */
 .callout-notice {
   background: #ffd;
   border: 1px dotted #333;

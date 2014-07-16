@@ -7,10 +7,19 @@ mixin formfield(field, placeholder="", type=None)
 		else
 			!= field(class="form-control", placeholder=placeholder)
 
-		ul.errors
-			for error in field.errors
-				li= error
+		+formerrors(field)
 
+mixin formfield_raw(field, input)
+	.form-group(class=('has-error' if field.errors else ''))
+		= field.label(class="control-label")
+		!= input
+
+		+formerrors(field)
+
+mixin formerrors(field)
+	ul.errors
+		for error in field.errors
+			li= error
 mixin formsubmit(value="Submit")
 	.form-group.form-submit
 		input.btn.btn-primary(type="submit", value=value)

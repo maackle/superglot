@@ -1,4 +1,23 @@
 from textblob import TextBlob, Word
+import util
+
+class Token:
+
+	reading = None
+	lemma = None
+
+	def __init__(self, reading, lemma):
+		self.reading = reading
+		self.lemma = lemma
+
+	def tup(self):
+		return (self.reading, self.lemma)
+
+	def __eq__(self, other):
+		return self.reading == other.reading
+
+	def __hash__(self):
+		return util.string_hash(self.lemma + self.reading)
 
 
 def get_sentences(text):
@@ -14,10 +33,10 @@ def tokenize(text):
 	def gen():
 		for reading, pos_abbr in tags:
 			keep_case = False
-			# if pos_abbr.startswith('NNP'):  # proper noun
-			# 	pos = 'n'
-			if pos_abbr.startswith('N'):  # noun
+			if pos_abbr.startswith('NNP'):  # proper noun
 				keep_case = True
+				pos = 'n'
+			if pos_abbr.startswith('N'):  # noun
 				pos = 'n'
 			elif pos_abbr.startswith('V'):  # verb
 				pos = 'v'
@@ -31,7 +50,7 @@ def tokenize(text):
 			if not keep_case and not is_acronym:
 				reading = reading.lower()
 
-			yield (reading, Word(reading).lemmatize(pos).lower())
+			yield Token(reading, Word(reading).lemmatize(pos).lower())
 
 	return list(gen())
 

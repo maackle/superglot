@@ -9,6 +9,11 @@ def get_page(url):
 	req = requests.get(url)
 	return req	
 
+def string_hash(s):
+	'''
+	Creates a reasonable hash value for a string
+	'''
+	return sum([ord(ch)*31 for ch in s])
 
 def sorted_words(words):
 	return sorted(words, key=lambda word: word.reading.lower())

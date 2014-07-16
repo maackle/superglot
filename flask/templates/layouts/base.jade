@@ -1,6 +1,6 @@
 doctype 5
 
-- from 'mixins.jade' import formfield, formsubmit, grouped_columned_vocab_list, simple_vocab_list, vocab_progress_bar
+- from 'mixins.jade' import formfield, formfield_raw, formsubmit, grouped_columned_vocab_list, simple_vocab_list, vocab_progress_bar
 
 //- needs to be defined in the template unfortunately
 mixin vocab_list(words)
@@ -15,6 +15,7 @@ html
 		link(rel="stylesheet", href="/static/build/main.css")
 		link(rel="stylesheet", href="/static/fonts/fonts.css")
 		script(src="/static/bower/jquery/dist/jquery.min.js")
+		script(src="/static/bower/bootstrap/dist/js/bootstrap.min.js")
 		script(src="/static/build/main.js")
 	body
 		block navbar

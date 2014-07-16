@@ -8,9 +8,9 @@ block main_content
 		input.big-search-input(placeholder="Search by Name")
 
 	h1 Texts
+		a(href=url_for('frontend.article_create')).btn.btn-primary.add-text-button + Upload New
 
 	if doc_pairs|length > 0
-
 		table.table
 			thead
 				tr
@@ -24,7 +24,9 @@ block main_content
 			tbody
 				for doc, stats in doc_pairs
 					tr
-						td: a(href=url_for('frontend.article_read', doc_id=doc.id))= doc.title
+						td
+							a(href=url_for('frontend.article_read', doc_id=doc.id))= doc.title
+							//- a(href=url_for('frontend.article_edit', doc_id=doc.id)) edit
 						td
 							+vocab_progress_bar(stats)
 						td.align-center= doc.words|length

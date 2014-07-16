@@ -30,7 +30,7 @@ def update_word():
 		
 		if change:
 			(old, new) = change
-			changes.append({'from': old, 'to': new})
+			changes.append({'lemma': lemma, 'from': old, 'to': new})
 		else:
 			changes.append('false')
 	print(changes)

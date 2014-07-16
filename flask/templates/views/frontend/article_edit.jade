@@ -1,0 +1,13 @@
+extends layouts/base.jade
+
+- from 'mixins.jade' import formfield, formsubmit
+
+block main_content
+	h1 Add a Text
+
+	form(method="post").pure-form
+		!= form.csrf_token
+		+formfield(form.url)
+		+formfield(form.plaintext)
+		+formfield(form.title)
+		+formsubmit

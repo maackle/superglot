@@ -1,0 +1,12 @@
+extends 'layouts/base.jade'
+
+block main_content
+	.container
+		h1 Settings
+
+	form(method='post')
+		=form.csrf_token
+		+formfield(form.email)
+		+formfield(form.native_language)
+		+formfield_raw(form.target_language, form.target_language(class="form-control", disabled=1))
+		+formsubmit("Update")

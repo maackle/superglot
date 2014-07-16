@@ -6,3 +6,8 @@ rsync -av \
 --exclude .git \
 --exclude .DS_Store \
 ./ michael@superglot.com:/var/www/superglot.com/
+
+ssh michael@superglot.com <<-END
+	sudo initctl reload-configuration
+	sudo service superglot restart
+END

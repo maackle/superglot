@@ -12,6 +12,7 @@ from controllers.api import blueprint as api
 from controllers.chrome_api import blueprint as chrome_api
 from controllers.auth import login_manager, blueprint as auth
 from controllers.frontend import blueprint as frontend
+from controllers.user import blueprint as user_blueprint
 from models import User
 from cache import cache
 
@@ -33,6 +34,7 @@ app.register_blueprint(api, url_prefix='/api')
 app.register_blueprint(chrome_api, url_prefix='/chrome')
 app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(frontend, url_prefix='')
+app.register_blueprint(user_blueprint, url_prefix='/user')
 
 assets = Environment(app)
 assets.url = app.static_url_path

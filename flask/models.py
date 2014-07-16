@@ -6,6 +6,7 @@ from mongoengine import *
 from flask.ext.mongoengine import Document
 
 from decorators import memoized
+import util
 
 email_field = lambda: StringField(max_length=128, required=True)
 password_field = lambda: StringField(max_length=32, required=True)
@@ -44,7 +45,10 @@ class Word(Document):
 		return (self.reading, self.lemma)
 
 	def __eq__(self, other):
-		return self.lemma == other.lemma  # and self.reading.lower() == other.reading.lower()
+		return self.language == other.language and self.lemma == other.lemma and self.reading.lower() == other.reading.lower()
+
+	def __hash__(self):
+		return util.string_hash(self.lemma + self.reading)
 
 	def __str__(self):
 		return "Word({})".format(self.reading)
@@ -75,44 +79,22 @@ class UserWordList(EmbeddedDocument):
 
 	@staticmethod
 	def default():
+		'''
+		Default user word list.
+		NOTE that the ignored words must already exist in the DB to be added.
+		'''
+		ignored_lemmata = []
+		with open('config/ignored-en.txt') as f:
+			for line in f.readlines():
+				lemma = line.strip()
+				ignored_lemmata.append(lemma)
+
+		ignored_words = Word.objects(lemma__in=ignored_lemmata)
+
 		return UserWordList(
 			known=[],
 			learning=[],
-			ignored=[],
-			)
-
-	def __str__(self):
-		return str({
-			'known': self.known,
-			'learning': self.learning,
-			'ignored': self.ignored,
-			})
-
-class UserWordList(EmbeddedDocument):
-
-	group_names = {'ignored', 'learning', 'known'}
-
-	known = words_field()
-	learning = words_field()
-	ignored = words_field()
-
-	def has_word(self, word):
-		for name in self.group_names:
-			if word in getattr(self, name):
-				return True
-		return False
-
-	def sort(self):
-		self.known.sort(key=Word.sort_key)
-		self.learning.sort(key=Word.sort_key)
-		self.ignored.sort(key=Word.sort_key)
-
-	@staticmethod
-	def default():
-		return UserWordList(
-			known=[],
-			learning=[],
-			ignored=[],
+			ignored=ignored_words,
 			)
 
 	def __str__(self):
@@ -137,6 +119,7 @@ class User(Document, UserMixin, CreationStamp):
 	words = EmbeddedDocumentField(UserWordList)
 	target_languages = ListField(language_field())
 	target_language = language_field()
+	native_language = language_field()
 
 	meta = {
 		'index_options': {
@@ -235,14 +218,28 @@ class TextArticle(Document, CreationStamp):
 		stats = {
 			'counts': {},
 			'percents': {},
-			'total': len(self.words),
+			'total': 0,
 		}
 
-		for name in UserWordList.group_names:
+		total = 0
+		group_names = UserWordList.group_names - {'ignored'}
+
+		for name in group_names:
 			group = getattr(wordlist, name)
 			num = len([word for word in group if (word in self.words)])
 			stats['counts'][name] = num
-			stats['percents'][name] = float(100 * num / stats['total'])
+			total += num
+
+		# num_unmarked = len([word for word in self.words if not word.group])
+		# total += num_unmarked
+
+		for name in group_names:
+			if total == 0:
+				percent = 0
+			else:
+				percent = float(100 * stats['counts'][name] / total)
+			stats['percents'][name] = percent
+
 		return stats
 
 

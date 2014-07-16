@@ -3,17 +3,22 @@ nav.navbar: .container
 	ul.left
 		if current_user.is_authenticated()
 			li
-				a(href=url_for('frontend.article_list')) list texts
+				a(href=url_for('frontend.article_list')) texts
 				//- ul.subnav
 				//- 	li: a(href=url_for('frontend.article_list')) list
 				//- 	li: a(href=url_for('frontend.article_create')) new
 			li
-				a(href=url_for('frontend.article_create')) add text
-			li
 				a(href=url_for('frontend.word_list_all')) vocabulary
 	ul.right
 		if current_user.is_authenticated()
-			li: a(href=url_for('auth.logout')) log out
+			li.dropdown
+				a(href="#", data-toggle="dropdown").dropdown-toggle
+					= current_user.email
+					<span class="caret"></span>
+				ul(role="menu").dropdown-menu
+					li: a(href=url_for('user.settings')) Settings
+					li.divider
+					li: a(href=url_for('auth.logout')) Log out
 		else
-			li: a(href=url_for('auth.login')) log in
-			li: a(href=url_for('auth.register')) sign up
+			li: a(href=url_for('auth.login')) Sign In
+			li: a(href=url_for('auth.register')) Sign Up

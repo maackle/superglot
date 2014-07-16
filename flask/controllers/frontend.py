@@ -15,22 +15,6 @@ import util
 import formatting
 
 
-def make_words(tokens):
-	# TODO: add warning if reading is case-insensitively the same, in case the user really wants
-	# to add an acronym or something
-	for reading, lemma in set(tokens):
-		try:
-			(word, created) = Word.objects(reading__iexact=reading).get_or_create(
-				lemma=lemma,
-				language='en',
-				defaults={
-					'reading': reading,
-				}
-			)
-			yield word
-		except Word.MultipleObjectsReturned:
-			pass
-
 
 blueprint = Blueprint('frontend', __name__, template_folder='templates')
 
@@ -63,7 +47,8 @@ def add_words(partition):
 	# 			yield word.id
 
 	# new_words = list(words(partition))
-	new_words = make_words(nlp.tokenize(request.form['words']))
+	tokens = nlp.tokenize(request.form['words'])
+	new_words = make_words(tokens)
 	new_word_ids = [w.id for w in new_words]
 	for name in UserWordList.group_names:
 		for word_id in new_word_ids:
@@ -96,7 +81,9 @@ def article_read(doc_id):
 	def annotate(word):
 		group = None
 		for name in UserWordList.group_names:
-			if word in getattr(current_user.words, name):
+			words = getattr(current_user.words, name)
+			lemmata = (w.lemma for w in words)
+			if word.lemma in lemmata:
 				group = name
 				break
 
@@ -105,8 +92,7 @@ def article_read(doc_id):
 			'group': group,
 		}
 
-	annotated_words = map(annotate, doc.sorted_words())
-	# print(doc.occurrences)
+	annotated_words = list(map(annotate, doc.sorted_words()))
 	
 	return render_template('views/frontend/article_read.jade', 
 		doc=doc, 
@@ -131,11 +117,32 @@ def article_create():
 		strings = (soup.stripped_strings)
 		strings = (map(lambda x: re.sub(r"\s+", ' ', x), strings))
 		plaintext = "\n".join(strings)
+		return (plaintext, soup.title)
+
+
+	def make_words(tokens):
+		# TODO: add warning if reading is case-insensitively the same, in case the user really wants
+		# to add an acronym or something
+		for token in tokens:
+			reading, lemma = token.tup()
+			try:
+				(word, created) = Word.objects(reading__iexact=reading).get_or_create(
+					lemma=lemma,
+					language='en',
+					defaults={
+						'reading': reading,
+					}
+				)
+				yield word
+			except Word.MultipleObjectsReturned:
+				pass
+
 
 	form = AddArticleForm()
 	if form.validate_on_submit():
 		url = form.url.data
 		title = form.title.data
+		plaintext = None
 
 		if form.plaintext.data:
 			plaintext = form.plaintext.data
