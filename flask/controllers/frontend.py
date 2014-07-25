@@ -160,7 +160,7 @@ def article_create():
 			else:
 				title = '[untitled]'
 
-		all_tokens = nlp.tokenize(plaintext)
+		all_tokens = set(nlp.tokenize(plaintext))
 		all_words = list(make_words(all_tokens))
 		sentence_positions = []
 		occurrences = {}

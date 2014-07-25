@@ -221,24 +221,33 @@ class TextArticle(Document, CreationStamp):
 			'total': 0,
 		}
 
-		total = 0
-		group_names = UserWordList.group_names - {'ignored'}
+		total_marked = 0
+		total_significant = 0
+		group_names = UserWordList.group_names# - {'ignored'}
 
 		for name in group_names:
 			group = getattr(wordlist, name)
 			num = len([word for word in group if (word in self.words)])
 			stats['counts'][name] = num
-			total += num
+			total_marked += num
+			if name not in ('ignored',):
+				total_significant += num
 
-		# num_unmarked = len([word for word in self.words if not word.group])
-		# total += num_unmarked
 
+		total = len(set((w.lemma for w in self.words)))
+		total_unmarked = total - total_marked
+		divisor = total_significant + total_unmarked
+		# total_significant = total_marked - stats['counts']['ignored']
+			
 		for name in group_names:
-			if total == 0:
+			if divisor == 0:
 				percent = 0
 			else:
-				percent = float(100 * stats['counts'][name] / total)
+				percent = float(100 * stats['counts'][name] / divisor)
 			stats['percents'][name] = percent
+
+		stats['total'] = total
+		stats['total_significant'] = total_significant
 
 		return stats
 
