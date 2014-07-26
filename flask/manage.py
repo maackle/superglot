@@ -1,9 +1,12 @@
 import sys
-from flask.ext.script import Manager
+from subprocess import call
+
+from flask.ext.script import Manager, Command
 
 from application import app, db
 from models import User
 import nlp
+
 
 manager = Manager(app)
 
@@ -31,6 +34,26 @@ def edit_user():
 	michael = User(**data)
 	michael.password = 'asdf'
 	michael.save()
+
+@manager.command
+def translate(task, lang=None):
+	potfile = 'translations/messages.pot'
+
+	if task=='extract':
+		call("pybabel extract -F config/babel.cfg -o {} .".format(potfile), shell=True)
+	if task=='compile':
+		call("pybabel compile -f -d translations", shell=True)
+	if task=='update':
+		call("pybabel update -i {} -d translations".format(potfile), shell=True)
+	if task=='init':
+		if not lang:
+			raise Exception("missing language")
+		call("pybabel init -i {} -d translations -l {}".format(potfile, lang), shell=True)
+
+# class Translate(Command):
+
+# 	def run(self):
+# 		pass
 
 if __name__ == "__main__":
     manager.run()

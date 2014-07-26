@@ -1,9 +1,10 @@
 extends layouts/base.jade
 
 - from 'mixins.jade' import formfield, formsubmit
+- var a_test = "THIS IS A TRANSLATION TEST"
 
 block main_content
-	h1 Add a Text
+	h1= _("Add a Text")
 
 	form(method="post").pure-form
 		!= form.csrf_token

@@ -13,7 +13,7 @@ password_field = lambda: StringField(max_length=32, required=True)
 
 word_reading_field = lambda: StringField(max_length=128)
 word_lemma_field = lambda: StringField(max_length=128)
-language_field = lambda: StringField(max_length=8, default="en-US")
+language_field = lambda: StringField(max_length=8, default="en_US")
 
 lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True))
 

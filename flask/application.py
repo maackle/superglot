@@ -1,12 +1,13 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
+import requests
+import mongoengine
 from flask import Flask, render_template, request, redirect, session, flash, url_for, g
 from flask.ext.assets import Environment, Bundle
 from flask.ext.login import current_user
-import requests
-import mongoengine
 from flask.ext.mongoengine import MongoEngine
+from flask.ext.babel import Babel
 
 from controllers.api import blueprint as api
 from controllers.chrome_api import blueprint as chrome_api
@@ -39,6 +40,8 @@ app.register_blueprint(user_blueprint, url_prefix='/user')
 assets = Environment(app)
 assets.url = app.static_url_path
 
+babel = Babel(app)
+
 cache.init_app(app, config={
 	'CACHE_TYPE': 'filesystem',
 	'CACHE_DIR': '.flask-cache',
@@ -60,6 +63,14 @@ def add_modules():
 		'formatting': formatting,
 	}
 
+@app.context_processor
+def add_translation():
+	from flask.ext.babel import gettext, ngettext
+
+	return {
+		'_': gettext,
+		'__': ngettext,
+	}
 
 @app.route('/')
 def home():
@@ -73,6 +84,13 @@ def login():
 def logout():
 	return redirect(url_for('auth.logout'))
 
+@babel.localeselector
+def get_locale():
+	if current_user.is_authenticated():
+		locale = current_user.native_language
+	else:
+		locale = request.accept_languages.best_match(['de', 'fr', 'en'])
+	return locale.split('-')[0]
 
 if __name__ == '__main__':
 	handler = RotatingFileHandler("log/error.log", maxBytes=10000000, backupCount=10)

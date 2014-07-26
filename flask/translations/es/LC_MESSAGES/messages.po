@@ -1,0 +1,90 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2014-07-26 12:41-0700\n"
+"PO-Revision-Date: 2014-07-26 11:32-0700\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.0-dev\n"
+
+#: templates/partials/navbar.jade:0
+msgid "texts"
+msgstr ""
+
+#: templates/partials/navbar.jade:0
+msgid "vocabulary"
+msgstr ""
+
+#: templates/partials/navbar.jade:0
+msgid "Settings"
+msgstr ""
+
+#: templates/partials/navbar.jade:0
+msgid "Log out"
+msgstr ""
+
+#: templates/partials/navbar.jade:0
+msgid "Sign In"
+msgstr ""
+
+#: templates/partials/navbar.jade:0
+msgid "Sign Up"
+msgstr ""
+
+#: templates/views/frontend/article_create.jade:0
+msgid "Add a Text"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+msgid "Vocabulary"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+#, python-format
+msgid "You know %(num)d words"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+#, python-format
+msgid "You are learning %(num)d words"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+msgid "add words?"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+msgid "known"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+msgid "learning"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+msgid "ignored"
+msgstr ""
+
+#~ msgid "You know %(num)d words"
+#~ msgstr ""
+
+#~ msgid "You are learning %(num)d words"
+#~ msgstr ""
+
+#~ msgid "You know %d words"
+#~ msgstr ""
+
+#~ msgid "You are learning %d words"
+#~ msgstr ""
+
