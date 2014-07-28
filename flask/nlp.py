@@ -19,6 +19,9 @@ class Token:
 	def __hash__(self):
 		return util.string_hash(self.lemma + self.reading)
 
+def translate_word(text, language):
+	blob = TextBlob(text)
+	return str(blob.translate(to=language))
 
 def get_sentences(text):
 	return TextBlob(text).sentences

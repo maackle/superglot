@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-26 12:46-0700\n"
+"POT-Creation-Date: 2014-07-27 16:53-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,58 +17,130 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.0-dev\n"
 
+#: forms.py:37 models.py:198 templates/views/frontend/article_list.jade:0
+msgid "title"
+msgstr ""
+
+#: forms.py:38
+msgid "URL"
+msgstr ""
+
+#: forms.py:42
+msgid "text"
+msgstr ""
+
+#: models.py:12
+msgid "email"
+msgstr ""
+
+#: models.py:13
+msgid "password"
+msgstr ""
+
+#: models.py:15
+msgid "reading"
+msgstr ""
+
+#: models.py:16
+msgid "lemma"
+msgstr ""
+
+#: models.py:17
+msgid "language"
+msgstr ""
+
+#: models.py:199
+msgid "plaintext"
+msgstr ""
+
+#: models.py:200
+msgid "source"
+msgstr ""
+
 #: templates/partials/navbar.jade:0
+#: templates/views/frontend/article_list.jade:0
 msgid "texts"
 msgstr ""
 
 #: templates/partials/navbar.jade:0
+#: templates/views/frontend/vocabulary_show.jade:0
 msgid "vocabulary"
 msgstr ""
 
 #: templates/partials/navbar.jade:0
-msgid "Settings"
+msgid "settings"
 msgstr ""
 
 #: templates/partials/navbar.jade:0
-msgid "Log out"
+msgid "log out"
 msgstr ""
 
 #: templates/partials/navbar.jade:0
-msgid "Sign In"
+msgid "sign in"
 msgstr ""
 
 #: templates/partials/navbar.jade:0
-msgid "Sign Up"
+msgid "sign up"
 msgstr ""
 
 #: templates/views/frontend/article_create.jade:0
 msgid "Add a Text"
 msgstr ""
 
-#: templates/views/frontend/vocabulary_show.jade:0
-msgid "Vocabulary"
+#: templates/views/frontend/article_list.jade:0
+msgid "search by name"
 msgstr ""
 
-#: templates/views/frontend/vocabulary_show.jade:0
-#, python-format
-msgid "You know %(num)d words"
+#: templates/views/frontend/article_list.jade:0
+msgid "upload new"
 msgstr ""
 
-#: templates/views/frontend/vocabulary_show.jade:0
-#, python-format
-msgid "You are learning %(num)d words"
+#: templates/views/frontend/article_list.jade:0
+msgid "comprehension"
 msgstr ""
 
-#: templates/views/frontend/vocabulary_show.jade:0
-msgid "add words?"
+#: templates/views/frontend/article_list.jade:0
+msgid "total"
 msgstr ""
 
+#: templates/views/frontend/article_list.jade:0
 #: templates/views/frontend/vocabulary_show.jade:0
 msgid "known"
 msgstr ""
 
+#: templates/views/frontend/article_list.jade:0
 #: templates/views/frontend/vocabulary_show.jade:0
 msgid "learning"
+msgstr ""
+
+#: templates/views/frontend/article_list.jade:0
+msgid "original"
+msgstr ""
+
+#: templates/views/frontend/article_list.jade:0
+msgid "you have nothing to read!"
+msgstr ""
+
+#: templates/views/frontend/article_list.jade:0
+msgid "go add some texts"
+msgstr ""
+
+#: templates/views/frontend/article_list.jade:0
+msgid ", and they will show up here."
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+#, python-format
+msgid "you know %(num)d words"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+#, python-format
+msgid "you are learning %(num)d words"
+msgstr ""
+
+#: templates/views/frontend/vocabulary_show.jade:0
+msgid "add words?"
 msgstr ""
 
 #: templates/views/frontend/vocabulary_show.jade:0

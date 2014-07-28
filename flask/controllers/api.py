@@ -36,3 +36,19 @@ def update_word():
 	print(changes)
 
 	return jsonify({'changes': changes})
+
+
+@blueprint.route('/words/translate/', methods=['GET',])
+@login_required
+def translate_word():
+	word_id = request.args.get("word_id")
+
+	word = Word.objects(id=word_id).first()
+	meaning = word.lookup(current_user.native_language)
+
+	return jsonify({
+		'source_language': word.language,
+		'source': word.reading,
+		'target_language': meaning.language,
+		'target': meaning.meaning,
+	})

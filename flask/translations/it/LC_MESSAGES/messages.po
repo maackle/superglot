@@ -7,72 +7,159 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-26 12:41-0700\n"
-"PO-Revision-Date: 2014-07-26 12:44-0800\n"
+"POT-Creation-Date: 2014-07-27 16:53-0700\n"
+"PO-Revision-Date: 2014-07-27 16:54-0800\n"
 "Last-Translator: Michael Dougherty <michael@lv11.co>\n"
 "Language-Team: it <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.0-dev\n"
-"Language: it\n"
 "X-Generator: Poedit 1.6.7\n"
 
+#: forms.py:37 models.py:198 templates/views/frontend/article_list.jade:0
+msgid "title"
+msgstr "titolo"
+
+#: forms.py:38
+msgid "URL"
+msgstr ""
+
+#: forms.py:42
+msgid "text"
+msgstr "testo"
+
+#: models.py:12
+msgid "email"
+msgstr "e-mail"
+
+#: models.py:13
+msgid "password"
+msgstr "password"
+
+#: models.py:15
+msgid "reading"
+msgstr "lettura"
+
+#: models.py:16
+msgid "lemma"
+msgstr "lemma"
+
+#: models.py:17
+msgid "language"
+msgstr "lingua"
+
+#: models.py:199
+msgid "plaintext"
+msgstr "testo normale"
+
+#: models.py:200
+msgid "source"
+msgstr "origine"
+
 #: templates/partials/navbar.jade:0
+#: templates/views/frontend/article_list.jade:0
 msgid "texts"
 msgstr "testi"
 
 #: templates/partials/navbar.jade:0
+#: templates/views/frontend/vocabulary_show.jade:0
 msgid "vocabulary"
 msgstr "vocabolario"
 
 #: templates/partials/navbar.jade:0
-msgid "Settings"
-msgstr "Impostazioni"
+msgid "settings"
+msgstr "impostazioni"
 
 #: templates/partials/navbar.jade:0
-msgid "Log out"
-msgstr "Esci"
+msgid "log out"
+msgstr "esci"
 
 #: templates/partials/navbar.jade:0
-msgid "Sign In"
-msgstr "Registrati"
+msgid "sign in"
+msgstr "registrati"
 
 #: templates/partials/navbar.jade:0
-msgid "Sign Up"
-msgstr "Iscriviti"
+msgid "sign up"
+msgstr "iscriviti"
 
 #: templates/views/frontend/article_create.jade:0
 msgid "Add a Text"
 msgstr "Aggiungere un Testo"
 
+#: templates/views/frontend/article_list.jade:0
+msgid "search by name"
+msgstr "ricerca per nome"
+
+#: templates/views/frontend/article_list.jade:0
+msgid "upload new"
+msgstr "carica nuova"
+
+#: templates/views/frontend/article_list.jade:0
+msgid "comprehension"
+msgstr "comprehensione"
+
+#: templates/views/frontend/article_list.jade:0
+msgid "total"
+msgstr "totale"
+
+#: templates/views/frontend/article_list.jade:0
 #: templates/views/frontend/vocabulary_show.jade:0
-msgid "Vocabulary"
-msgstr "Vocabolario"
+msgid "known"
+msgstr "noti"
+
+#: templates/views/frontend/article_list.jade:0
+#: templates/views/frontend/vocabulary_show.jade:0
+msgid "learning"
+msgstr "imparando"
+
+#: templates/views/frontend/article_list.jade:0
+msgid "original"
+msgstr "originale"
+
+#: templates/views/frontend/article_list.jade:0
+msgid "you have nothing to read!"
+msgstr "non hai niente da leggere!"
+
+#: templates/views/frontend/article_list.jade:0
+msgid "go add some texts"
+msgstr "aggiungere alcuni testi"
+
+#: templates/views/frontend/article_list.jade:0
+msgid ", and they will show up here."
+msgstr ", ed essi appariranno qui"
 
 #: templates/views/frontend/vocabulary_show.jade:0
 #, python-format
-msgid "You know %(num)d words"
-msgstr "Tu sapete %(num)d parole"
+msgid "you know %(num)d words"
+msgstr "tu sapete %(num)d parole"
 
 #: templates/views/frontend/vocabulary_show.jade:0
 #, python-format
-msgid "You are learning %(num)d words"
-msgstr "Tu stai imparando %(num)d parole"
+msgid "you are learning %(num)d words"
+msgstr "tu stai imparando %(num)d parole"
 
 #: templates/views/frontend/vocabulary_show.jade:0
 msgid "add words?"
 msgstr "aggiungere parole?"
 
 #: templates/views/frontend/vocabulary_show.jade:0
-msgid "known"
-msgstr "noti"
-
-#: templates/views/frontend/vocabulary_show.jade:0
-msgid "learning"
-msgstr "imparando"
-
-#: templates/views/frontend/vocabulary_show.jade:0
 msgid "ignored"
 msgstr "ignorati"
+
+#, fuzzy
+#~ msgid "Texts"
+#~ msgstr "testi"
+
+#, fuzzy
+#~ msgid "Known"
+#~ msgstr "noti"
+
+#, fuzzy
+#~ msgid "Learning"
+#~ msgstr "imparando"
+
+#~ msgid "Vocabulary"
+#~ msgstr "Vocabolario"

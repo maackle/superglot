@@ -22,14 +22,14 @@ blueprint = Blueprint('frontend', __name__, template_folder='templates')
 def home():
 	return render_template('views/home.jade')
 
-@blueprint.route('/words/', methods=['GET', 'POST'])
+@blueprint.route('/user/words/', methods=['GET', 'POST'])
 @login_required
 def word_list_all():
 	words = current_user.words
 	words.sort()
 	return render_template('views/frontend/vocabulary_show.jade', words=words)
 
-@blueprint.route('/words/<partition>/', methods=['GET', 'POST'])
+@blueprint.route('/user/words/<partition>/', methods=['GET', 'POST'])
 @login_required
 def word_list(partition):
 	if partition in ('known', 'learning', 'ignored',):
@@ -37,7 +37,7 @@ def word_list(partition):
 	words.sort(key=Word.sort_key)
 	return render_template('views/frontend/word_list.jade', words=words)
 
-@blueprint.route('/words/add/<partition>/', methods=['POST'])
+@blueprint.route('/user/words/add/<partition>/', methods=['POST'])
 @login_required
 def add_words(partition):
 	# def words(partition):
@@ -64,7 +64,7 @@ def add_words(partition):
 	return redirect(url_for('frontend.word_list_all'))
 
 
-@blueprint.route('/texts/', methods=['GET', 'POST'])
+@blueprint.route('/user/texts/', methods=['GET', 'POST'])
 @login_required
 def article_list():
 	docs = list(TextArticle.objects(user=current_user.id))
@@ -72,7 +72,7 @@ def article_list():
 	return render_template('views/frontend/article_list.jade', doc_pairs=list(zip(docs, stats)))
 
 
-@blueprint.route('/texts/<doc_id>/read', methods=['GET', 'POST'])
+@blueprint.route('/user/texts/<doc_id>/read', methods=['GET', 'POST'])
 @login_required
 def article_read(doc_id):
 	doc = TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
@@ -100,7 +100,7 @@ def article_read(doc_id):
 		annotated_words=annotated_words)
 
 
-@blueprint.route('/texts/add/', methods=['GET', 'POST'])
+@blueprint.route('/user/texts/add/', methods=['GET', 'POST'])
 @login_required
 def article_create():
 

@@ -4,16 +4,18 @@ from flask import session, jsonify
 from flask.ext.login import UserMixin
 from mongoengine import *
 from flask.ext.mongoengine import Document
+from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
 from decorators import memoized
 import util
+import nlp
 
-email_field = lambda: StringField(max_length=128, required=True)
-password_field = lambda: StringField(max_length=32, required=True)
+email_field = lambda: StringField(max_length=128, required=True, verbose_name=_('email'))
+password_field = lambda: StringField(max_length=32, required=True, verbose_name=_('password'))
 
-word_reading_field = lambda: StringField(max_length=128)
-word_lemma_field = lambda: StringField(max_length=128)
-language_field = lambda: StringField(max_length=8, default="en_US")
+word_reading_field = lambda: StringField(max_length=128, verbose_name=_('reading'))
+word_lemma_field = lambda: StringField(max_length=128, verbose_name=_('lemma'))
+language_field = lambda: StringField(max_length=8, verbose_name=_('language'), default="en_US")
 
 lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True))
 
@@ -21,6 +23,11 @@ lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True)
 class CreationStamp:
 
 	date_created = DateTimeField(default=datetime.datetime.now())
+
+
+class WordMeaning(EmbeddedDocument):
+	language = StringField(max_length=8, required=True)
+	meaning = StringField(max_length=256, required=True)
 
 
 class Word(Document):
@@ -39,10 +46,21 @@ class Word(Document):
 	reading = word_reading_field()
 	lemma = word_lemma_field()
 	language = language_field()
+	meanings = MapField(EmbeddedDocumentField(WordMeaning))
 	recognized = BooleanField(default=True)
 
 	def pair(self):
 		return (self.reading, self.lemma)
+
+	def lookup(self, language):
+		if language in self.meanings:
+			print(language)
+			return self.meanings[language]
+		else:
+			text = nlp.translate_word(self.reading, language)
+			meaning = self.meanings[language] = WordMeaning(language=language, meaning=text)
+			self.save()
+			return meaning
 
 	def __eq__(self, other):
 		return self.language == other.language and self.lemma == other.lemma and self.reading.lower() == other.reading.lower()
@@ -194,9 +212,9 @@ class WordOccurrence(EmbeddedDocument):
 
 class TextArticle(Document, CreationStamp):
 	
-	title = StringField(max_length=256)
-	plaintext = StringField()
-	source = StringField()
+	title = StringField(max_length=256, verbose_name=_('title'))
+	plaintext = StringField(verbose_name=_('plaintext'))
+	source = StringField(verbose_name=_('source'))
 	words = words_field()
 	user = ReferenceField(User)
 	occurrences = ListField(EmbeddedDocumentField(WordOccurrence))

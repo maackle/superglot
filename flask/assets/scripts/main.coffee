@@ -7,6 +7,12 @@ $ ->
 			group: group
 		}, after
 
+	translations = {}
+
+	addMeaningTooltip = (el, meaning) ->
+		$(el).tooltip
+			title: meaning
+			placement: 'left'
 
 	$('.annotated-word-list li').click (e) ->
 		$el = $(this)
@@ -34,3 +40,16 @@ $ ->
 			.get()
 		markWords lemmata, group, (data) ->
 			$affected.attr('data-group', group)
+
+	$('.vocab-list li').mouseenter (e) ->
+		el = this
+		$el = $(el)
+		wordId = $el.data('id')
+		if $el.data('translation') is undefined
+			$(el).data('translation', '')  # so we know we're working on it
+			$.get '/api/words/translate/', { word_id: wordId }, (data) =>
+				meaning = data.target
+				translations[wordId] = meaning
+				addMeaningTooltip(el, meaning)
+				$el.data('translation', meaning)
+				$el.trigger 'mouseenter'

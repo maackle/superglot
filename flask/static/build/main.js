@@ -1,6 +1,6 @@
 (function() {
   $(function() {
-    var markWords;
+    var addMeaningTooltip, markWords, translations;
     markWords = function(lemmata, group, after) {
       var lemmataString;
       lemmataString = lemmata.join("\n");
@@ -8,6 +8,13 @@
         lemmata: lemmataString,
         group: group
       }, after);
+    };
+    translations = {};
+    addMeaningTooltip = function(el, meaning) {
+      return $(el).tooltip({
+        title: meaning,
+        placement: 'left'
+      });
     };
     $('.annotated-word-list li').click(function(e) {
       var $el, group, lemma, newGroup;
@@ -28,7 +35,7 @@
         }
       });
     });
-    return $('.annotated-word-list .controls .mark-all').click(function(e) {
+    $('.annotated-word-list .controls .mark-all').click(function(e) {
       var $affected, group, lemmata;
       group = $(this).attr('data-group');
       $affected = $('.annotated-word-list li').filter(function(i, el) {
@@ -40,6 +47,26 @@
       return markWords(lemmata, group, function(data) {
         return $affected.attr('data-group', group);
       });
+    });
+    return $('.vocab-list li').mouseenter(function(e) {
+      var $el, el, wordId,
+        _this = this;
+      el = this;
+      $el = $(el);
+      wordId = $el.data('id');
+      if ($el.data('translation') === void 0) {
+        $(el).data('translation', '');
+        return $.get('/api/words/translate/', {
+          word_id: wordId
+        }, function(data) {
+          var meaning;
+          meaning = data.target;
+          translations[wordId] = meaning;
+          addMeaningTooltip(el, meaning);
+          $el.data('translation', meaning);
+          return $el.trigger('mouseenter');
+        });
+      }
     });
   });
 

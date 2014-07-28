@@ -3,6 +3,7 @@ from flask.ext.mongoengine.wtf import model_form
 from wtforms import StringField, PasswordField, BooleanField, TextAreaField, HiddenField, FieldList, IntegerField
 from wtforms import validators
 # from wtforms.validators import Length, EqualTo, InputRequired, Optional, ValidationError, URL
+from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
 from models import User
 
@@ -33,9 +34,9 @@ UserSettingsForm = model_form(User, Form, only=('email', 'native_language', 'tar
 
 
 class AddArticleForm(Form):
-    title = StringField('Title')
-    url = StringField('URL', [
+    title = StringField(_('title'))
+    url = StringField(_('URL'), [
         validators.Optional(),
         validators.URL()
         ])
-    plaintext = TextAreaField('Text')
+    plaintext = TextAreaField(_('text'))

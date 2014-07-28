@@ -5,20 +5,21 @@ extends layouts/base.jade
 block main_content
 
 	form.article-search
-		input.big-search-input(placeholder="Search by Name")
+		input.big-search-input(placeholder=_("search by name")|capitalize)
 
-	h1 Texts
-		a(href=url_for('frontend.article_create')).btn.btn-primary.add-text-button + Upload New
+	h1= _("texts") | title
+		a(href=url_for('frontend.article_create')).btn.btn-primary.add-text-button + 
+			= _("upload new") | title
 
 	if doc_pairs|length > 0
 		table.table
 			thead
 				tr
-					th Title
-					th Comprehension
-					th Total
-					th Known
-					th Learning
+					th= _("title") | capitalize
+					th= _("comprehension") | capitalize
+					th= _("total") | capitalize
+					th= _("known") | capitalize
+					th= _("learning") | capitalize
 					th 
 						//- Action
 			tbody
@@ -34,8 +35,12 @@ block main_content
 						td.align-center= "%2.0f%%"|format(stats.percents.learning)
 						td
 							if doc.source
-								a(href=doc.source, target="_blank") original &rarr;
+								a(href=doc.source, target="_blank") 
+									= _("original")
+									|  &rarr;
 	else
 		.callout-notice
-			h3 You have nothing to read!
-			p Go <a href="#{ url_for('frontend.article_create') }">add some texts</a>, and they will show up here.
+			h3= _("you have nothing to read!") | capitalize
+			p
+				a(href="#{ url_for('frontend.article_create') }")= _("go add some texts") | capitalize
+				= _(", and they will show up here.")

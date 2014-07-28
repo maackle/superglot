@@ -3,12 +3,12 @@ nav.navbar: .container
 	ul.left
 		if current_user.is_authenticated()
 			li
-				a(href=url_for('frontend.article_list'))= _("texts")
+				a(href=url_for('frontend.article_list'))= _("texts") | title
 				//- ul.subnav
 				//- 	li: a(href=url_for('frontend.article_list')) list
 				//- 	li: a(href=url_for('frontend.article_create')) new
 			li
-				a(href=url_for('frontend.word_list_all'))= _("vocabulary")
+				a(href=url_for('frontend.word_list_all'))= _("vocabulary") | title
 	ul.right
 		if current_user.is_authenticated()
 			li.dropdown
@@ -16,9 +16,9 @@ nav.navbar: .container
 					= current_user.email
 					<span class="caret"></span>
 				ul(role="menu").dropdown-menu
-					li: a(href=url_for('user.settings'))= _("Settings")
+					li: a(href=url_for('user.settings'))= _("settings") | title
 					li.divider
-					li: a(href=url_for('auth.logout'))= _("Log out")
+					li: a(href=url_for('auth.logout'))= _("log out") | title
 		else
-			li: a(href=url_for('auth.login'))= _("Sign In")
-			li: a(href=url_for('auth.register'))= _("Sign Up")
+			li: a(href=url_for('auth.login'))= _("sign in") | title
+			li: a(href=url_for('auth.register'))= _("sign up") | title

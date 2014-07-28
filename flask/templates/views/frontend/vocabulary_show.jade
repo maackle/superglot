@@ -1,35 +1,35 @@
 extends layouts/base.jade
 
 block main_content
-	h1= _("Vocabulary")
+	h1= _("vocabulary") | title
 
 	.vocab-stats
-		p= _("You know %(num)d words", num=words.known|length)
-		p= _("You are learning %(num)d words", num=words.learning|length)
+		p= _("you know %(num)d words", num=words.known|length) | capitalize
+		p= _("you are learning %(num)d words", num=words.learning|length) | capitalize
 
-	h2= _("add words?")
+	h2= _("add words?") | capitalize
 	.row
 		.col-sm-4
-			h3= _("known")
+			h3= _("known") | capitalize
 			form(method="POST", action=url_for('frontend.add_words', partition='known'))
 				textarea(name="words", rows=7).form-control
 				+formsubmit('add/move words')
 		.col-sm-4
-			h3= _("learning")
+			h3= _("learning") | capitalize
 			form(method="POST", action=url_for('frontend.add_words', partition='learning'))
 				textarea(name="words", rows=7).form-control
 				+formsubmit('add/move words')
 		.col-sm-4
-			h3= _("ignored")
+			h3= _("ignored") | capitalize
 			form(method="POST", action=url_for('frontend.add_words', partition='ignored'))
 				textarea(name="words", rows=7).form-control
 				+formsubmit('add/move words')
 
-	h2= _("known")
+	h2= _("known") | capitalize
 	+vocab_list(words.known)
 			
-	h2= _("learning")
+	h2= _("learning") | capitalize
 	+vocab_list(words.learning)
 					
-	h2= _("ignored")
+	h2= _("ignored") | capitalize
 	+vocab_list(words.ignored)
