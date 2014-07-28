@@ -72,6 +72,12 @@ def add_translation():
 		'__': ngettext,
 	}
 
+@app.context_processor
+def add_settings():
+	return {
+		'settings': dict(app.config),
+	}
+
 @app.route('/')
 def home():
 	return redirect(url_for('frontend.home'))
@@ -89,7 +95,7 @@ def get_locale():
 	if current_user.is_authenticated():
 		locale = current_user.native_language
 	else:
-		locale = request.accept_languages.best_match(['de', 'fr', 'en'])
+		locale = request.accept_languages.best_match(app.config['TARGET_LANGUAGES'])
 	return locale.split('-')[0]
 
 if __name__ == '__main__':

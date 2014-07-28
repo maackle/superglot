@@ -1,6 +1,6 @@
 import datetime
 
-from flask import session, jsonify
+from flask import session, jsonify, current_app as app
 from flask.ext.login import UserMixin
 from mongoengine import *
 from flask.ext.mongoengine import Document
@@ -9,13 +9,15 @@ from flask.ext.babel import lazy_gettext as _#, ngettext as __
 from decorators import memoized
 import util
 import nlp
+from config import settings
 
-email_field = lambda: StringField(max_length=128, required=True, verbose_name=_('email'))
-password_field = lambda: StringField(max_length=32, required=True, verbose_name=_('password'))
+email_field = lambda: StringField(max_length=128, required=True, verbose_name=_('email').capitalize())
+password_field = lambda: StringField(max_length=32, required=True, verbose_name=_('password').capitalize())
 
 word_reading_field = lambda: StringField(max_length=128, verbose_name=_('reading'))
 word_lemma_field = lambda: StringField(max_length=128, verbose_name=_('lemma'))
-language_field = lambda: StringField(max_length=8, verbose_name=_('language'), default="en_US")
+native_language_field = lambda: StringField(max_length=8, verbose_name=_('native language').capitalize(), default="en", choices=settings.NATIVE_LANGUAGE_CHOICES)
+target_language_field = lambda: StringField(max_length=8, verbose_name=_('target language').capitalize(), default="en", choices=settings.TARGET_LANGUAGE_CHOICES)
 
 lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True))
 
@@ -45,7 +47,7 @@ class Word(Document):
 
 	reading = word_reading_field()
 	lemma = word_lemma_field()
-	language = language_field()
+	language = native_language_field()
 	meanings = MapField(EmbeddedDocumentField(WordMeaning))
 	recognized = BooleanField(default=True)
 
@@ -135,9 +137,9 @@ class User(Document, UserMixin, CreationStamp):
 	password = password_field()
 	vocabulary = ListField(EmbeddedDocumentField(VocabWord))
 	words = EmbeddedDocumentField(UserWordList)
-	target_languages = ListField(language_field())
-	target_language = language_field()
-	native_language = language_field()
+	# target_languages = ListField(target_language_field())
+	target_language = target_language_field()
+	native_language = native_language_field()
 
 	meta = {
 		'index_options': {

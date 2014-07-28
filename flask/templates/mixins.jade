@@ -1,4 +1,4 @@
-mixin formfield(field, placeholder="", type=None)
+mixin form_field(field, placeholder="", type=None)
 	.form-group(class=('has-error' if field.errors else ''))
 		= field.label(class="control-label")
 		|  
@@ -6,21 +6,39 @@ mixin formfield(field, placeholder="", type=None)
 			!= field(class="form-control", placeholder=placeholder, type=type)
 		else
 			!= field(class="form-control", placeholder=placeholder)
-
 		+formerrors(field)
 
-mixin formfield_raw(field, input)
+mixin form_field_raw(field, input)
 	.form-group(class=('has-error' if field.errors else ''))
 		= field.label(class="control-label")
 		!= input
-
 		+formerrors(field)
+
+mixin form_select(field, choices)
+	.form-group(class=('has-error' if field.errors else ''))
+		= field.label(class="control-label")
+		select(name=field.name, class="form-control")
+			for value, text in choices
+				if value == field.data
+					option(value=value, selected=True)= text
+				else
+					option(value=value)= text
+		+formerrors(field)
+
+//- mixin form_select_language(field, choices)
+//- 	.form-group(class=('has-error' if field.errors else ''))
+//- 		= field.label(class="control-label")
+//- 		select(name=field.name, class="form-control")
+//- 			for code, name in choices
+//- 				option(value=code, style="background-image: url('/static/images/flag-icons/#{ code }.png')")= name
+//- 		+formerrors(field)
 
 mixin formerrors(field)
 	ul.errors
 		for error in field.errors
 			li= error
-mixin formsubmit(value="Submit")
+
+mixin form_submit(value="Submit")
 	.form-group.form-submit
 		input.btn.btn-primary(type="submit", value=value)
 

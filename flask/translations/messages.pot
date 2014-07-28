@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-27 16:53-0700\n"
+"POT-Creation-Date: 2014-07-27 21:45-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.0-dev\n"
 
-#: forms.py:37 models.py:198 templates/views/frontend/article_list.jade:0
+#: forms.py:37 models.py:217 templates/views/frontend/article_list.jade:0
 msgid "title"
 msgstr ""
 
@@ -29,32 +29,80 @@ msgstr ""
 msgid "text"
 msgstr ""
 
-#: models.py:12
+#: models.py:14
 msgid "email"
 msgstr ""
 
-#: models.py:13
+#: models.py:15
 msgid "password"
 msgstr ""
 
-#: models.py:15
+#: models.py:17
 msgid "reading"
 msgstr ""
 
-#: models.py:16
+#: models.py:18
 msgid "lemma"
 msgstr ""
 
-#: models.py:17
-msgid "language"
+#: models.py:19
+msgid "native language"
 msgstr ""
 
-#: models.py:199
+#: models.py:20
+msgid "target language"
+msgstr ""
+
+#: models.py:218
 msgid "plaintext"
 msgstr ""
 
-#: models.py:200
+#: models.py:219
 msgid "source"
+msgstr ""
+
+#: controllers/articles.py:146
+#, python-format
+msgid "added %(doc)s"
+msgstr ""
+
+#: controllers/articles.py:148
+#, python-format
+msgid "updated %(doc)s"
+msgstr ""
+
+#: controllers/auth.py:29
+msgid "Logged in successfully."
+msgstr ""
+
+#: controllers/auth.py:32
+msgid "Invalid username or password."
+msgstr ""
+
+#: controllers/auth.py:35
+#, python-format
+msgid "There was a problem logging in. Please contact support at %(email)s."
+msgstr ""
+
+#: controllers/auth.py:44
+msgid "You are logged out."
+msgstr ""
+
+#: controllers/auth.py:61
+msgid "You're all signed up! Now you can log in."
+msgstr ""
+
+#: controllers/auth.py:64
+msgid "An account with this email address already exists."
+msgstr ""
+
+#: controllers/auth.py:68
+#, python-format
+msgid "Uh oh, there was a problem with your registration. Please email %(email)s"
+msgstr ""
+
+#: controllers/user.py:34
+msgid "settings updated"
 msgstr ""
 
 #: templates/partials/navbar.jade:0

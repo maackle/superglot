@@ -13,17 +13,17 @@ block main_content
 			h3= _("known") | capitalize
 			form(method="POST", action=url_for('frontend.add_words', partition='known'))
 				textarea(name="words", rows=7).form-control
-				+formsubmit('add/move words')
+				+form_submit('add/move words')
 		.col-sm-4
 			h3= _("learning") | capitalize
 			form(method="POST", action=url_for('frontend.add_words', partition='learning'))
 				textarea(name="words", rows=7).form-control
-				+formsubmit('add/move words')
+				+form_submit('add/move words')
 		.col-sm-4
 			h3= _("ignored") | capitalize
 			form(method="POST", action=url_for('frontend.add_words', partition='ignored'))
 				textarea(name="words", rows=7).form-control
-				+formsubmit('add/move words')
+				+form_submit('add/move words')
 
 	h2= _("known") | capitalize
 	+vocab_list(words.known)

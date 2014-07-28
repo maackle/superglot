@@ -1,21 +1,23 @@
 (function() {
+  var addMeaningTooltip, markWords;
+
+  markWords = function(lemmata, group, after) {
+    var lemmataString;
+    lemmataString = lemmata.join("\n");
+    return $.post('/api/user/words/update/', {
+      lemmata: lemmataString,
+      group: group
+    }, after);
+  };
+
+  addMeaningTooltip = function(el, meaning) {
+    return $(el).tooltip({
+      title: meaning,
+      placement: 'left'
+    });
+  };
+
   $(function() {
-    var addMeaningTooltip, markWords, translations;
-    markWords = function(lemmata, group, after) {
-      var lemmataString;
-      lemmataString = lemmata.join("\n");
-      return $.post('/api/user/words/update/', {
-        lemmata: lemmataString,
-        group: group
-      }, after);
-    };
-    translations = {};
-    addMeaningTooltip = function(el, meaning) {
-      return $(el).tooltip({
-        title: meaning,
-        placement: 'left'
-      });
-    };
     $('.annotated-word-list li').click(function(e) {
       var $el, group, lemma, newGroup;
       $el = $(this);
@@ -61,7 +63,6 @@
         }, function(data) {
           var meaning;
           meaning = data.target;
-          translations[wordId] = meaning;
           addMeaningTooltip(el, meaning);
           $el.data('translation', meaning);
           return $el.trigger('mouseenter');

@@ -6,7 +6,7 @@ block main_content
 
 	form(method='post')
 		=form.csrf_token
-		+formfield(form.email)
-		+formfield(form.native_language)
-		+formfield_raw(form.target_language, form.target_language(class="form-control", disabled=1))
-		+formsubmit("Update")
+		+form_field(form.email)
+		+form_select(form.native_language, settings.NATIVE_LANGUAGE_CHOICES)
+		+form_select(form.target_language, settings.TARGET_LANGUAGE_CHOICES)
+		+form_submit("Update")

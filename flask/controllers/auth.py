@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 from flask.ext.login import LoginManager, login_user, logout_user, login_required
+from flask.ext.babel import gettext as _
 
 from forms import LoginForm, RegisterForm
 from models import User, UserWordList
+
 
 login_manager = LoginManager()
 
@@ -24,14 +26,13 @@ def login():
 			user = User.authenticate(**data)
 			if user:
 				result = login_user(user, remember=False)
-				flash("Logged in successfully.")
+				flash(_("Logged in successfully.").capitalize())
 				return redirect(request.args.get("next") or url_for("home"))
 			else:
-				flash("Nope!", 'danger')
+				flash(_("Invalid username or password.").capitalize(), 'danger')
 				return render_template(template, **ctx)
-
 		else:
-			flash('problem logging in', 'danger')
+			flash(_('There was a problem logging in. Please contact support at %(email)s.', current_app.config['EMAIL_SUPPORT']), 'danger')
 			return render_template(template, **ctx)
 	else:
 		return render_template(template, **ctx)
@@ -40,24 +41,31 @@ def login():
 @login_required
 def logout():
 	logout_user()
-	flash("Logged ya out!")
+	flash(_("You are logged out."))
 	return redirect(url_for('home'))
 
 @blueprint.route('/register/', methods=['GET', 'POST'])
 def register():
 	form = RegisterForm()
+	template = "views/auth/register.jade"
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			user = User(
-				email=data['email'], 
-				password=data['password'],
-				words=UserWordList.default()).save()
-			flash("Created user.")
-			return redirect(url_for('auth.login'))
+			(user, created) = User.objects.get_or_create(
+				email=data['email'],
+				defaults={
+					'password': data['password'],
+					'words': UserWordList.default(),
+				})
+			if created:
+				flash(_("You're all signed up! Now you can log in."))
+				return redirect(url_for('auth.login'))
+			else:
+				flash(_("An account with this email address already exists."), 'danger')
+				return render_template(template, form=form)
 		else:
 			print(form.data)
-			flash('problem creating user', 'danger')
-			return render_template("views/auth/register.jade", form=form)
+			flash(_('Uh oh, there was a problem with your registration. Please email %(email)s', current_app.config['EMAIL_SUPPORT']), 'danger')
+			return render_template(template, form=form)
 	else:
-		return render_template("views/auth/register.jade", form=form)
+		return render_template(template, form=form)

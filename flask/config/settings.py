@@ -3,7 +3,23 @@ SECRET_KEY = '8ahsd7&&Gg9g7(*U![{S'
 CSRF_ENABLED = True
 WTF_CSRF_ENABLED = True
 
+EMAIL_SUPPORT = 'support@superglot.com'
+
 DEBUG = True
+
+NATIVE_LANGUAGES = ('en', 'es', 'it', 'ja')
+
+TARGET_LANGUAGES = ('en',)
+
+LANGUAGE_NAMES = {
+	'en': 'English',
+	'es': 'Español',
+	'it': 'Italiano',
+	'ja': '日本語',
+}
+
+NATIVE_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in NATIVE_LANGUAGES)
+TARGET_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in TARGET_LANGUAGES)
 
 MONGODB_SETTINGS = {
 	'DB': 'superglot'

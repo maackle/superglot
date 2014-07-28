@@ -4,6 +4,7 @@ import requests
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.ext.login import current_user, login_required
+from flask.ext.babel import gettext as _
 from mongoengine.errors import NotUniqueError
 
 from forms import AddArticleForm
@@ -142,9 +143,9 @@ def article_create():
 		num_added = num_words_after - num_words_before
 		
 		if created:
-			flash("Added {}".format(title), 'success')
+			flash(_("added %(doc)s", title).capitalize(), 'success')
 		else:
-			flash("Updated {}".format(title), 'success')
+			flash(_("updated %(doc)s", title).capitalize(), 'success')
 
 		return redirect(url_for('frontend.article_list'))
 	else:

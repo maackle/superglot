@@ -7807,3 +7807,9 @@ ul.inline-list li {
   margin: 2rem auto;
   width: 50%;
 }
+
+/* line 218, ../../assets/styles/main.scss */
+.alert-message {
+  background: #cccccc;
+  border: gray;
+}
