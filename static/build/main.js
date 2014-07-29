@@ -1,12 +1,12 @@
 (function() {
   var addMeaningTooltip, markWords;
 
-  markWords = function(lemmata, group, after) {
+  markWords = function(lemmata, label, after) {
     var lemmataString;
     lemmataString = lemmata.join("\n");
     return $.post('/api/user/words/update/', {
       lemmata: lemmataString,
-      group: group
+      label: label
     }, after);
   };
 
@@ -19,35 +19,35 @@
 
   $(function() {
     $('.annotated-word-list li').click(function(e) {
-      var $el, group, lemma, newGroup;
+      var $el, label, lemma, newGroup;
       $el = $(this);
-      if ($el.attr('data-group') === 'ignored') {
+      if ($el.attr('data-group-label') === 'ignored') {
         return false;
       }
       lemma = $el.data('lemma');
-      group = $el.attr('data-group');
-      if (group === 'known') {
+      label = $el.attr('data-group-label');
+      if (label === 'known') {
         newGroup = 'learning';
       } else {
         newGroup = 'known';
       }
       return markWords([lemma], newGroup, function(data) {
         if (data) {
-          return $("[data-lemma='" + lemma + "']").attr('data-group', newGroup);
+          return $("[data-lemma='" + lemma + "']").attr('data-group-label', newGroup);
         }
       });
     });
     $('.annotated-word-list .controls .mark-all').click(function(e) {
-      var $affected, group, lemmata;
-      group = $(this).attr('data-group');
+      var $affected, label, lemmata;
+      label = $(this).attr('data-group-label');
       $affected = $('.annotated-word-list li').filter(function(i, el) {
-        return $(el).attr('data-group') !== group;
+        return $(el).attr('data-group-label') !== label;
       });
       lemmata = $affected.map(function(i, el) {
         return $(el).attr('data-lemma');
       }).get();
-      return markWords(lemmata, group, function(data) {
-        return $affected.attr('data-group', group);
+      return markWords(lemmata, label, function(data) {
+        return $affected.attr('data-group-label', label);
       });
     });
     return $('.vocab-list li').mouseenter(function(e) {

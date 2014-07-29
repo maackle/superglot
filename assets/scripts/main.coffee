@@ -1,8 +1,8 @@
-markWords = (lemmata, group, after) ->
+markWords = (lemmata, label, after) ->
 	lemmataString = lemmata.join("\n")
 	$.post '/api/user/words/update/', {
 		lemmata: lemmataString
-		group: group
+		label: label
 	}, after
 
 addMeaningTooltip = (el, meaning) ->
@@ -13,30 +13,30 @@ addMeaningTooltip = (el, meaning) ->
 $ ->
 	$('.annotated-word-list li').click (e) ->
 		$el = $(this)
-		if $el.attr('data-group') == 'ignored'
+		if $el.attr('data-group-label') == 'ignored'
 			return false
 		lemma = $el.data('lemma')
-		group = $el.attr('data-group')
-		if group == 'known'
+		label = $el.attr('data-group-label')
+		if label == 'known'
 			newGroup = 'learning'
 		else
 			newGroup = 'known'
 
 		markWords [lemma], newGroup, (data) ->
 			if data
-				$("[data-lemma='"+lemma+ "']").attr('data-group', newGroup)
+				$("[data-lemma='"+lemma+ "']").attr('data-group-label', newGroup)
 
 	$('.annotated-word-list .controls .mark-all').click (e) ->
-		group = $(this).attr('data-group')
+		label = $(this).attr('data-group-label')
 		$affected = $('.annotated-word-list li')
 			.filter (i, el) ->
-				$(el).attr('data-group') != group
+				$(el).attr('data-group-label') != label
 		lemmata = $affected
 			.map (i, el) ->
 				$(el).attr('data-lemma')
 			.get()
-		markWords lemmata, group, (data) ->
-			$affected.attr('data-group', group)
+		markWords lemmata, label, (data) ->
+			$affected.attr('data-group-label', label)
 
 	$('.vocab-list li').mouseenter (e) ->
 		el = this

@@ -1,5 +1,21 @@
 
 
+VOCAB RE-STRUCTURE
+==================
+
+Problems:
+	hash-based updating needs to work differently for two cases:
+		- updating a user's words from a list
+		- annotating a document's words
+
+
+GENERAL DECISIONS
+=================
+
+Should word-equivalence be lemma or reading based, and when?
+	- Does a user know a Lemma or a Reading? (I think Lemma)
+
+
 PARSING DOCUMENTS
 =================
 

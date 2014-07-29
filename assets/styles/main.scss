@@ -180,13 +180,13 @@ ul {
 		@include transition(background-color 150ms);
 		cursor: pointer;
 		
-		&[data-group="known"] {
+		&[data-group-label="known"] {
 			background: $color-known;
 		}
-		&[data-group="learning"] {
+		&[data-group-label="learning"] {
 			background: $color-learning;
 		}
-		&[data-group="ignored"] {
+		&[data-group-label="ignored"] {
 			background: $color-ignored;
 			cursor: not-allowed;
 		}

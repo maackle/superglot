@@ -37,16 +37,16 @@ def word_list():
 	words.sort()
 	return render_template('views/frontend/word_list.jade', words=words)
 
-@blueprint.route('/words/add/<partition>/', methods=['POST'])
+@blueprint.route('/words/add/<label>/', methods=['POST'])
 @login_required
-def add_words(partition):
-	def words(partition):
+def add_words(label):
+	def words(label):
 		for reading, lemma in set(nlp.tokenize(request.form['words'])):
 			word = Word.objects(reading=reading, lemma=lemma).first()
 			if word:
 				yield word.id
 
-	new_words = list(words(partition))
+	new_words = list(words(label))
 	for name in UserWordList.group_names:
 		for word_id in new_words:
 			if word_id in map(lambda w: w.id, getattr(current_user.words, name)):
@@ -54,7 +54,7 @@ def add_words(partition):
 					"pull__words__{}".format(name): word_id
 				})
 	User.objects(id=current_user.id).update_one(**{
-		"add_to_set__words__{}".format(partition): new_words
+		"add_to_set__words__{}".format(label): new_words
 	})
 	current_user.reload()
 	flash('Added some words')
@@ -65,7 +65,7 @@ def add_words(partition):
 @login_required
 def article_list():
 	docs = list(TextArticle.objects(user=current_user.id))
-	stats = [doc.word_stats(current_user.words) for doc in docs]
+	stats = [doc.word_stats(current_user) for doc in docs]
 	return render_template('views/frontend/article_list.jade', doc_pairs=zip(docs, stats))
 
 
@@ -73,7 +73,7 @@ def article_list():
 @login_required
 def article_read(doc_id):
 	doc = TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
-	stats = doc.word_stats(current_user.words)
+	stats = doc.word_stats(current_user)
 
 	def annotate(word):
 		group = None

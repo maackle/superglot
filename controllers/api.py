@@ -19,21 +19,18 @@ def index():
 @login_required
 def update_word():
 	lemmata = request.form.get('lemmata').split('\n')
-	group = request.form.get('group')
+	label = request.form.get('label')
 
 	changes = []
 
 	for lemma in lemmata:
-
 		word = Word.objects(lemma=lemma).first()
-		change = current_user.update_word(word, group)
+		change = current_user.update_words([word], label)
 		
 		if change:
-			(old, new) = change
-			changes.append({'lemma': lemma, 'from': old, 'to': new})
+			changes.append({'lemma': lemma, 'to': label})
 		else:
 			changes.append('false')
-	print(changes)
 
 	return jsonify({'changes': changes})
 

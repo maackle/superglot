@@ -1,4 +1,5 @@
 import datetime
+from collections import defaultdict
 
 from flask import session, jsonify, current_app as app
 from flask.ext.login import UserMixin
@@ -6,7 +7,8 @@ from mongoengine import *
 from flask.ext.mongoengine import Document
 from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
-from decorators import memoized
+from cache import cache
+from decorators import memoized, lazyprop
 import util
 import nlp
 from config import settings
@@ -63,6 +65,10 @@ class Word(Document):
 			meaning = self.meanings[language] = WordMeaning(language=language, meaning=text)
 			self.save()
 			return meaning
+
+
+	def __lt__(self, other):
+		return self.reading.lower() < other.reading.lower()
 
 	def __eq__(self, other):
 		return self.language == other.language and self.lemma == other.lemma and self.reading.lower() == other.reading.lower()
@@ -130,13 +136,54 @@ class VocabWord(EmbeddedDocument):
 	word = ReferenceField(Word)
 	label = StringField()
 
+	def __lt__(self, other):
+		return self.word.reading.lower() < other.word.reading.lower()
+
+	def __eq__(self, other):
+		return self.word.id == other.word.id
+
+	def __hash__(self):
+		return util.string_hash(str(self.word.id))
+
+	def __str__(self):
+		return "[{}|{}]".format(self.word.reading, self.label)
+
+	def __repr__(self):
+		return self.__str__()
+
+
+class AnnotatedDocWord():
+
+	word = None
+	label = None
+
+	def __init__(self, word, label=None):
+		self.word = word
+		self.label = label
+
+	def __lt__(self, other):
+		return self.word.lemma < other.word.lemma
+
+	def __eq__(self, other):
+		return self.word.lemma == other.word.lemma
+
+	def __hash__(self):
+		return util.string_hash(str(self.word.lemma))
+
+	def __str__(self):
+		return "[{}|{}]".format(self.word.reading, self.label)
+
+	def __repr__(self):
+		return self.__str__()
+
+VocabWord.sort_key = lambda v: v.word.lemma
+
 
 class User(Document, UserMixin, CreationStamp):
 
 	email = email_field()
 	password = password_field()
-	vocabulary = ListField(EmbeddedDocumentField(VocabWord))
-	words = EmbeddedDocumentField(UserWordList)
+	vocab = ListField(EmbeddedDocumentField(VocabWord))
 	# target_languages = ListField(target_language_field())
 	target_language = target_language_field()
 	native_language = native_language_field()
@@ -147,55 +194,37 @@ class User(Document, UserMixin, CreationStamp):
 			'dropDups': True,
 			},
 		'indexes': [
-			'+words.known', 
-			'+words.learning', 
-			'+words.ignored',
-			'+vocabulary',
+			'+vocab',
 			]
-		# 'indexes': [
-		# 	{'unique': True, 'fields': ['+words.known'] }, 
-		# 	{'unique': True, 'fields': ['+words.learning'] }, 
-		# 	{'unique': True, 'fields': ['+words.ignored'] },
-		# 	]
 	}
-
-	def get_lemmata(self):
-		ret = {}
-		for partition in self.words:
-			ret[partition] = list(map(lambda x: x.lemma, self.words[partition]))
-		return ret
-
-	def json(self):
-		return jsonify({
-			'email': self.email,
-			'lemmata': self.get_lemmata(),
-		})
 
 	def get_id(self):
 		return str(self.id)
 
-	def update_word(self, word, new_group_name):
-		other_group_names = self.words.group_names - set(new_group_name)
-		new_partition = getattr(self.words, new_group_name)
-		old_group_name = None
+	@cache.memoize()
+	def vocab_lists(self):
+		partitions = defaultdict(set)
+		for item in self.vocab:
+			partitions[item.label].add(item.word)
+		for label in partitions:
+			partitions[label] = sorted(partitions[label])
+		return partitions
 
-		if word in new_partition:
-			return None
-		else:
-			for group_name in other_group_names:
-				old_partition = getattr(self.words, group_name)
-				if word in old_partition:
-					User.objects(id=self.id).update_one(**{
-						"pull__words__{}".format(group_name): word.id
-					})
-					old_group_name = group_name
+	def words(self):
+		for item in self.vocab:
+			yield item.word
 
-			User.objects(id=self.id).update_one(**{
-				"add_to_set__words__{}".format(new_group_name): [word.id,]
-			})
-			self.reload()
-			return (old_group_name, new_group_name)
-			
+	def update_words(self, words, label):
+		new_vocab = set(VocabWord(word=word, label=label) for word in words)
+		self.vocab = list(new_vocab | set(self.vocab))
+		self.save()
+		cache.delete_memoized(self.vocab_lists)
+		return True
+	
+	def delete_all_words(self):
+		self.vocab = []
+		self.save()
+		cache.delete_memoized(self.vocab_lists)
 
 	@staticmethod
 	def authenticate(email, password):
@@ -234,7 +263,7 @@ class TextArticle(Document, CreationStamp):
 	def sorted_lemmata(self):
 		return sorted(set(map(lambda x: x.lemma, self.words)), key=str.lower)
 
-	def word_stats(self, wordlist):
+	def word_stats(self, user):
 		stats = {
 			'counts': {},
 			'percents': {},
@@ -243,14 +272,12 @@ class TextArticle(Document, CreationStamp):
 
 		total_marked = 0
 		total_significant = 0
-		group_names = UserWordList.group_names# - {'ignored'}
 
-		for name in group_names:
-			group = getattr(wordlist, name)
-			num = len([word for word in group if (word in self.words)])
-			stats['counts'][name] = num
+		for label, vocab_list in user.vocab_lists().items():
+			num = len([word for word in vocab_list if (word in self.words)])
+			stats['counts'][label] = num
 			total_marked += num
-			if name not in ('ignored',):
+			if label not in ('ignored',):
 				total_significant += num
 
 
@@ -259,12 +286,12 @@ class TextArticle(Document, CreationStamp):
 		divisor = total_significant + total_unmarked
 		# total_significant = total_marked - stats['counts']['ignored']
 			
-		for name in group_names:
+		for label in user.vocab_lists().keys():
 			if divisor == 0:
 				percent = 0
 			else:
-				percent = float(100 * stats['counts'][name] / divisor)
-			stats['percents'][name] = percent
+				percent = float(100 * stats['counts'][label] / divisor)
+			stats['percents'][label] = percent
 
 		stats['total'] = total
 		stats['total_significant'] = total_significant

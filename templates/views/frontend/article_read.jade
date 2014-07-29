@@ -10,11 +10,11 @@ block main_content
 
 	ul.inline-list.document-words.annotated-word-list
 		.controls
-			button.mark-all(data-group="known") Mark All Known
-			button.mark-all(data-group="learning") Mark All Learning
-			button.mark-all(data-group="") Unmark All
+			button.mark-all(data-group-label="known") Mark All Known
+			button.mark-all(data-group-label="learning") Mark All Learning
+			button.mark-all(data-group-label="") Unmark All
 		for a_word in annotated_words
-			li(data-group=a_word.group, data-lemma=a_word.word.lemma) #{a_word.word.reading}
+			li(data-group-label=a_word.label, data-lemma=a_word.word.lemma) #{a_word.word.reading}
 
 	for o in doc.occurrences
 		h4= o.word.reading
@@ -23,22 +23,3 @@ block main_content
 				li= doc.sentence(s)
 	h3 raw
 	pre= doc.plaintext
-
-	//- :coffeescript
-	//- 	$ ->
-	//- 		$('.document-words li').click (e) ->
-	//- 			$el = $(this)
-	//- 			if $el.attr('data-group') == 'ignored'
-	//- 				return false
-	//- 			lemma = $el.data('lemma')
-	//- 			group = $el.attr('data-group')
-	//- 			if group == 'known'
-	//- 				newGroup = 'learning'
-	//- 			else
-	//- 				newGroup = 'known'
-	//- 			$.post '/api/user/words/update/', {
-	//- 				lemma: lemma
-	//- 				group: newGroup
-	//- 			}, (data) ->
-	//- 				if data
-	//- 					$("[data-lemma='"+lemma+ "']").attr('data-group', newGroup)

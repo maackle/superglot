@@ -4,16 +4,36 @@ import requests
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.ext.login import current_user, login_required
+from flask.ext.babel import gettext as _
 from mongoengine.errors import NotUniqueError
 
+from cache import cache
 from forms import AddArticleForm
-from models import User, UserWordList, Word, TextArticle, WordOccurrence
+import models
 from controllers import api
 from util import sorted_words
 import nlp
 import util
 import formatting
 
+
+
+def make_words(tokens):
+	# TODO: add warning if reading is case-insensitively the same, in case the user really wants
+	# to add an acronym or something
+	for token in tokens:
+		reading, lemma = token.tup()
+		try:
+			(word, created) = models.Word.objects(reading__iexact=reading).get_or_create(
+				lemma=lemma,
+				language='en',
+				defaults={
+					'reading': reading,
+				}
+			)
+			yield word
+		except models.Word.MultipleObjectsReturned:
+			pass
 
 
 blueprint = Blueprint('frontend', __name__, template_folder='templates')
@@ -25,41 +45,30 @@ def home():
 @blueprint.route('/user/words/', methods=['GET', 'POST'])
 @login_required
 def word_list_all():
-	words = current_user.words
-	words.sort()
-	return render_template('views/frontend/vocabulary_show.jade', words=words)
+	vocab = current_user.vocab_lists()
+	return render_template('views/frontend/vocab_show.jade', vocab=vocab)
+
+@blueprint.route('/user/words/delete/', methods=['GET', 'POST'])
+@login_required
+def delete_all_words():
+	current_user.delete_all_words()
+	flash(_('Deleted all words!'))
+	return redirect(url_for('frontend.word_list_all'))
 
 @blueprint.route('/user/words/<partition>/', methods=['GET', 'POST'])
 @login_required
 def word_list(partition):
-	if partition in ('known', 'learning', 'ignored',):
-		words = getattr(current_user.words, partition)
-	words.sort(key=Word.sort_key)
+	vocab = current_user.vocab_lists()
+	words = vocab[partition]
+	words.sort(key=models.Word.sort_key)
 	return render_template('views/frontend/word_list.jade', words=words)
 
-@blueprint.route('/user/words/add/<partition>/', methods=['POST'])
+@blueprint.route('/user/words/add/<label>/', methods=['POST'])
 @login_required
-def add_words(partition):
-	# def words(partition):
-	# 	for reading, lemma in set(nlp.tokenize(request.form['words'])):
-	# 		(word, created) = Word.objects.get_or_create(reading=reading, lemma=lemma)
-	# 		if word:
-	# 			yield word.id
-
-	# new_words = list(words(partition))
+def add_words(label):
 	tokens = nlp.tokenize(request.form['words'])
 	new_words = make_words(tokens)
-	new_word_ids = [w.id for w in new_words]
-	for name in UserWordList.group_names:
-		for word_id in new_word_ids:
-			if word_id in map(lambda w: w.id, getattr(current_user.words, name)):
-				User.objects(id=current_user.id).update_one(**{
-					"pull__words__{}".format(name): word_id
-				})
-	User.objects(id=current_user.id).update_one(**{
-		"add_to_set__words__{}".format(partition): new_word_ids
-	})
-	current_user.reload()
+	current_user.update_words(new_words, label)
 	flash('Added some words')
 	return redirect(url_for('frontend.word_list_all'))
 
@@ -67,37 +76,31 @@ def add_words(partition):
 @blueprint.route('/user/texts/', methods=['GET', 'POST'])
 @login_required
 def article_list():
-	docs = list(TextArticle.objects(user=current_user.id))
-	stats = [doc.word_stats(current_user.words) for doc in docs]
+	docs = list(models.TextArticle.objects(user=current_user.id))
+	stats = [doc.word_stats(current_user) for doc in docs]
 	return render_template('views/frontend/article_list.jade', doc_pairs=list(zip(docs, stats)))
 
 
 @blueprint.route('/user/texts/<doc_id>/read', methods=['GET', 'POST'])
 @login_required
 def article_read(doc_id):
-	doc = TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
-	stats = doc.word_stats(current_user.words)
+	'''
+	TODO: words with the same lemma are not marked as known
+	'''
+	doc = models.TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
+	stats = doc.word_stats(current_user)
 
-	def annotate(word):
-		group = None
-		for name in UserWordList.group_names:
-			words = getattr(current_user.words, name)
-			lemmata = (w.lemma for w in words)
-			if word.lemma in lemmata:
-				group = name
-				break
+	# doc_vocab = set(map(lambda word: models.AnnotatedDocWord(word=word), doc.words))
+	# user_vocab = set(map(lambda item: models.AnnotatedDocWord(word=item.word, label=item.label), current_user.vocab))
+	doc_vocab = set(map(lambda word: models.VocabWord(word=word), doc.words))
+	user_vocab = set(current_user.vocab)
+	doc_vocab = (user_vocab & doc_vocab) | doc_vocab
 
-		return {
-			'word': word,
-			'group': group,
-		}
-
-	annotated_words = list(map(annotate, doc.sorted_words()))
 	
 	return render_template('views/frontend/article_read.jade', 
 		doc=doc, 
 		stats=stats,
-		annotated_words=annotated_words)
+		annotated_words=sorted(doc_vocab))
 
 
 @blueprint.route('/user/texts/add/', methods=['GET', 'POST'])
@@ -118,25 +121,6 @@ def article_create():
 		strings = (map(lambda x: re.sub(r"\s+", ' ', x), strings))
 		plaintext = "\n".join(strings)
 		return (plaintext, soup.title)
-
-
-	def make_words(tokens):
-		# TODO: add warning if reading is case-insensitively the same, in case the user really wants
-		# to add an acronym or something
-		for token in tokens:
-			reading, lemma = token.tup()
-			try:
-				(word, created) = Word.objects(reading__iexact=reading).get_or_create(
-					lemma=lemma,
-					language='en',
-					defaults={
-						'reading': reading,
-					}
-				)
-				yield word
-			except Word.MultipleObjectsReturned:
-				pass
-
 
 	form = AddArticleForm()
 	if form.validate_on_submit():
@@ -172,18 +156,18 @@ def article_create():
 				reading = word.reading
 				location = 0
 				if not word.id in occurrences:
-					occurrences[word.id] = WordOccurrence(word=word)
+					occurrences[word.id] = models.WordOccurrence(word=word)
 				occurrences[word.id].locations.append(sentence.start)
 				occurrences[word.id].sentences.append(i)
 
-		num_words_before = Word.objects.count()
-		user = User.objects(id=current_user.id).first()
+		num_words_before = models.Word.objects.count()
+		user = Models.User.objects(id=current_user.id).first()
 
 		duplicates = set()
 		added = set()
 
 		occ = list(occurrences.values())
-		(article, created) = TextArticle.objects.get_or_create(
+		(article, created) = models.TextArticle.objects.get_or_create(
 			source=url,
 			user=user,
 			defaults={
@@ -202,7 +186,7 @@ def article_create():
 			article.sentence_positions = sentence_positions
 			article.save()
 
-		num_words_after = Word.objects.count()
+		num_words_after = models.Word.objects.count()
 		num_added = num_words_after - num_words_before
 		
 		if created:
