@@ -5,7 +5,12 @@ bower_components
 .sass-cache
 .hg
 local/
+log/
+static/bower/
+
+sandbox/
 zzz/
 
 __pycache__
 .flask-cache
+.ruby-version
