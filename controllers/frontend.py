@@ -77,7 +77,7 @@ def add_words(label):
 @login_required
 def article_list():
 	docs = list(models.TextArticle.objects(user=current_user.id))
-	stats = [doc.word_stats(current_user) for doc in docs]
+	stats = [util.vocab_stats(doc.common_words(current_user)) for doc in docs]
 	return render_template('views/frontend/article_list.jade', doc_pairs=list(zip(docs, stats)))
 
 
@@ -88,14 +88,9 @@ def article_read(doc_id):
 	TODO: words with the same lemma are not marked as known
 	'''
 	doc = models.TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
-	stats = doc.word_stats(current_user)
+	doc_vocab = doc.common_words(current_user)
+	stats = util.vocab_stats(doc_vocab)
 
-	# doc_vocab = set(map(lambda word: models.AnnotatedDocWord(word=word), doc.words))
-	# user_vocab = set(map(lambda item: models.AnnotatedDocWord(word=item.word, label=item.label), current_user.vocab))
-	doc_vocab = set(map(lambda word: models.VocabWord(word=word), doc.words))
-	user_vocab = set(current_user.vocab)
-	doc_vocab = (user_vocab | doc_vocab) - (user_vocab - doc_vocab)
-	
 	return render_template('views/frontend/article_read.jade', 
 		doc=doc, 
 		stats=stats,

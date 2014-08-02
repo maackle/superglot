@@ -4,11 +4,10 @@ nav.navbar: .container
 		if current_user.is_authenticated()
 			li
 				a(href=url_for('frontend.article_list'))= _("texts") | title
-				//- ul.subnav
-				//- 	li: a(href=url_for('frontend.article_list')) list
-				//- 	li: a(href=url_for('frontend.article_create')) new
 			li
 				a(href=url_for('frontend.word_list_all'))= _("vocabulary") | title
+			//- li
+				a(href=url_for('frontend.word_list_all'))= _("study") | title
 	ul.right
 		if current_user.is_authenticated()
 			li.dropdown

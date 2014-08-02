@@ -1,6 +1,7 @@
 import sys
 from bs4 import BeautifulSoup
 import requests
+from collections import defaultdict
 
 from cache import cache
 
@@ -17,6 +18,28 @@ def string_hash(s):
 
 def sorted_words(words):
 	return sorted(words, key=lambda word: word.reading.lower())
+
+def vocab_stats(vocab):
+
+	counts = defaultdict(int)
+	percents = defaultdict(int)
+
+	for item in vocab:
+		counts[item.label] += 1
+
+	total = len(vocab)
+	total_significant = total - counts['ignored']
+
+	for label in counts:
+		percents[label] = 100 * counts[label] / total_significant
+
+	return {
+		'counts': counts,
+		'percents': percents,
+		'total_significant': total_significant,
+		'total': total,
+	}
+
 
 def get_remote_article(url):
 

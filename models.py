@@ -10,6 +10,7 @@ from flask.ext.babel import lazy_gettext as _#, ngettext as __
 from cache import cache
 from decorators import memoized, lazyprop
 import util
+import models
 import nlp
 from config import settings
 
@@ -263,41 +264,12 @@ class TextArticle(Document, CreationStamp):
 	def sorted_lemmata(self):
 		return sorted(set(map(lambda x: x.lemma, self.words)), key=str.lower)
 
-	def word_stats(self, user):
-		stats = {
-			'counts': {},
-			'percents': {},
-			'total': 0,
-		}
-
-		total_marked = 0
-		total_significant = 0
-
-		# unique_words = 
-
-		for label, vocab_list in user.vocab_lists().items():
-			num = len(set([word.lemma for word in vocab_list if (word in self.words)]))
-			stats['counts'][label] = num
-			total_marked += num
-			if label not in ('ignored',):
-				total_significant += num
-
-
-		total = len(set((w.lemma for w in self.words)))
-		total_unmarked = total - total_marked
-		divisor = total_significant + total_unmarked
-		# total_significant = total_marked - stats['counts']['ignored']
-			
-		for label in user.vocab_lists().keys():
-			if divisor == 0:
-				percent = 0
-			else:
-				percent = float(100 * stats['counts'][label] / divisor)
-			stats['percents'][label] = percent
-
-		stats['total'] = total
-		stats['total_significant'] = total_significant
-
-		return stats
+	def common_words(self, user):
+		'''
+		Get words that show up in user's vocab and this document
+		'''
+		doc_vocab = set(map(lambda word: models.VocabWord(word=word), self.words))
+		user_vocab = set(user.vocab)
+		return (user_vocab | doc_vocab) - (user_vocab - doc_vocab)
 
 
