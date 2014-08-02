@@ -94,8 +94,7 @@ def article_read(doc_id):
 	# user_vocab = set(map(lambda item: models.AnnotatedDocWord(word=item.word, label=item.label), current_user.vocab))
 	doc_vocab = set(map(lambda word: models.VocabWord(word=word), doc.words))
 	user_vocab = set(current_user.vocab)
-	doc_vocab = (user_vocab & doc_vocab) | doc_vocab
-
+	doc_vocab = (user_vocab | doc_vocab) - (user_vocab - doc_vocab)
 	
 	return render_template('views/frontend/article_read.jade', 
 		doc=doc, 
@@ -161,7 +160,7 @@ def article_create():
 				occurrences[word.id].sentences.append(i)
 
 		num_words_before = models.Word.objects.count()
-		user = Models.User.objects(id=current_user.id).first()
+		user = models.User.objects(id=current_user.id).first()
 
 		duplicates = set()
 		added = set()

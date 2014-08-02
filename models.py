@@ -84,6 +84,27 @@ Word.sort_key = lambda w: w.lemma
 words_field = lambda: ListField(ReferenceField(Word))
 
 
+class VocabWord(EmbeddedDocument):
+
+	word = ReferenceField(Word)
+	label = StringField()
+
+	def __lt__(self, other):
+		return self.word.reading.lower() < other.word.reading.lower()
+
+	def __eq__(self, other):
+		return self.word.lemma == other.word.lemma
+
+	def __hash__(self):
+		return util.string_hash(str(self.word.lemma))
+
+	def __str__(self):
+		return "{} ({})".format(self.word.reading, str(self.label).upper())
+
+	def __repr__(self):
+		return self.__str__()
+
+
 class UserWordList(EmbeddedDocument):
 
 	group_names = {'ignored', 'learning', 'known'}
@@ -129,27 +150,6 @@ class UserWordList(EmbeddedDocument):
 			'learning': self.learning,
 			'ignored': self.ignored,
 			})
-
-
-class VocabWord(EmbeddedDocument):
-
-	word = ReferenceField(Word)
-	label = StringField()
-
-	def __lt__(self, other):
-		return self.word.reading.lower() < other.word.reading.lower()
-
-	def __eq__(self, other):
-		return self.word.id == other.word.id
-
-	def __hash__(self):
-		return util.string_hash(str(self.word.id))
-
-	def __str__(self):
-		return "[{}|{}]".format(self.word.reading, self.label)
-
-	def __repr__(self):
-		return self.__str__()
 
 
 class AnnotatedDocWord():
@@ -273,8 +273,10 @@ class TextArticle(Document, CreationStamp):
 		total_marked = 0
 		total_significant = 0
 
+		# unique_words = 
+
 		for label, vocab_list in user.vocab_lists().items():
-			num = len([word for word in vocab_list if (word in self.words)])
+			num = len(set([word.lemma for word in vocab_list if (word in self.words)]))
 			stats['counts'][label] = num
 			total_marked += num
 			if label not in ('ignored',):

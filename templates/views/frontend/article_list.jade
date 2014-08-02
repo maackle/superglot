@@ -30,7 +30,7 @@ block main_content
 							//- a(href=url_for('frontend.article_edit', doc_id=doc.id)) edit
 						td
 							+vocab_progress_bar(stats)
-						td.align-center= doc.words|length
+						td.align-center= stats.total
 						td.align-center= "%2.0f%%"|format(stats.percents.known)
 						td.align-center= "%2.0f%%"|format(stats.percents.learning)
 						td
