@@ -7804,23 +7804,28 @@ ul.inline-list li {
   cursor: not-allowed;
 }
 
-/* line 215, ../../assets/styles/main.scss */
+/* line 216, ../../assets/styles/main.scss */
+.annotated-words .selected {
+  border: 2px solid black;
+}
+
+/* line 221, ../../assets/styles/main.scss */
 .article-search {
   margin: 1rem auto;
   float: right;
 }
 
-/* line 220, ../../assets/styles/main.scss */
+/* line 226, ../../assets/styles/main.scss */
 .add-text-button {
   margin-left: 30px;
 }
 
-/* line 224, ../../assets/styles/main.scss */
+/* line 230, ../../assets/styles/main.scss */
 .big-search-input {
   padding: 0.75rem 2rem;
 }
 
-/* line 228, ../../assets/styles/main.scss */
+/* line 234, ../../assets/styles/main.scss */
 .callout-notice {
   background: #ffd;
   border: 1px dotted #333;
@@ -7829,8 +7834,23 @@ ul.inline-list li {
   width: 50%;
 }
 
-/* line 236, ../../assets/styles/main.scss */
+/* line 242, ../../assets/styles/main.scss */
 .alert-message {
   background: #cccccc;
   border: gray;
+}
+
+/* line 247, ../../assets/styles/main.scss */
+#word-score-popup {
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  display: none;
+  background: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  position: fixed;
+  bottom: 10px;
+  width: 50%;
+  left: 25%;
 }

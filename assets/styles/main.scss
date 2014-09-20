@@ -212,6 +212,12 @@ ul {
 	
 }
 
+.annotated-words {
+	.selected {
+		border: 2px solid black;
+	}
+}
+
 .article-search {
 	margin: 1rem auto;
 	float: right;
@@ -236,4 +242,20 @@ ul {
 .alert-message {
 	background: lighten(gray, 30%);
 	border: gray;
+}
+
+#word-score-popup {
+	@include border-radius(8px);
+	display: none;
+	background: white;
+	box-shadow: 2px 2px 5px rgba(black, 0.5);
+	padding: 15px;
+	position: fixed;
+	bottom: 10px;
+	width: 50%;
+	left: 25%;
+}
+
+#html-templates {
+	// display: none;
 }

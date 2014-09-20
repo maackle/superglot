@@ -13,7 +13,7 @@ block main_content
 		| When reading an article, you'll be able to either read a decent-looking annotated version here, or use the Chrome plugin to read it directly at its source with annotation.
 		| From either place, you can interact with all words.
 
-	ul.inline-list.document-words.annotated-word-list
+	ul.inline-list.document-words.annotated-word-list.annotated-words
 		.controls
 			button.mark-all(data-group-label="known") Mark All Known
 			button.mark-all(data-group-label="learning") Mark All Learning
@@ -24,7 +24,7 @@ block main_content
 	.accordion
 		h3.header raw text
 		pre= doc.plaintext
-		
+
 	.accordion
 		h3.header Sample Sentences
 		div
