@@ -36,18 +36,49 @@ def make_words(tokens):
 			pass
 
 
-blueprint = Blueprint('articles', __name__, template_folder='templates')
+blueprint = Blueprint('vocab', __name__, template_folder='templates')
 
 @blueprint.route('/')
 def home():
 	return render_template('views/home.jade')
+
+@blueprint.route('/user/words/', methods=['GET', 'POST'])
+@login_required
+def word_list_all():
+	vocab = current_user.vocab_lists()
+	return render_template('views/vocab/vocab_show.jade', vocab=vocab)
+
+@blueprint.route('/user/words/delete/', methods=['GET', 'POST'])
+@login_required
+def delete_all_words():
+	current_user.delete_all_words()
+	flash(_('Deleted all words!'))
+	return redirect(url_for('vocab.word_list_all'))
+
+@blueprint.route('/user/words/<partition>/', methods=['GET', 'POST'])
+@login_required
+def word_list(partition):
+	vocab = current_user.vocab_lists()
+	words = vocab[partition]
+	words.sort(key=models.Word.sort_key)
+	return render_template('views/vocab/word_list.jade', words=words)
+
+@blueprint.route('/user/words/add/<label>/', methods=['POST'])
+@login_required
+def add_words(label):
+	tokens = nlp.tokenize(request.form['words'])
+	new_words = make_words(tokens)
+	current_user.update_words(new_words, label)
+	flash('Added some words')
+	return redirect(url_for('vocab.word_list_all'))
+
 
 @blueprint.route('/user/texts/', methods=['GET', 'POST'])
 @login_required
 def article_list():
 	docs = list(models.TextArticle.objects(user=current_user.id))
 	stats = [util.vocab_stats(doc.common_words(current_user)) for doc in docs]
-	return render_template('views/articles/article_list.jade', doc_pairs=list(zip(docs, stats)))
+	return render_template('views/vocab/article_list.jade', doc_pairs=list(zip(docs, stats)))
 
 
 @blueprint.route('/user/texts/<doc_id>/read', methods=['GET', 'POST'])
@@ -60,7 +91,7 @@ def article_read(doc_id):
 	doc_vocab = doc.common_words(current_user)
 	stats = util.vocab_stats(doc_vocab)
 
-	return render_template('views/articles/article_read.jade', 
+	return render_template('views/vocab/article_read.jade', 
 		doc=doc, 
 		stats=stats,
 		annotated_words=sorted(doc_vocab))
@@ -157,7 +188,7 @@ def article_create():
 		else:
 			flash("Updated {}".format(title), 'success')
 
-		return redirect(url_for('articles.article_list'))
+		return redirect(url_for('vocab.article_list'))
 	else:
-		return render_template('views/articles/article_create.jade', form=form)
+		return render_template('views/vocab/article_create.jade', form=form)
 

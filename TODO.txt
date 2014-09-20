@@ -1,3 +1,14 @@
+STUDY
+=====
+
+### Study Words
+
+Flashcard style
+SRS
+
+### Study Sentences
+
+Each word will be highlighted, you can change the color based on how well you know it
 
 
 VOCAB RE-STRUCTURE

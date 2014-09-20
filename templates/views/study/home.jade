@@ -1,0 +1,7 @@
+extends 'layouts/base.jade'
+
+block main_content
+	h1= _('study') | title
+
+	p: a(href=url_for('study.words')) study words
+	p: a(href=url_for('study.sentences')) study sentences

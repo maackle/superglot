@@ -50,7 +50,7 @@
         return $affected.attr('data-group-label', label);
       });
     });
-    return $('.vocab-list li').mouseenter(function(e) {
+    $('.vocab-list li').mouseenter(function(e) {
       var $el, el, wordId,
         _this = this;
       el = this;
@@ -68,6 +68,10 @@
           return $el.trigger('mouseenter');
         });
       }
+    });
+    return $('.accordion').accordion({
+      header: '.header',
+      collapsible: true
     });
   });
 

@@ -9,10 +9,11 @@ from flask.ext.login import current_user
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.babel import Babel
 
-from controllers.api import blueprint as api
-from controllers.chrome_api import blueprint as chrome_api
-from controllers.auth import login_manager, blueprint as auth
-from controllers.frontend import blueprint as frontend
+from controllers.api import blueprint as api_blueprint
+from controllers.chrome_api import blueprint as chrome_api_blueprint
+from controllers.auth import login_manager, blueprint as auth_blueprint
+from controllers.frontend import blueprint as frontend_blueprint
+from controllers.study import blueprint as study_blueprint
 from controllers.user import blueprint as user_blueprint
 from models import User
 from cache import cache
@@ -31,11 +32,12 @@ except:
 	print("Loaded DEVELOPMENT config")
 
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
-app.register_blueprint(api, url_prefix='/api')
-app.register_blueprint(chrome_api, url_prefix='/chrome')
-app.register_blueprint(auth, url_prefix='/auth')
-app.register_blueprint(frontend, url_prefix='')
+app.register_blueprint(api_blueprint, url_prefix='/api')
+app.register_blueprint(chrome_api_blueprint, url_prefix='/chrome')
+app.register_blueprint(auth_blueprint, url_prefix='/auth')
+app.register_blueprint(study_blueprint, url_prefix='/study')
 app.register_blueprint(user_blueprint, url_prefix='/user')
+app.register_blueprint(frontend_blueprint, url_prefix='')
 
 assets = Environment(app)
 assets.url = app.static_url_path

@@ -8,6 +8,11 @@ block main_content
 	p 
 		i #{stats.total} total
 
+	.temp-info
+		img.icon(src="/static/images/info-circled-alt.png")
+		| When reading an article, you'll be able to either read a decent-looking annotated version here, or use the Chrome plugin to read it directly at its source with annotation.
+		| From either place, you can interact with all words.
+
 	ul.inline-list.document-words.annotated-word-list
 		.controls
 			button.mark-all(data-group-label="known") Mark All Known
@@ -16,10 +21,15 @@ block main_content
 		for a_word in annotated_words
 			li(data-group-label=a_word.label, data-lemma=a_word.word.lemma) #{a_word.word.reading}
 
-	for o in doc.occurrences
-		h4= o.word.reading
-		ul
-			for s in o.sentences
-				li= doc.sentence(s)
-	h3 raw
-	pre= doc.plaintext
+	.accordion
+		h3.header raw text
+		pre= doc.plaintext
+		
+	.accordion
+		h3.header Sample Sentences
+		div
+			for o in doc.occurrences
+				h4= o.word.reading
+				ul
+					for s in o.sentences
+						li= doc.sentence(s)

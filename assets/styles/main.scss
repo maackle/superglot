@@ -33,6 +33,24 @@ h4 {
 
 }
 
+#footer {
+	height: 100px;
+}
+
+.temp-info {
+	@include clearfix;
+	background: #ffe;
+	border: 3px dotted darken(#ff3, 20%);
+	padding: 10px 30px;
+	margin: 30px auto;
+
+	.icon {
+		float: left;
+		margin-right: 20px;
+		margin-bottom: 10px;
+	}
+}
+
 .table {
 	th {
 		text-align: center;

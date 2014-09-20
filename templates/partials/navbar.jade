@@ -6,8 +6,8 @@ nav.navbar: .container
 				a(href=url_for('frontend.article_list'))= _("texts") | title
 			li
 				a(href=url_for('frontend.word_list_all'))= _("vocabulary") | title
-			//- li
-				a(href=url_for('frontend.word_list_all'))= _("study") | title
+			li
+				a(href=url_for('study.home'))= _("study") | title
 	ul.right
 		if current_user.is_authenticated()
 			li.dropdown

@@ -257,6 +257,11 @@ class TextArticle(Document, CreationStamp):
 		a,b = self.sentence_positions[index]
 		return self.plaintext[a:b]
 
+	def gen_sentences(self):
+		for o in self.occurrences:
+			for s in o.sentences:
+				yield self.sentence(s)
+
 	def sorted_words(self):
 		from util import sorted_words
 		return sorted_words(self.words)

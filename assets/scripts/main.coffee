@@ -49,3 +49,8 @@ $ ->
 				addMeaningTooltip(el, meaning)
 				$el.data('translation', meaning)
 				$el.trigger 'mouseenter'
+
+	$('.accordion').accordion({
+		header: '.header',
+		collapsible: true,
+	});

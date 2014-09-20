@@ -56,6 +56,7 @@ def register():
 				defaults={
 					'password': data['password'],
 					'words': UserWordList.default(),
+					'native_language': 'en',
 				})
 			if created:
 				flash(_("You're all signed up! Now you can log in."))
