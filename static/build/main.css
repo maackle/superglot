@@ -7800,32 +7800,66 @@ ul.inline-list li {
 }
 /* line 207, ../../assets/styles/main.scss */
 .annotated-word-list li[data-group-label="ignored"] {
-  background: #aaaaaa;
+  background: #ddd;
+  color: #888;
   cursor: not-allowed;
 }
-
+/* line 213, ../../assets/styles/main.scss */
+.annotated-word-list li[data-score="1"] {
+  background: #f48d5b;
+}
+/* line 214, ../../assets/styles/main.scss */
+.annotated-word-list li[data-score="2"] {
+  background: #f4c75b;
+}
+/* line 215, ../../assets/styles/main.scss */
+.annotated-word-list li[data-score="3"] {
+  background: #ecea1a;
+}
 /* line 216, ../../assets/styles/main.scss */
-.annotated-words .selected {
+.annotated-word-list li[data-score="4"] {
+  background: #addd19;
+}
+/* line 217, ../../assets/styles/main.scss */
+.annotated-word-list li[data-score="5"] {
+  background: #3edd19;
+}
+
+/* line 223, ../../assets/styles/main.scss */
+.annotated-words .word {
+  -moz-transition: border-color 150ms;
+  -o-transition: border-color 150ms;
+  -webkit-transition: border-color 150ms;
+  transition: border-color 150ms;
+  margin: 2px auto;
+  border: 2px solid transparent;
+}
+/* line 228, ../../assets/styles/main.scss */
+.annotated-words .word:hover {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+/* line 232, ../../assets/styles/main.scss */
+.annotated-words .word.selected {
   border: 2px solid black;
 }
 
-/* line 221, ../../assets/styles/main.scss */
+/* line 239, ../../assets/styles/main.scss */
 .article-search {
   margin: 1rem auto;
   float: right;
 }
 
-/* line 226, ../../assets/styles/main.scss */
+/* line 244, ../../assets/styles/main.scss */
 .add-text-button {
   margin-left: 30px;
 }
 
-/* line 230, ../../assets/styles/main.scss */
+/* line 248, ../../assets/styles/main.scss */
 .big-search-input {
   padding: 0.75rem 2rem;
 }
 
-/* line 234, ../../assets/styles/main.scss */
+/* line 252, ../../assets/styles/main.scss */
 .callout-notice {
   background: #ffd;
   border: 1px dotted #333;
@@ -7834,23 +7868,79 @@ ul.inline-list li {
   width: 50%;
 }
 
-/* line 242, ../../assets/styles/main.scss */
+/* line 260, ../../assets/styles/main.scss */
 .alert-message {
   background: #cccccc;
   border: gray;
 }
 
-/* line 247, ../../assets/styles/main.scss */
+/* line 265, ../../assets/styles/main.scss */
 #word-score-popup {
   -moz-border-radius: 8px;
   -webkit-border-radius: 8px;
   border-radius: 8px;
-  display: none;
+  -moz-transition: height 200ms;
+  -o-transition: height 200ms;
+  -webkit-transition: height 200ms;
+  transition: height 200ms;
+  height: 0;
   background: white;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-  padding: 15px;
+  box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5);
   position: fixed;
-  bottom: 10px;
-  width: 50%;
-  left: 25%;
+  bottom: 0px;
+  width: 100%;
+  left: 0;
+}
+/* line 279, ../../assets/styles/main.scss */
+#word-score-popup .inner {
+  padding: 20px;
+}
+/* line 283, ../../assets/styles/main.scss */
+#word-score-popup.visible {
+  height: 80px;
+}
+/* line 287, ../../assets/styles/main.scss */
+#word-score-popup .lemma {
+  display: inline-block;
+  width: 30%;
+  font-size: 2.4rem;
+}
+/* line 293, ../../assets/styles/main.scss */
+#word-score-popup .scores {
+  display: inline-block;
+}
+/* line 296, ../../assets/styles/main.scss */
+#word-score-popup .scores .choice {
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 1px;
+  padding: 2px 14px;
+  cursor: pointer;
+  border: 3px solid transparent;
+}
+/* line 304, ../../assets/styles/main.scss */
+#word-score-popup .scores .choice[data-score="1"] {
+  background: #f48d5b;
+}
+/* line 305, ../../assets/styles/main.scss */
+#word-score-popup .scores .choice[data-score="2"] {
+  background: #f4c75b;
+}
+/* line 306, ../../assets/styles/main.scss */
+#word-score-popup .scores .choice[data-score="3"] {
+  background: #ecea1a;
+}
+/* line 307, ../../assets/styles/main.scss */
+#word-score-popup .scores .choice[data-score="4"] {
+  background: #addd19;
+}
+/* line 308, ../../assets/styles/main.scss */
+#word-score-popup .scores .choice[data-score="5"] {
+  background: #3edd19;
+}
+/* line 310, ../../assets/styles/main.scss */
+#word-score-popup .scores .choice.selected {
+  border: 3px solid black;
 }

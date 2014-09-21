@@ -5,7 +5,7 @@ extends layouts/base.jade
 block main_content
 
 	form.article-search
-		input.big-search-input(placeholder=_("search by name")|capitalize)
+		input.big-search-input(placeholder=_("search by name (TODO)")|capitalize)
 
 	h1= _("texts") | title
 		a(href=url_for('frontend.article_create')).btn.btn-primary.add-text-button + 

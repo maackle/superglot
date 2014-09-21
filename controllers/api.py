@@ -19,16 +19,19 @@ def index():
 @login_required
 def update_word():
 	lemmata = request.form.get('lemmata').split('\n')
-	label = request.form.get('label')
+	score = request.form.get('score')
 
 	changes = []
 
 	for lemma in lemmata:
 		word = Word.objects(lemma=lemma).first()
-		change = current_user.update_words([word], label)
+		change = current_user.update_words([word], score)
 		
 		if change:
-			changes.append({'lemma': lemma, 'to': label})
+			changes.append({
+				'lemma': lemma, 
+				'score': score,
+			})
 		else:
 			changes.append('false')
 

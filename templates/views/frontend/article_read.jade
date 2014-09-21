@@ -19,7 +19,7 @@ block main_content
 			button.mark-all(data-group-label="learning") Mark All Learning
 			button.mark-all(data-group-label="") Unmark All
 		for a_word in annotated_words
-			li(data-group-label=a_word.label, data-lemma=a_word.word.lemma) #{a_word.word.reading}
+			li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-score=a_word.score|int) #{a_word.word.reading}
 
 	.accordion
 		h3.header raw text

@@ -1,8 +1,14 @@
-markWords = (lemmata, label, after) ->
+markWords = (lemmata, score, after) ->
+	if score == 'known'
+		score = 4
+	else if score == 'learning'
+		score = 2
+	else
+		score = 0
 	lemmataString = lemmata.join("\n")
 	$.post '/api/user/words/update/', {
 		lemmata: lemmataString
-		label: label
+		score: score
 	}, after
 
 addMeaningTooltip = (el, meaning) ->
@@ -11,6 +17,8 @@ addMeaningTooltip = (el, meaning) ->
 		placement: 'left'
 
 setupAnnotation = ->
+	$popup = $('#word-score-popup')
+	$popupChoices = $popup.find('.scores .choice')
 
 	selectWord = (el) ->
 		$word = $(el)
@@ -27,29 +35,43 @@ setupAnnotation = ->
 
 	updateWord = (el, score) ->
 		lemma = $(el).attr('data-lemma')
-		if score < 3
+		if score <= 0
+			label = null
+		else if score < 3
 			label = 'learning'
 		else
 			label = 'known'
-		markWords [lemma], label, (data) ->
+		markWords [lemma], score, (data) ->
 			if data
-				$("[data-lemma='"+lemma+ "']").attr('data-group-label', label)
+				$(el).attr('data-group-label', label)
+				$(el).attr('data-score', score)
+				console.log score
 				deselectWords()
+
+	setPopupScore = (score) ->
+		$popupChoices.removeClass('selected')
+		$popupChoices.filter("[data-score=#{ score }]").addClass('selected')
 
 	showWordScorePopup = (el) ->
 		# TODO: link score to word, must switch over from labels... 
-		$popup = $('#word-score-popup')
-		$popup.show().focus()
+		$popup.addClass('visible').focus()
+		$popup.find('.lemma').text($(el).attr('data-lemma'))
+		setPopupScore($(el).attr('data-score'))
+		$popupChoices.click (e) ->
+			score = $(this).attr('data-score')
+			if score >= 0 and score <= 5
+				setPopupScore(score)
+				updateWord(el, score)
 		$(document).on 'keypress', (e) ->
 			char = String.fromCharCode(e.keyCode)
 			score = parseInt(char, 10)
-			if score >= 0 and score <= 5
-				$popup.find("input[value=\"#{ score }\"]").prop('checked', 1)
-				updateWord(el, score)
+			$popup.find(".choice[data-score=\"#{ score }\"]").trigger('click')
+
 
 	hideWordScorePopup = (el) ->
 		$popup = $('#word-score-popup')
-		$popup.hide()
+		$popup.removeClass('visible')
+		$popupChoices.off 'click'
 		$(document).off 'keypress'
 
 	attachAnnotationControls = ($el) ->
@@ -57,27 +79,11 @@ setupAnnotation = ->
 		$el.click (e) ->
 			selectWord(this)
 
-	attachAnnotationControls( $('.annotated-word-list li') )
+	attachAnnotationControls( $('.annotated-word-list li:not([data-group-label="ignored"])') )
 
 
 $ ->
 	setupAnnotation()
-		
-
-	# $('.annotated-word-list li').click (e) ->
-	# 		$el = $(this)
-	# 		if $el.attr('data-group-label') == 'ignored'
-	# 			return false
-	# 		lemma = $el.data('lemma')
-	# 		label = $el.attr('data-group-label')
-	# 		if label == 'known'
-	# 			newGroup = 'learning'
-	# 		else
-	# 			newGroup = 'known'
-
-	# 		markWords [lemma], newGroup, (data) ->
-	# 			if data
-	# 				$("[data-lemma='"+lemma+ "']").attr('data-group-label', newGroup)
 
 	$('.annotated-word-list .controls .mark-all').click (e) ->
 		label = $(this).attr('data-group-label')

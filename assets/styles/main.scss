@@ -205,16 +205,34 @@ ul {
 			background: $color-learning;
 		}
 		&[data-group-label="ignored"] {
-			background: $color-ignored;
+			background: #ddd;
+			color: #888;
 			cursor: not-allowed;
 		}
+
+		&[data-score="1"] { background: $color-score-1; }
+		&[data-score="2"] { background: $color-score-2; }
+		&[data-score="3"] { background: $color-score-3; }
+		&[data-score="4"] { background: $color-score-4; }
+		&[data-score="5"] { background: $color-score-5; }
 	}
-	
 }
 
 .annotated-words {
-	.selected {
-		border: 2px solid black;
+
+	.word {
+		@include transition(border-color 150ms);
+		margin: 2px auto;
+		border: 2px solid transparent;
+
+		&:hover {
+			border: 2px solid rgba(black, 0.2);
+		}
+
+		&.selected {
+			border: 2px solid black;
+		}
+		
 	}
 }
 
@@ -246,16 +264,57 @@ ul {
 
 #word-score-popup {
 	@include border-radius(8px);
-	display: none;
+	@include transition(height 200ms);
+
+	// display: none;
+	height: 0;
 	background: white;
-	box-shadow: 2px 2px 5px rgba(black, 0.5);
-	padding: 15px;
+	box-shadow: 0px -2px 5px rgba(black, 0.5);
+	// padding: 15px;
 	position: fixed;
-	bottom: 10px;
-	width: 50%;
-	left: 25%;
+	bottom: 0px;
+	width: 100%;
+	left: 0;
+
+	.inner {
+		padding: 20px;
+	}
+
+	&.visible {
+		height: 80px;
+	}
+
+	.lemma {
+		display: inline-block;
+		width: 30%;
+		font-size: 2.4rem;
+	}
+
+	.scores {
+		display: inline-block;
+
+		.choice {
+			@include border-radius(50%);
+			display: inline-block;
+			margin: 0 1px;
+			padding: 2px 14px;
+			cursor: pointer;
+			border: 3px solid transparent;
+
+			&[data-score="1"] { background: $color-score-1; }
+			&[data-score="2"] { background: $color-score-2; }
+			&[data-score="3"] { background: $color-score-3; }
+			&[data-score="4"] { background: $color-score-4; }
+			&[data-score="5"] { background: $color-score-5; }
+
+			&.selected {
+				border: 3px solid black;
+			}
+		}
+	}
 }
 
 #html-templates {
 	// display: none;
 }
+

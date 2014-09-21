@@ -15,7 +15,7 @@ from util import sorted_words
 import nlp
 import util
 import formatting
-
+from config import settings
 
 
 def make_words(tokens):
@@ -66,9 +66,17 @@ def word_list(partition):
 @blueprint.route('/user/words/add/<label>/', methods=['POST'])
 @login_required
 def add_words(label):
+	if label == 'ignored':
+		score = settings.SCORES['ignored']
+	elif label == 'learning':
+		score = settings.SCORES['learning']
+	elif label == 'known':
+		score = settings.SCORES['known']
+	else:
+		raise "Invalid label"
 	tokens = nlp.tokenize(request.form['words'])
 	new_words = make_words(tokens)
-	current_user.update_words(new_words, label)
+	current_user.update_words(new_words, score)
 	flash('Added some words')
 	return redirect(url_for('frontend.word_list_all'))
 

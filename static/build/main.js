@@ -1,12 +1,19 @@
 (function() {
   var addMeaningTooltip, markWords, setupAnnotation;
 
-  markWords = function(lemmata, label, after) {
+  markWords = function(lemmata, score, after) {
     var lemmataString;
+    if (score === 'known') {
+      score = 4;
+    } else if (score === 'learning') {
+      score = 2;
+    } else {
+      score = 0;
+    }
     lemmataString = lemmata.join("\n");
     return $.post('/api/user/words/update/', {
       lemmata: lemmataString,
-      label: label
+      score: score
     }, after);
   };
 
@@ -18,7 +25,9 @@
   };
 
   setupAnnotation = function() {
-    var attachAnnotationControls, deselectWords, hideWordScorePopup, selectWord, showWordScorePopup, updateWord;
+    var $popup, $popupChoices, attachAnnotationControls, deselectWords, hideWordScorePopup, selectWord, setPopupScore, showWordScorePopup, updateWord;
+    $popup = $('#word-score-popup');
+    $popupChoices = $popup.find('.scores .choice');
     selectWord = function(el) {
       var $word;
       $word = $(el);
@@ -37,46 +46,58 @@
     updateWord = function(el, score) {
       var label, lemma;
       lemma = $(el).attr('data-lemma');
-      if (score < 3) {
+      if (score <= 0) {
+        label = null;
+      } else if (score < 3) {
         label = 'learning';
       } else {
         label = 'known';
       }
-      return markWords([lemma], label, function(data) {
+      return markWords([lemma], score, function(data) {
         if (data) {
-          $("[data-lemma='" + lemma + "']").attr('data-group-label', label);
+          $(el).attr('data-group-label', label);
+          $(el).attr('data-score', score);
+          console.log(score);
           return deselectWords();
         }
       });
     };
+    setPopupScore = function(score) {
+      $popupChoices.removeClass('selected');
+      return $popupChoices.filter("[data-score=" + score + "]").addClass('selected');
+    };
     showWordScorePopup = function(el) {
-      var $popup;
-      $popup = $('#word-score-popup');
-      $popup.show().focus();
+      $popup.addClass('visible').focus();
+      $popup.find('.lemma').text($(el).attr('data-lemma'));
+      setPopupScore($(el).attr('data-score'));
+      $popupChoices.click(function(e) {
+        var score;
+        score = $(this).attr('data-score');
+        if (score >= 0 && score <= 5) {
+          setPopupScore(score);
+          return updateWord(el, score);
+        }
+      });
       return $(document).on('keypress', function(e) {
         var char, score;
         char = String.fromCharCode(e.keyCode);
         score = parseInt(char, 10);
-        if (score >= 0 && score <= 5) {
-          $popup.find("input[value=\"" + score + "\"]").prop('checked', 1);
-          return updateWord(el, score);
-        }
+        return $popup.find(".choice[data-score=\"" + score + "\"]").trigger('click');
       });
     };
     hideWordScorePopup = function(el) {
-      var $popup;
       $popup = $('#word-score-popup');
-      $popup.hide();
+      $popup.removeClass('visible');
+      $popupChoices.off('click');
       return $(document).off('keypress');
     };
     attachAnnotationControls = function($el) {
-      var $popup;
       $popup = $('#word-score-popup');
       return $el.click(function(e) {
         return selectWord(this);
       });
     };
-    return attachAnnotationControls($('.annotated-word-list li'));
+    return attachAnnotationControls($('.annotated-word-list li:not([data-group-label="ignored"])'));
   };
 
   $(function() {

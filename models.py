@@ -88,7 +88,19 @@ words_field = lambda: ListField(ReferenceField(Word))
 class VocabWord(EmbeddedDocument):
 
 	word = ReferenceField(Word)
-	label = StringField()
+	# label = StringField()
+	score = IntField()
+
+	@property
+	def label(self):
+		if not self.score:
+			return None
+		elif self.score == -1:
+			return 'ignored'
+		elif self.score < 3.0:
+			return 'learning'
+		else:
+			return 'known'
 
 	def __lt__(self, other):
 		return self.word.reading.lower() < other.word.reading.lower()
@@ -156,11 +168,11 @@ class UserWordList(EmbeddedDocument):
 class AnnotatedDocWord():
 
 	word = None
-	label = None
+	score = None
 
-	def __init__(self, word, label=None):
+	def __init__(self, word, score=None):
 		self.word = word
-		self.label = label
+		self.score = score
 
 	def __lt__(self, other):
 		return self.word.lemma < other.word.lemma
@@ -172,7 +184,7 @@ class AnnotatedDocWord():
 		return util.string_hash(str(self.word.lemma))
 
 	def __str__(self):
-		return "[{}|{}]".format(self.word.reading, self.label)
+		return "[{}|{}]".format(self.word.reading, self.score)
 
 	def __repr__(self):
 		return self.__str__()
@@ -215,8 +227,8 @@ class User(Document, UserMixin, CreationStamp):
 		for item in self.vocab:
 			yield item.word
 
-	def update_words(self, words, label):
-		new_vocab = set(VocabWord(word=word, label=label) for word in words)
+	def update_words(self, words, score):
+		new_vocab = set(VocabWord(word=word, score=score) for word in words)
 		self.vocab = list(new_vocab | set(self.vocab))
 		self.save()
 		cache.delete_memoized(self.vocab_lists)

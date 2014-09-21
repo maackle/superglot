@@ -18,6 +18,12 @@ LANGUAGE_NAMES = {
 	'ja': '日本語',
 }
 
+SCORES = {
+	'ignored': -1,
+	'learning': 2,
+	'known': 4,
+}
+
 NATIVE_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in NATIVE_LANGUAGES)
 TARGET_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in TARGET_LANGUAGES)
 

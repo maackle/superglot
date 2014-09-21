@@ -42,12 +42,19 @@ html
 				footer#footer
 
 			#html-templates
-				#word-score-popup
-					input(type="radio", name="score", value="1")
-					input(type="radio", name="score", value="2")
-					input(type="radio", name="score", value="3")
-					input(type="radio", name="score", value="4")
-					input(type="radio", name="score", value="5")
+				#word-score-popup: .inner
+					.lemma
+					ul.scores
+						li.choice(data-score="1") 1
+						li.choice(data-score="2") 2
+						li.choice(data-score="3") 3
+						li.choice(data-score="4") 4
+						li.choice(data-score="5") 5
+						//- input(type="radio", name="score", value="1")
+						//- input(type="radio", name="score", value="2")
+						//- input(type="radio", name="score", value="3")
+						//- input(type="radio", name="score", value="4")
+						//- input(type="radio", name="score", value="5")
 
 			block scripts
 
