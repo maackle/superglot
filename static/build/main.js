@@ -7,8 +7,6 @@
       score = 4;
     } else if (score === 'learning') {
       score = 2;
-    } else {
-      score = 0;
     }
     lemmataString = lemmata.join("\n");
     return $.post('/api/user/words/update/', {
@@ -57,7 +55,6 @@
         if (data) {
           $(el).attr('data-group-label', label);
           $(el).attr('data-score', score);
-          console.log(score);
           return deselectWords();
         }
       });

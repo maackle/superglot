@@ -4,6 +4,7 @@ from collections import defaultdict
 from flask import session, jsonify, current_app as app
 from flask.ext.login import UserMixin
 from mongoengine import *
+from mongoengine import signals
 from flask.ext.mongoengine import Document
 from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
@@ -25,9 +26,14 @@ target_language_field = lambda: StringField(max_length=8, verbose_name=_('target
 lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True))
 
 
-class CreationStamp:
+class CreatedStamp:
 
-	date_created = DateTimeField(default=datetime.datetime.now())
+	created_at = DateTimeField(default=datetime.datetime.now)
+
+
+class UpdatedStamp:
+
+	updated_at = DateTimeField(default=datetime.datetime.now)
 
 
 class WordMeaning(EmbeddedDocument):
@@ -85,22 +91,29 @@ Word.sort_key = lambda w: w.lemma
 words_field = lambda: ListField(ReferenceField(Word))
 
 
-class VocabWord(EmbeddedDocument):
+class VocabWord(EmbeddedDocument, UpdatedStamp):
 
 	word = ReferenceField(Word)
-	# label = StringField()
 	score = IntField()
+	last_studied = DateTimeField(default=datetime.datetime.now)
+
+	def last_studied_interval(self):
+		# TODO: hook this up
+		delta = datetime.datetime.now() - self.last_studied
+		return delta
 
 	@property
 	def label(self):
 		if not self.score:
 			return None
-		elif self.score == -1:
+		elif self.score == settings.SCORES['ignored']:
 			return 'ignored'
-		elif self.score < 3.0:
+		elif self.score > 0 and self.score <= settings.SCORES['learning']:
 			return 'learning'
-		else:
+		elif self.score <= settings.SCORES['known']:
 			return 'known'
+		else:
+			return None
 
 	def __lt__(self, other):
 		return self.word.reading.lower() < other.word.reading.lower()
@@ -192,7 +205,7 @@ class AnnotatedDocWord():
 VocabWord.sort_key = lambda v: v.word.lemma
 
 
-class User(Document, UserMixin, CreationStamp):
+class User(Document, UserMixin, CreatedStamp):
 
 	email = email_field()
 	password = password_field()
@@ -230,6 +243,8 @@ class User(Document, UserMixin, CreationStamp):
 	def update_words(self, words, score):
 		new_vocab = set(VocabWord(word=word, score=score) for word in words)
 		self.vocab = list(new_vocab | set(self.vocab))
+		for item in self.vocab:
+			item.last_studied = datetime.datetime.now()
 		self.save()
 		cache.delete_memoized(self.vocab_lists)
 		return True
@@ -250,11 +265,9 @@ class WordOccurrence(EmbeddedDocument):
 	word = ReferenceField(Word)
 	locations = ListField(IntField())
 	sentences = ListField(IntField())
-	# reading = word_reading_field()
-	# article = ReferenceField(TextArticle)
 
 
-class TextArticle(Document, CreationStamp):
+class TextArticle(Document, CreatedStamp):
 	
 	title = StringField(max_length=256, verbose_name=_('title'))
 	plaintext = StringField(verbose_name=_('plaintext'))
@@ -263,7 +276,7 @@ class TextArticle(Document, CreationStamp):
 	user = ReferenceField(User)
 	occurrences = ListField(EmbeddedDocumentField(WordOccurrence))
 	sentence_positions = ListField(ListField(IntField()))  # list of doubles
-	date_modified = DateTimeField(default=datetime.datetime.now)
+	updated_at = DateTimeField(default=datetime.datetime.now)
 
 	def sentence(self, index):
 		a,b = self.sentence_positions[index]

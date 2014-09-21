@@ -3,8 +3,7 @@ markWords = (lemmata, score, after) ->
 		score = 4
 	else if score == 'learning'
 		score = 2
-	else
-		score = 0
+		
 	lemmataString = lemmata.join("\n")
 	$.post '/api/user/words/update/', {
 		lemmata: lemmataString
@@ -45,7 +44,6 @@ setupAnnotation = ->
 			if data
 				$(el).attr('data-group-label', label)
 				$(el).attr('data-score', score)
-				console.log score
 				deselectWords()
 
 	setPopupScore = (score) ->
