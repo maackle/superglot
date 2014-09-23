@@ -20,6 +20,7 @@ def index():
 def update_word():
 	lemmata = request.form.get('lemmata').split('\n')
 	score = request.form.get('score')
+	score = int(score)
 
 	changes = []
 

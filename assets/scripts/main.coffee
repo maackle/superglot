@@ -1,9 +1,13 @@
+SRS_SCORE_CHOICES = [1,2,3,4]
+
 markWords = (lemmata, score, after) ->
 	if score == 'known'
 		score = 4
 	else if score == 'learning'
 		score = 2
-		
+
+	score = parseInt(score, 10)
+
 	lemmataString = lemmata.join("\n")
 	$.post '/api/user/words/update/', {
 		lemmata: lemmataString
@@ -60,17 +64,21 @@ setupAnnotation = ->
 			if score >= 0 and score <= 5
 				setPopupScore(score)
 				updateWord(el, score)
+		$(document).on 'keyup', (e) ->
+			if e.keyCode == 27  # esc
+				deselectWords()
 		$(document).on 'keypress', (e) ->
 			char = String.fromCharCode(e.keyCode)
 			score = parseInt(char, 10)
-			$popup.find(".choice[data-score=\"#{ score }\"]").trigger('click')
+			if score in SRS_SCORE_CHOICES
+				$popup.find(".choice[data-score=\"#{ score }\"]").trigger('click')
 
 
 	hideWordScorePopup = (el) ->
 		$popup = $('#word-score-popup')
 		$popup.removeClass('visible')
 		$popupChoices.off 'click'
-		$(document).off 'keypress'
+		$(document).off 'keyup keypress'
 
 	attachAnnotationControls = ($el) ->
 		$popup = $('#word-score-popup')

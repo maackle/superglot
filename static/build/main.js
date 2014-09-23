@@ -1,5 +1,8 @@
 (function() {
-  var addMeaningTooltip, markWords, setupAnnotation;
+  var SRS_SCORE_CHOICES, addMeaningTooltip, markWords, setupAnnotation,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  SRS_SCORE_CHOICES = [1, 2, 3, 4];
 
   markWords = function(lemmata, score, after) {
     var lemmataString;
@@ -8,6 +11,7 @@
     } else if (score === 'learning') {
       score = 2;
     }
+    score = parseInt(score, 10);
     lemmataString = lemmata.join("\n");
     return $.post('/api/user/words/update/', {
       lemmata: lemmataString,
@@ -75,18 +79,25 @@
           return updateWord(el, score);
         }
       });
+      $(document).on('keyup', function(e) {
+        if (e.keyCode === 27) {
+          return deselectWords();
+        }
+      });
       return $(document).on('keypress', function(e) {
         var char, score;
         char = String.fromCharCode(e.keyCode);
         score = parseInt(char, 10);
-        return $popup.find(".choice[data-score=\"" + score + "\"]").trigger('click');
+        if (__indexOf.call(SRS_SCORE_CHOICES, score) >= 0) {
+          return $popup.find(".choice[data-score=\"" + score + "\"]").trigger('click');
+        }
       });
     };
     hideWordScorePopup = function(el) {
       $popup = $('#word-score-popup');
       $popup.removeClass('visible');
       $popupChoices.off('click');
-      return $(document).off('keypress');
+      return $(document).off('keyup keypress');
     };
     attachAnnotationControls = function($el) {
       $popup = $('#word-score-popup');

@@ -13,6 +13,7 @@ from decorators import memoized, lazyprop
 import util
 import models
 import nlp
+import srs
 from config import settings
 
 email_field = lambda: StringField(max_length=128, required=True, verbose_name=_('email').capitalize())
@@ -95,12 +96,35 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 
 	word = ReferenceField(Word)
 	score = IntField()
-	last_studied = DateTimeField(default=datetime.datetime.now)
+
+	last_scored = DateTimeField(default=datetime.datetime.now)
+	last_repetition = DateTimeField(default=datetime.datetime.now)
+	next_repetition = DateTimeField(default=datetime.datetime.now)
+	
+	srs_ease_factor = DecimalField(default=2.5)
+	srs_num_repetitions = IntField(default=0)
 
 	def last_studied_interval(self):
 		# TODO: hook this up
-		delta = datetime.datetime.now() - self.last_studied
+		delta = datetime.datetime.now() - self.last_repetition
 		return delta
+
+	def record_score(self, score):
+		'''This should happen when the word score is updated after the next interval time'''
+
+		interval, self.ease_factor, self.num_repetitions = srs.process_answer(score, float(self.srs_ease_factor), self.srs_num_repetitions)
+		self.last_repetition = datetime.datetime.now()
+		self.next_repetition = datetime.datetime.now() + datetime.timedelta(days=interval)
+		
+		app.logger.info("""
+			Recorded score: {1}
+			{0}
+			interval: {interval}
+			ease_factor: {ease_factor}
+			last rep: {last_repetition}
+			next rep: {next_repetition}
+		""".format(self.word, score, interval=interval, ease_factor=self.ease_factor, last_repetition=self.last_repetition, next_repetition=self.next_repetition))
+		# app.logger.info("{}, {}".format(self.last_repetition, self.next_repetition))
 
 	@property
 	def label(self):
@@ -242,9 +266,15 @@ class User(Document, UserMixin, CreatedStamp):
 
 	def update_words(self, words, score):
 		new_vocab = set(VocabWord(word=word, score=score) for word in words)
-		self.vocab = list(new_vocab | set(self.vocab))
+		now = datetime.datetime.now()
+		self.vocab = list(set(self.vocab) | new_vocab)  
+		# NOTE: the above set union used to be in the reverse order. The current order breaks "add/move words". There should be a notice when adding words that already exist, instead of just switching them over.
+		self.save()
 		for item in self.vocab:
-			item.last_studied = datetime.datetime.now()
+			if item in new_vocab:
+				item.last_scored = now
+				if item.next_repetition < now:
+					item.record_score(score)
 		self.save()
 		cache.delete_memoized(self.vocab_lists)
 		return True

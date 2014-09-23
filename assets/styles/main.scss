@@ -210,6 +210,7 @@ ul {
 			cursor: not-allowed;
 		}
 
+		
 		&[data-score="1"] { background: $color-score-1; }
 		&[data-score="2"] { background: $color-score-2; }
 		&[data-score="3"] { background: $color-score-3; }
@@ -301,6 +302,7 @@ ul {
 			cursor: pointer;
 			border: 3px solid transparent;
 
+			
 			&[data-score="1"] { background: $color-score-1; }
 			&[data-score="2"] { background: $color-score-2; }
 			&[data-score="3"] { background: $color-score-3; }
