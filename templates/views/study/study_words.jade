@@ -2,3 +2,7 @@ extends 'layouts/base.jade'
 
 block main_content
 	h1= _('study words') | title
+
+	ul.annotated-word-list.annotated-words
+		for item in due_vocab
+			+annotated_vocab_word(item)

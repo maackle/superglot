@@ -60,3 +60,6 @@ mixin vocab_progress_bar(stats)
 		.partition.known(style="width: #{ "%2f%%"|format(stats.percents.known) }")
 		.partition.learning(style="width: #{ "%2f%%"|format(stats.percents.learning) }")
 		//- .partition.other(style="width: #{ "%2f%%"|format(100 - stats.percents.known - stats.percents.learning) }")
+
+mixin annotated_vocab_word(a_word)
+	li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-score=a_word.score|int) #{a_word.word.reading}

@@ -1,7 +1,5 @@
 extends layouts/base.jade
 
-- from 'mixins.jade' import form_field, form_submit
-
 block main_content
 	h1= doc.title
 	h3 words
@@ -13,13 +11,13 @@ block main_content
 		| When reading an article, you'll be able to either read a decent-looking annotated version here, or use the Chrome plugin to read it directly at its source with annotation.
 		| From either place, you can interact with all words.
 
-	ul.inline-list.document-words.annotated-word-list.annotated-words
-		.controls
-			button.mark-all(data-group-label="known") Mark All Known
-			button.mark-all(data-group-label="learning") Mark All Learning
-			button.mark-all(data-group-label="") Unmark All
+	ul.inline-list.annotated-word-list.annotated-words
+		//- .controls
+		//- 	button.mark-all(data-group-label="known") Mark All Known
+		//- 	button.mark-all(data-group-label="learning") Mark All Learning
+		//- 	button.mark-all(data-group-label="") Unmark All
 		for a_word in annotated_words
-			li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-score=a_word.score|int) #{a_word.word.reading}
+			+annotated_vocab_word(a_word)
 
 	.accordion
 		h3.header raw text
