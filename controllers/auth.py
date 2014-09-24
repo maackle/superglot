@@ -3,7 +3,7 @@ from flask.ext.login import LoginManager, login_user, logout_user, login_require
 from flask.ext.babel import gettext as _
 
 from forms import LoginForm, RegisterForm
-from models import User, UserWordList
+from models import User
 
 
 login_manager = LoginManager()
@@ -32,7 +32,7 @@ def login():
 				flash(_("Invalid username or password.").capitalize(), 'danger')
 				return render_template(template, **ctx)
 		else:
-			flash(_('There was a problem logging in. Please contact support at %(email)s.', current_app.config['EMAIL_SUPPORT']), 'danger')
+			flash(_('There was a problem logging in. Please contact support at %(email)s.', email=current_app.config['EMAIL_SUPPORT']), 'danger')
 			return render_template(template, **ctx)
 	else:
 		return render_template(template, **ctx)
@@ -55,7 +55,7 @@ def register():
 				email=data['email'],
 				defaults={
 					'password': data['password'],
-					'words': UserWordList.default(),
+					'vocab': models.Vocab.default_vocab(),
 					'native_language': 'en',
 				})
 			if created:
@@ -66,7 +66,7 @@ def register():
 				return render_template(template, form=form)
 		else:
 			print(form.data)
-			flash(_('Uh oh, there was a problem with your registration. Please email %(email)s', current_app.config['EMAIL_SUPPORT']), 'danger')
+			flash(_('Uh oh, there was a problem with your registration. Please email %(email)s', email=current_app.config['EMAIL_SUPPORT']), 'danger')
 			return render_template(template, form=form)
 	else:
 		return render_template(template, form=form)

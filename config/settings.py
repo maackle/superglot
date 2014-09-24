@@ -7,6 +7,8 @@ EMAIL_SUPPORT = 'support@superglot.com'
 
 DEBUG = True
 
+SERVER_PORT = 31337
+
 NATIVE_LANGUAGES = ('en', 'es', 'it', 'ja')
 
 TARGET_LANGUAGES = ('en',)
@@ -32,3 +34,4 @@ MONGODB_SETTINGS = {
 }
 
 pwd = "v(4K9HUg9!sAba~"
+

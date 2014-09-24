@@ -1,3 +1,10 @@
+WISHLIST
+========
+
+Ability to check out sample sentences from documents user doesn't own.
+Upvote/Downvote sample sentences for your own benefit and benefit of others.
+
+
 STUDY
 =====
 
@@ -5,19 +12,11 @@ STUDY
 
 Flashcard style
 SRS
+Ability to pull all sample sentences that contain this word -- might need relational model for this
 
 ### Study Sentences
 
 Each word will be highlighted, you can change the color based on how well you know it
-
-
-VOCAB RE-STRUCTURE
-==================
-
-Problems:
-	hash-based updating needs to work differently for two cases:
-		- updating a user's words from a list
-		- annotating a document's words
 
 
 GENERAL DECISIONS

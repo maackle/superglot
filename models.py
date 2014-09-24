@@ -95,7 +95,7 @@ words_field = lambda: ListField(ReferenceField(Word))
 class VocabWord(EmbeddedDocument, UpdatedStamp):
 
 	word = ReferenceField(Word)
-	score = IntField()
+	score = IntField(default=0)
 
 	last_scored = DateTimeField(default=datetime.datetime.now)
 	last_repetition = DateTimeField(default=datetime.datetime.now)
@@ -126,6 +126,16 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 		""".format(self.word, score, interval=interval, ease_factor=self.ease_factor, last_repetition=self.last_repetition, next_repetition=self.next_repetition))
 		# app.logger.info("{}, {}".format(self.last_repetition, self.next_repetition))
 
+	@staticmethod
+	def default_vocab():
+		ignored_lemmata = []
+		with open('config/ignored-en.txt') as f:
+			for line in f.readlines():
+				lemma = line.strip()
+				ignored_lemmata.append(lemma)
+		ignored_words = Word.objects(lemma__in=ignored_lemmata)
+		return (VocabWord(word=word, score=SCORES.ignored) for word in ignored_words)
+
 	@property
 	def label(self):
 		if not self.score:
@@ -153,53 +163,6 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 
 	def __repr__(self):
 		return self.__str__()
-
-
-class UserWordList(EmbeddedDocument):
-
-	group_names = {'ignored', 'learning', 'known'}
-
-	known = words_field()
-	learning = words_field()
-	ignored = words_field()
-
-	def has_word(self, word):
-		for name in self.group_names:
-			if word in getattr(self, name):
-				return True
-		return False
-
-	def sort(self):
-		self.known.sort(key=Word.sort_key)
-		self.learning.sort(key=Word.sort_key)
-		self.ignored.sort(key=Word.sort_key)
-
-	@staticmethod
-	def default():
-		'''
-		Default user word list.
-		NOTE that the ignored words must already exist in the DB to be added.
-		'''
-		ignored_lemmata = []
-		with open('config/ignored-en.txt') as f:
-			for line in f.readlines():
-				lemma = line.strip()
-				ignored_lemmata.append(lemma)
-
-		ignored_words = Word.objects(lemma__in=ignored_lemmata)
-
-		return UserWordList(
-			known=[],
-			learning=[],
-			ignored=ignored_words,
-			)
-
-	def __str__(self):
-		return str({
-			'known': self.known,
-			'learning': self.learning,
-			'ignored': self.ignored,
-			})
 
 
 class AnnotatedDocWord():
