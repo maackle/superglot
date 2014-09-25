@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app as app
 from flask.ext.login import LoginManager, login_user, logout_user, login_required
 from flask.ext.babel import gettext as _
 
 from forms import LoginForm, RegisterForm
+import models
 from models import User
 
 
@@ -32,7 +33,7 @@ def login():
 				flash(_("Invalid username or password.").capitalize(), 'danger')
 				return render_template(template, **ctx)
 		else:
-			flash(_('There was a problem logging in. Please contact support at %(email)s.', email=current_app.config['EMAIL_SUPPORT']), 'danger')
+			flash(_('There was a problem logging in. Please contact support at %(email)s.', email=app.config['EMAIL_SUPPORT']), 'danger')
 			return render_template(template, **ctx)
 	else:
 		return render_template(template, **ctx)
@@ -51,13 +52,7 @@ def register():
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			(user, created) = User.objects.get_or_create(
-				email=data['email'],
-				defaults={
-					'password': data['password'],
-					'vocab': models.Vocab.default_vocab(),
-					'native_language': 'en',
-				})
+			(user, created) = User.register(email=data['email'], password= data['password'])
 			if created:
 				flash(_("You're all signed up! Now you can log in."))
 				return redirect(url_for('auth.login'))
@@ -65,8 +60,8 @@ def register():
 				flash(_("An account with this email address already exists."), 'danger')
 				return render_template(template, form=form)
 		else:
-			print(form.data)
-			flash(_('Uh oh, there was a problem with your registration. Please email %(email)s', email=current_app.config['EMAIL_SUPPORT']), 'danger')
+			app.logger.error(form.errors)
+			flash(_('Uh oh, there was a problem with your registration. Please email %(email)s', email=app.config['EMAIL_SUPPORT']), 'danger')
 			return render_template(template, form=form)
 	else:
 		return render_template(template, form=form)

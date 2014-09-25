@@ -4,6 +4,9 @@ import requests
 from collections import defaultdict
 
 from cache import cache
+import datetime
+
+now = datetime.datetime.now
 
 @cache.memoize()
 def get_page(url):

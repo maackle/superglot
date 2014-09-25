@@ -29,12 +29,12 @@ lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True)
 
 class CreatedStamp:
 
-	created_at = DateTimeField(default=datetime.datetime.now)
+	created_at = DateTimeField(default=util.now)
 
 
 class UpdatedStamp:
 
-	updated_at = DateTimeField(default=datetime.datetime.now)
+	updated_at = DateTimeField(default=util.now)
 
 
 class WordMeaning(EmbeddedDocument):
@@ -66,7 +66,6 @@ class Word(Document):
 
 	def lookup(self, language):
 		if language in self.meanings:
-			print(language)
 			return self.meanings[language]
 		else:
 			text = nlp.translate_word(self.reading, language)
@@ -97,44 +96,33 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 	word = ReferenceField(Word)
 	score = IntField(default=0)
 
-	last_scored = DateTimeField(default=datetime.datetime.now)
-	last_repetition = DateTimeField(default=datetime.datetime.now)
-	next_repetition = DateTimeField(default=datetime.datetime.now)
+	last_scored = DateTimeField(default=util.now)
+	last_repetition = DateTimeField(default=util.now)
+	next_repetition = DateTimeField(default=util.now)
 	
 	srs_ease_factor = DecimalField(default=2.5)
 	srs_num_repetitions = IntField(default=0)
 
 	def last_studied_interval(self):
 		# TODO: hook this up
-		delta = datetime.datetime.now() - self.last_repetition
+		delta = util.now() - self.last_repetition
 		return delta
 
 	def record_score(self, score):
 		'''This should happen when the word score is updated after the next interval time'''
 
 		interval, self.ease_factor, self.num_repetitions = srs.process_answer(score, float(self.srs_ease_factor), self.srs_num_repetitions)
-		self.last_repetition = datetime.datetime.now()
-		self.next_repetition = datetime.datetime.now() + datetime.timedelta(days=interval)
+		self.last_repetition = util.now()
+		self.next_repetition = util.now() + datetime.timedelta(days=interval)
 		
-		app.logger.info("""
-			Recorded score: {1}
-			{0}
-			interval: {interval}
-			ease_factor: {ease_factor}
-			last rep: {last_repetition}
-			next rep: {next_repetition}
-		""".format(self.word, score, interval=interval, ease_factor=self.ease_factor, last_repetition=self.last_repetition, next_repetition=self.next_repetition))
-		# app.logger.info("{}, {}".format(self.last_repetition, self.next_repetition))
-
-	@staticmethod
-	def default_vocab():
-		ignored_lemmata = []
-		with open('config/ignored-en.txt') as f:
-			for line in f.readlines():
-				lemma = line.strip()
-				ignored_lemmata.append(lemma)
-		ignored_words = Word.objects(lemma__in=ignored_lemmata)
-		return (VocabWord(word=word, score=SCORES.ignored) for word in ignored_words)
+		# app.logger.debug("""
+		# 	Recorded score: {1}
+		# 	{0}
+		# 	interval: {interval}
+		# 	ease_factor: {ease_factor}
+		# 	last rep: {last_repetition}
+		# 	next rep: {next_repetition}
+		# """.format(self.word, score, interval=interval, ease_factor=self.ease_factor, last_repetition=self.last_repetition, next_repetition=self.next_repetition))
 
 	@property
 	def label(self):
@@ -229,18 +217,20 @@ class User(Document, UserMixin, CreatedStamp):
 
 	def update_words(self, words, score):
 		new_vocab = set(VocabWord(word=word, score=score) for word in words)
-		now = datetime.datetime.now()
+		now = util.now()
 		self.vocab = list(set(self.vocab) | new_vocab)  
 		# NOTE: the above set union used to be in the reverse order. The current order breaks "add/move words". There should be a notice when adding words that already exist, instead of just switching them over.
 		self.save()
+		num_recorded = 0
 		for item in self.vocab:
 			if item in new_vocab:
 				item.last_scored = now
 				if item.next_repetition < now:
+					num_recorded += 1
 					item.record_score(score)
 		self.save()
 		cache.delete_memoized(self.vocab_lists)
-		return True
+		return num_recorded
 	
 	def delete_all_words(self):
 		self.vocab = []
@@ -251,6 +241,27 @@ class User(Document, UserMixin, CreatedStamp):
 	def authenticate(email, password):
 		user = User.objects(email=email, password=password).first()
 		return user
+
+	@staticmethod
+	def register(email, password):
+		return User.objects.get_or_create(
+			email=email,
+			defaults={
+				'password': password,
+				'vocab': models.User.default_vocab(),
+				'native_language': 'en',
+			})
+
+	@staticmethod
+	def default_vocab():
+		ignored_lemmata = []
+		with open('config/ignored-en.txt') as f:
+			for line in f.readlines():
+				lemma = line.strip()
+				ignored_lemmata.append(lemma)
+		ignored_words = Word.objects(lemma__in=ignored_lemmata)
+		return (VocabWord(word=word, score=app.config['SCORES']['ignored']) for word in ignored_words)
+
 
 
 class WordOccurrence(EmbeddedDocument):
@@ -269,7 +280,7 @@ class TextArticle(Document, CreatedStamp):
 	user = ReferenceField(User)
 	occurrences = ListField(EmbeddedDocumentField(WordOccurrence))
 	sentence_positions = ListField(ListField(IntField()))  # list of doubles
-	updated_at = DateTimeField(default=datetime.datetime.now)
+	updated_at = DateTimeField(default=util.now)
 
 	def sentence(self, index):
 		a,b = self.sentence_positions[index]

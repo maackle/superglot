@@ -10,6 +10,7 @@ from flask.ext.babel import gettext as _
 from cache import cache
 from controllers import api
 import models
+import util
 
 
 
@@ -26,7 +27,7 @@ def home():
 @login_required
 def words():
 
-	due_vocab = (item for item in current_user.vocab if item.next_repetition and item.next_repetition < datetime.datetime.now())
+	due_vocab = (item for item in current_user.vocab if item.next_repetition and item.next_repetition < util.now())
 
 	return render_template('views/study/study_words.jade', **{
 		'due_vocab': due_vocab,
