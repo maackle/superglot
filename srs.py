@@ -2,6 +2,7 @@ from flask import current_app as app
 
 
 SCORES = [1, 2, 3, 4]
+SCORE_MIN = 1
 SCORE_MAX = 4
 PASS_SCORE_MIN = 2
 

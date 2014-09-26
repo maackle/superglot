@@ -11,7 +11,7 @@ from cache import cache
 from controllers import api
 import models
 import util
-
+import srs
 
 
 blueprint = Blueprint('study', __name__, template_folder='templates')
@@ -27,7 +27,7 @@ def home():
 @login_required
 def words():
 
-	due_vocab = (item for item in current_user.vocab if item.next_repetition and item.next_repetition < util.now())
+	due_vocab = (item for item in current_user.vocab if item.score >= srs.SCORE_MIN and item.next_repetition and item.next_repetition < util.now())
 
 	return render_template('views/study/study_words.jade', **{
 		'due_vocab': due_vocab,

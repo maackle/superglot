@@ -195,45 +195,124 @@ ul {
 .annotated-word-list {
 
 	li {
-		@include transition(background-color 150ms);
-		cursor: pointer;
-		
-		&[data-group-label="known"] {
-			background: $color-known;
-		}
-		&[data-group-label="learning"] {
-			background: $color-learning;
-		}
-		&[data-group-label="ignored"] {
-			background: #ddd;
-			color: #888;
-			cursor: not-allowed;
-		}
-
-		
-		&[data-score="1"] { background: $color-score-1; }
-		&[data-score="2"] { background: $color-score-2; }
-		&[data-score="3"] { background: $color-score-3; }
-		&[data-score="4"] { background: $color-score-4; }
-		&[data-score="5"] { background: $color-score-5; }
 	}
 }
 
 .annotated-words {
 
-	.word {
-		@include transition(border-color 150ms);
-		margin: 2px auto;
-		border: 2px solid transparent;
+	&.style-a {
+		.word {
+			$border-width: 3px;
+			@include transition(border-color 150ms, background-color 150ms);
+			cursor: pointer;
+			line-height: 1em;
+			
+			border-color: transparent;
+			border-width: $border-width;
+			border-style: solid;
+			padding: 1px 3px;
+			margin: 2px auto;
+			
+			&[data-group-label="ignored"] {
+				// background: #ddd;
+				color: #aaa;
+				cursor: not-allowed;
+				&:hover {
+					border-color: transparent;
+				}
+			}
 
-		&:hover {
-			border: 2px solid rgba(black, 0.2);
-		}
+			&:hover {
+				border-color: rgba(black, 0.2);
+			}
 
-		&.selected {
-			border: 2px solid black;
+			&[data-score="1"] { color: $color-score-1; border-bottom-color: $color-score-1; }
+			&[data-score="2"] { color: $color-score-2; border-bottom-color: $color-score-2; }
+			&[data-score="3"] { color: $color-score-3; border-bottom-color: $color-score-3; }
+			&[data-score="4"] { color: $color-score-4; border-bottom-color: $color-score-4; }
+			&[data-score="5"] { color: $color-score-5; border-bottom-color: $color-score-5; }
+
+			&.selected {
+				border-color: black;
+			}
+			
+			&.due {
+				color: inherit;
+				&[data-score="1"] { background: $color-score-1; }
+				&[data-score="2"] { background: $color-score-2; }
+				&[data-score="3"] { background: $color-score-3; }
+				&[data-score="4"] { background: $color-score-4; }
+				&[data-score="5"] { background: $color-score-5; }
+				
+				position: relative;
+				.due-marker {
+					position: absolute;
+					top: 0;
+					right: 0;
+					width: 8px;
+					height: 8px;
+					background: black;
+					color: black;
+				}
+			}
 		}
-		
+	}
+	&.style-b {
+		.word {
+			$border-width: 3px;
+			@include transition(border-color 150ms, background-color 150ms);
+			cursor: pointer;
+			line-height: 1em;
+			
+			border-color: transparent;
+			border-width: $border-width;
+			border-style: solid;
+			padding: 1px 3px;
+			margin: 2px auto;
+			
+			&[data-group-label="ignored"] {
+				// background: #ddd;
+				color: #aaa;
+				cursor: not-allowed;
+				&:hover {
+					border-color: transparent;
+				}
+			}
+
+			&:hover {
+				border-color: rgba(black, 0.2);
+			}
+
+			&[data-score="1"] { color: $color-score-1; border-bottom-color: $color-score-1; }
+			&[data-score="2"] { color: $color-score-2; border-bottom-color: $color-score-2; }
+			&[data-score="3"] { color: $color-score-3; border-bottom-color: $color-score-3; }
+			&[data-score="4"] { color: $color-score-4; border-bottom-color: $color-score-4; }
+			&[data-score="5"] { color: $color-score-5; border-bottom-color: $color-score-5; }
+
+			&.selected {
+				border-color: black;
+			}
+			
+			&.due {
+				color: inherit;
+				&[data-score="1"] { border-color: $color-score-1; }
+				&[data-score="2"] { border-color: $color-score-2; }
+				&[data-score="3"] { border-color: $color-score-3; }
+				&[data-score="4"] { border-color: $color-score-4; }
+				&[data-score="5"] { border-color: $color-score-5; }
+				
+				position: relative;
+				.due-marker {
+					position: absolute;
+					top: 0;
+					right: 0;
+					width: 8px;
+					height: 8px;
+					background: black;
+					color: black;
+				}
+			}
+		}
 	}
 }
 
@@ -296,21 +375,40 @@ ul {
 
 		.choice {
 			@include border-radius(50%);
+			@include transition(color 200ms, border-color 200ms);
 			display: inline-block;
 			margin: 0 1px;
-			padding: 2px 14px;
+			// padding: 2px;
+			font-size: 4rem;
+			font-weight: 300;
+			width: 4.8rem;
+			height: 4.8rem;
+			line-height: 4.8rem;
+			text-align: center;
 			cursor: pointer;
 			border: 3px solid transparent;
+			color: white;
+			color: rgba(black, 0.3);
 
-			
 			&[data-score="1"] { background: $color-score-1; }
 			&[data-score="2"] { background: $color-score-2; }
 			&[data-score="3"] { background: $color-score-3; }
 			&[data-score="4"] { background: $color-score-4; }
 			&[data-score="5"] { background: $color-score-5; }
 
+			&:hover {
+				color: black;
+			}
 			&.selected {
-				border: 3px solid black;
+				&:not([data-score="0"]) {
+					border: 3px solid black;
+					color: black;
+				}
+				&[data-score="1"] { background: $color-score-1; }
+				&[data-score="2"] { background: $color-score-2; }
+				&[data-score="3"] { background: $color-score-3; }
+				&[data-score="4"] { background: $color-score-4; }
+				&[data-score="5"] { background: $color-score-5; }
 			}
 		}
 	}

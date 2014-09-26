@@ -64,9 +64,11 @@ def create_app(**extra_config):
 	@app.context_processor
 	def add_modules():
 		import formatting
+		import util
 
 		return {
 			'formatting': formatting,
+			'util': util,
 		}
 
 	@app.context_processor

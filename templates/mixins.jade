@@ -1,3 +1,5 @@
+
+
 mixin form_field(field, placeholder="", type=None)
 	.form-group(class=('has-error' if field.errors else ''))
 		= field.label(class="control-label")
@@ -50,6 +52,7 @@ mixin grouped_columned_vocab_list(groups)
 			for word in group
 				li(data-id=word.id)= word.reading
 
+
 mixin simple_vocab_list(words)
 	ul.vocab-list.simple
 		for word in words
@@ -61,5 +64,4 @@ mixin vocab_progress_bar(stats)
 		.partition.learning(style="width: #{ "%2f%%"|format(stats.percents.learning) }")
 		//- .partition.other(style="width: #{ "%2f%%"|format(100 - stats.percents.known - stats.percents.learning) }")
 
-mixin annotated_vocab_word(a_word)
-	li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-score=a_word.score|int) #{a_word.word.reading}
+

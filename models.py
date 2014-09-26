@@ -100,6 +100,7 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 	last_repetition = DateTimeField(default=util.now)
 	next_repetition = DateTimeField(default=util.now)
 	
+	srs_score = IntField(default=0)
 	srs_ease_factor = DecimalField(default=2.5)
 	srs_num_repetitions = IntField(default=0)
 
@@ -111,7 +112,8 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 	def record_score(self, score):
 		'''This should happen when the word score is updated after the next interval time'''
 
-		interval, self.ease_factor, self.num_repetitions = srs.process_answer(score, float(self.srs_ease_factor), self.srs_num_repetitions)
+		interval, self.srs_ease_factor, self.srs_num_repetitions = srs.process_answer(score, float(self.srs_ease_factor), self.srs_num_repetitions)
+		self.srs_score = score
 		self.last_repetition = util.now()
 		self.next_repetition = util.now() + datetime.timedelta(days=interval)
 		
@@ -216,15 +218,16 @@ class User(Document, UserMixin, CreatedStamp):
 			yield item.word
 
 	def update_words(self, words, score):
-		new_vocab = set(VocabWord(word=word, score=score) for word in words)
+		new_vocab = set(VocabWord(word=word, score=score, srs_score=score) for word in words)
 		now = util.now()
-		self.vocab = list(set(self.vocab) | new_vocab)  
+		self.vocab = list(set(self.vocab) | new_vocab)
 		# NOTE: the above set union used to be in the reverse order. The current order breaks "add/move words". There should be a notice when adding words that already exist, instead of just switching them over.
 		self.save()
 		num_recorded = 0
 		for item in self.vocab:
 			if item in new_vocab:
 				item.last_scored = now
+				item.score = score
 				if item.next_repetition < now:
 					num_recorded += 1
 					item.record_score(score)

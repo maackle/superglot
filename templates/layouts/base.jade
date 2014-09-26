@@ -1,13 +1,25 @@
 doctype 5
 
-- from 'mixins.jade' import form_field, form_select, form_field_raw, form_submit, grouped_columned_vocab_list, simple_vocab_list, vocab_progress_bar, annotated_vocab_word
+- from 'mixins.jade' import form_field, form_select, form_field_raw, form_submit, grouped_columned_vocab_list, simple_vocab_list, vocab_progress_bar
 
-//- needs to be defined in the template unfortunately
+//- unfortunately these need to be inline because of context variable dependency
+
 mixin vocab_list(words)
 	if words|length > 100
 		+grouped_columned_vocab_list(formatting.alpha_headings(words))
 	else
 		+simple_vocab_list(words)
+
+
+mixin annotated_vocab_word(a_word)
+	if a_word.score > 0 and util.now() > a_word.next_repetition
+		li.word.due(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-score=a_word.score|int) 
+			//- div.due-marker
+				//- = a_word.next_repetition
+			= a_word.word.reading
+	else
+		li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-score=a_word.score|int) #{a_word.word.reading}
+
 
 html
 	head
@@ -45,6 +57,7 @@ html
 				#word-score-popup: .inner
 					.lemma
 					ul.scores
+						li.choice(data-score="0") &times;
 						li.choice(data-score="1") 1
 						li.choice(data-score="2") 2
 						li.choice(data-score="3") 3
