@@ -60,11 +60,3 @@ def tokenize(text):
 
 def lemmatize_word(word):
 	return Word(word).lemmatize()
-
-if __name__ == '__main__':
-	sentence = """
-	these octopi went to the best, tastiest restaurants
-	"""
-	lemmata = lemmatize(sentence)
-	for l in lemmata:
-		print(l)

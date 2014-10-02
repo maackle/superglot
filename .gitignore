@@ -10,6 +10,7 @@ static/bower/
 
 sandbox/
 zzz/
+.zzz/
 
 __pycache__
 .flask-cache

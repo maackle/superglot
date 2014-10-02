@@ -21,6 +21,7 @@ block main_content
 					th= _("known") | capitalize
 					th= _("learning") | capitalize
 					th 
+					th 
 						//- Action
 			tbody
 				for doc, stats in doc_pairs
@@ -38,6 +39,8 @@ block main_content
 								a(href=doc.source, target="_blank") 
 									= _("original")
 									|  &rarr;
+						td
+							a(href=url_for('frontend.article_delete', doc_id=doc.id)) &times;
 	else
 		.callout-notice
 			h3= _("you have nothing to read!") | capitalize

@@ -9,6 +9,7 @@ from flask.ext.assets import Environment, Bundle
 from flask.ext.login import current_user
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.babel import Babel
+from flask_debugtoolbar import DebugToolbarExtension
 
 from controllers.api import blueprint as api_blueprint
 from controllers.chrome_api import blueprint as chrome_api_blueprint
@@ -17,6 +18,7 @@ from controllers.frontend import blueprint as frontend_blueprint
 from controllers.study import blueprint as study_blueprint
 from controllers.user import blueprint as user_blueprint
 from models import User
+import models
 from cache import cache
 
 
@@ -59,7 +61,11 @@ def create_app(**extra_config):
 	# mongoengine.connect('superglot')
 	db = MongoEngine(app)
 
+	models.Word.ensure_indexes()
+
 	login_manager.init_app(app)
+
+	toolbar = DebugToolbarExtension(app)
 
 	@app.context_processor
 	def add_modules():

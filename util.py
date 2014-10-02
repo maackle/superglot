@@ -2,9 +2,9 @@ import sys
 from bs4 import BeautifulSoup
 import requests
 from collections import defaultdict
+import datetime
 
 from cache import cache
-import datetime
 
 now = datetime.datetime.now
 
@@ -42,7 +42,6 @@ def vocab_stats(vocab):
 		'total_significant': total_significant,
 		'total': total,
 	}
-
 
 def get_remote_article(url):
 

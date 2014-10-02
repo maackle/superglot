@@ -2,7 +2,7 @@ import re
 from bs4 import BeautifulSoup
 import requests
 
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app as app
 from flask.ext.login import current_user, login_required
 from flask.ext.babel import gettext as _
 from mongoengine.errors import NotUniqueError
@@ -34,6 +34,17 @@ def make_words(tokens):
 			yield word
 		except models.Word.MultipleObjectsReturned:
 			pass
+
+
+@cache.memoize()
+def common_words(user, article):
+	'''
+	Get words that show up in user's vocab and the article
+	'''
+	app.logger.info("HM")
+	doc_vocab = set(map(lambda word: models.VocabWord(word=word), article.words))
+	user_vocab = set(user.vocab)
+	return (user_vocab | doc_vocab) - (user_vocab - doc_vocab)
 
 
 blueprint = Blueprint('frontend', __name__, template_folder='templates')
@@ -85,7 +96,7 @@ def add_words(label):
 @login_required
 def article_list():
 	docs = list(models.TextArticle.objects(user=current_user.id))
-	stats = [util.vocab_stats(doc.common_words(current_user)) for doc in docs]
+	stats = [util.vocab_stats(common_words(current_user, doc)) for doc in docs]
 	return render_template('views/frontend/article_list.jade', doc_pairs=list(zip(docs, stats)))
 
 
@@ -96,7 +107,7 @@ def article_read(doc_id):
 	TODO: words with the same lemma are not marked as known
 	'''
 	doc = models.TextArticle.objects(user=current_user.id, id=doc_id).first_or_404()
-	doc_vocab = doc.common_words(current_user)
+	doc_vocab = common_words(current_user, doc)
 	stats = util.vocab_stats(doc_vocab)
 
 	return render_template('views/frontend/article_read.jade', 
@@ -104,6 +115,19 @@ def article_read(doc_id):
 		stats=stats,
 		annotated_words=sorted(doc_vocab))
 
+
+
+@blueprint.route('/user/texts/<doc_id>/delete/', methods=['GET', 'POST'])
+@login_required
+def article_delete(doc_id):
+	'''
+	TODO: ensure the user owns the article!!
+	'''
+	doc = models.TextArticle.objects(id=doc_id).first()
+	if doc:
+		flash(_('Deleted "%(title)s"', title=doc.title))
+		doc.delete()
+	return redirect(url_for('.article_list'))
 
 @blueprint.route('/user/texts/add/', methods=['GET', 'POST'])
 @login_required
@@ -123,6 +147,7 @@ def article_create():
 		strings = (map(lambda x: re.sub(r"\s+", ' ', x), strings))
 		plaintext = "\n".join(strings)
 		return (plaintext, soup.title)
+	app.logger.info("CREATE-ARTICLE: BeautifulSoup is done. ({})".format(util.now()))
 
 	form = AddArticleForm()
 	if form.validate_on_submit():
@@ -146,8 +171,12 @@ def article_create():
 			else:
 				title = '[untitled]'
 
+		app.logger.info("CREATE-ARTICLE: Page has been read ({})".format(util.now()))
+
 		all_tokens = set(nlp.tokenize(plaintext))
+		app.logger.info("CREATE-ARTICLE: Tokens created ({})".format(util.now()))
 		all_words = list(make_words(all_tokens))
+		app.logger.info("CREATE-ARTICLE: Words created ({})".format(util.now()))
 		sentence_positions = []
 		occurrences = {}
 		for i, sentence in enumerate(nlp.get_sentences(plaintext)):
@@ -161,6 +190,8 @@ def article_create():
 					occurrences[word.id] = models.WordOccurrence(word=word)
 				occurrences[word.id].locations.append(sentence.start)
 				occurrences[word.id].sentences.append(i)
+
+		app.logger.info("CREATE-ARTICLE: Occurrences marked ({})".format(util.now()))
 
 		num_words_before = models.Word.objects.count()
 		user = models.User.objects(id=current_user.id).first()
@@ -180,6 +211,8 @@ def article_create():
 				'sentence_positions': sentence_positions,
 				}
 			)
+
+		app.logger.info("CREATE-ARTICLE: Article created/retrieved ({})".format(util.now()))
 		if not created:
 			article.words = all_words
 			article.title = title
@@ -187,6 +220,9 @@ def article_create():
 			article.occurrences = occ
 			article.sentence_positions = sentence_positions
 			article.save()
+		app.logger.info("CREATE-ARTICLE: Article saved ({})".format(util.now()))
+
+		cache.delete_memoized(common_words, current_user, article)
 
 		num_words_after = models.Word.objects.count()
 		num_added = num_words_after - num_words_before

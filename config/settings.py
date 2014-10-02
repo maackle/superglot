@@ -33,5 +33,7 @@ MONGODB_SETTINGS = {
 	'DB': 'superglot'
 }
 
+DEBUG_TB_INTERCEPT_REDIRECTS = False
+
 pwd = "v(4K9HUg9!sAba~"
 

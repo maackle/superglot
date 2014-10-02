@@ -3,25 +3,29 @@ module.exports = (grunt) ->
 	grunt.initConfig
 
 		paths:
-			templates: "templates"
-			src: "assets"
-			dest: "static/build"
+			# common:
+			# 	src: "common/assets"
+			# 	dest: "common/build"
+			server:
+				templates: "./templates"
+				src: "./assets"
+				dest: "./static/build"
 
 		pkg: grunt.file.readJSON("package.json")
 
 		watch:
 			livereload:
 				files: [
-					"<%= paths.dest %>/**/*.css"
-					# "<%= paths.templates %>/**/*"
+					"<%= paths.server.dest %>/**/*.css"
+					# "<%= paths.server.templates %>/**/*"
 				]
 				options:
 					livereload: 54739
 			js:
-				files: ["<%= paths.src %>/scripts/{,**}/*.coffee"]
+				files: ["<%= paths.server.src %>/scripts/{,**}/*.coffee"]
 				tasks: ["coffee"]
 			sass:
-				files: ["<%= paths.src %>/styles/{,**}/*.{sass,scss}"]
+				files: ["<%= paths.server.src %>/styles/{,**}/*.{sass,scss}"]
 				tasks: ["compass"]
 
 
@@ -30,18 +34,11 @@ module.exports = (grunt) ->
 				options:
 					join: true
 				files: [
-					"<%= paths.dest %>/main.js": [
-						"<%= paths.src %>/scripts/util.coffee"
-						"<%= paths.src %>/scripts/main.coffee"
-						"<%= paths.src %>/scripts/*.coffee"
+					"<%= paths.server.dest %>/main.js": [
+						"<%= paths.server.src %>/scripts/util.coffee"
+						"<%= paths.server.src %>/scripts/main.coffee"
+						"<%= paths.server.src %>/scripts/*.coffee"
 					]
-					# {
-					# 	expand: true # Enable dynamic expansion.
-					# 	cwd: "<%= paths.src %>/coffee/pages/" # Src matches are relative to this path.
-					# 	src: ["*.coffee"] # Actual pattern(s) to match.
-					# 	dest: "<%= paths.dest %>/scripts/pages/" # Destination path prefix.
-					# 	ext: ".js" # Dest filepaths will have this extension.
-					# }
 				]
 
 
@@ -50,8 +47,8 @@ module.exports = (grunt) ->
 				options:
 					noLineComments: false
 					# debugInfo: true
-					sassDir: '<%= paths.src %>/styles'
-					cssDir: '<%= paths.dest %>/'
+					sassDir: '<%= paths.server.src %>/styles'
+					cssDir: '<%= paths.server.dest %>/'
 					environment: 'development'
 					require: [
 						'susy'

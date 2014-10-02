@@ -50,8 +50,8 @@ class Word(Document):
 		# 	'dropDups': True,
 		# 	},
 		'indexes': [ {
-			'unique': True,
-			'fields': ('reading',  'lemma',  'language'),
+			'unique': False,
+			'fields': ('lemma',  'language'),
 		}]
 	}
 
@@ -201,6 +201,9 @@ class User(Document, UserMixin, CreatedStamp):
 			]
 	}
 
+	def __str__(self):
+		return "User({})".format(self.id)
+
 	def get_id(self):
 		return str(self.id)
 
@@ -301,12 +304,5 @@ class TextArticle(Document, CreatedStamp):
 	def sorted_lemmata(self):
 		return sorted(set(map(lambda x: x.lemma, self.words)), key=str.lower)
 
-	def common_words(self, user):
-		'''
-		Get words that show up in user's vocab and this document
-		'''
-		doc_vocab = set(map(lambda word: models.VocabWord(word=word), self.words))
-		user_vocab = set(user.vocab)
-		return (user_vocab | doc_vocab) - (user_vocab - doc_vocab)
-
-
+	def __str__(self):
+		return 'TextArticle({})'.format(self.id)
