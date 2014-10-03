@@ -1,4 +1,4 @@
-SRS_SCORE_CHOICES = [1,2,3,4]
+SRS_SCORE_CHOICES = [1,2,3,4]  # the scores that can be selected by pressing the keypad
 
 markWords = (lemmata, score, after) ->
 	if score == 'known'
@@ -46,8 +46,9 @@ setupAnnotation = ->
 			label = 'known'
 		markWords [lemma], score, (data) ->
 			if data
-				$(el).attr('data-group-label', label)
-				$(el).attr('data-score', score)
+				$set = $(".word[data-lemma='#{ lemma }']")
+				$set.attr('data-group-label', label)
+				$set.attr('data-score', score)
 				deselectWords()
 
 	setPopupScore = (score) ->
@@ -60,10 +61,9 @@ setupAnnotation = ->
 		$popup.find('.lemma').text($(el).attr('data-lemma'))
 		setPopupScore($(el).attr('data-score'))
 		$popupChoices.click (e) ->
-			score = $(this).attr('data-score')
-			if score >= 0 and score <= 5
-				setPopupScore(score)
-				updateWord(el, score)
+			score = parseInt($(this).attr('data-score'), 10);
+			setPopupScore(score)
+			updateWord(el, score)
 		$(document).on 'keyup', (e) ->
 			if e.keyCode == 27  # esc
 				deselectWords()
@@ -85,15 +85,15 @@ setupAnnotation = ->
 		$el.click (e) ->
 			selectWord(this)
 
-	attachAnnotationControls( $('.annotated-word-list li:not([data-group-label="ignored"])') )
+	attachAnnotationControls( $('.annotated-words .word:not([data-group-label="ignored"])') )
 
 
 $ ->
 	setupAnnotation()
 
-	$('.annotated-word-list .controls .mark-all').click (e) ->
+	$('.annotated-words .controls .mark-all').click (e) ->
 		label = $(this).attr('data-group-label')
-		$affected = $('.annotated-word-list li')
+		$affected = $('.annotated-words .word')
 			.filter (i, el) ->
 				$(el).attr('data-group-label') != label
 		lemmata = $affected

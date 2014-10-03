@@ -2,3 +2,8 @@ extends 'layouts/base.jade'
 
 block main_content
 	h1= _('study sentences') | title
+
+	for sentence, vocab in sentences
+		.annotated-sentence.annotated-words.style-a
+			for item in vocab
+				+annotated_vocab_word(item)

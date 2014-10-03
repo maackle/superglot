@@ -13,6 +13,10 @@ class Token:
 	def tup(self):
 		return (self.reading, self.lemma)
 
+	def word(self):
+		import models
+		return models.Word(reading=self.reading, lemma=self.lemma)
+
 	def __eq__(self, other):
 		return self.reading == other.reading
 

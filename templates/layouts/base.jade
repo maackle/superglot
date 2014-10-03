@@ -35,19 +35,7 @@ html
 				footer#footer
 
 			#html-templates
-				#word-score-popup: .inner
-					.lemma
-					ul.scores
-						li.choice(data-score="0") &times;
-						li.choice(data-score="1") 1
-						li.choice(data-score="2") 2
-						li.choice(data-score="3") 3
-						li.choice(data-score="4") 4
-						//- input(type="radio", name="score", value="1")
-						//- input(type="radio", name="score", value="2")
-						//- input(type="radio", name="score", value="3")
-						//- input(type="radio", name="score", value="4")
-						//- input(type="radio", name="score", value="5")
+				include partials/word_score_popup.jade
 
 			block scripts
 

@@ -56,9 +56,11 @@
         label = 'known';
       }
       return markWords([lemma], score, function(data) {
+        var $set;
         if (data) {
-          $(el).attr('data-group-label', label);
-          $(el).attr('data-score', score);
+          $set = $(".word[data-lemma='" + lemma + "']");
+          $set.attr('data-group-label', label);
+          $set.attr('data-score', score);
           return deselectWords();
         }
       });
@@ -73,11 +75,9 @@
       setPopupScore($(el).attr('data-score'));
       $popupChoices.click(function(e) {
         var score;
-        score = $(this).attr('data-score');
-        if (score >= 0 && score <= 5) {
-          setPopupScore(score);
-          return updateWord(el, score);
-        }
+        score = parseInt($(this).attr('data-score'), 10);
+        setPopupScore(score);
+        return updateWord(el, score);
       });
       $(document).on('keyup', function(e) {
         if (e.keyCode === 27) {
@@ -105,15 +105,15 @@
         return selectWord(this);
       });
     };
-    return attachAnnotationControls($('.annotated-word-list li:not([data-group-label="ignored"])'));
+    return attachAnnotationControls($('.annotated-words .word:not([data-group-label="ignored"])'));
   };
 
   $(function() {
     setupAnnotation();
-    $('.annotated-word-list .controls .mark-all').click(function(e) {
+    $('.annotated-words .controls .mark-all').click(function(e) {
       var $affected, label, lemmata;
       label = $(this).attr('data-group-label');
-      $affected = $('.annotated-word-list li').filter(function(i, el) {
+      $affected = $('.annotated-words .word').filter(function(i, el) {
         return $(el).attr('data-group-label') !== label;
       });
       lemmata = $affected.map(function(i, el) {

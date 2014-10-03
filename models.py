@@ -117,15 +117,6 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 		self.last_repetition = util.now()
 		self.next_repetition = util.now() + datetime.timedelta(days=interval)
 		
-		# app.logger.debug("""
-		# 	Recorded score: {1}
-		# 	{0}
-		# 	interval: {interval}
-		# 	ease_factor: {ease_factor}
-		# 	last rep: {last_repetition}
-		# 	next rep: {next_repetition}
-		# """.format(self.word, score, interval=interval, ease_factor=self.ease_factor, last_repetition=self.last_repetition, next_repetition=self.next_repetition))
-
 	@property
 	def label(self):
 		if not self.score:
@@ -150,31 +141,6 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 
 	def __str__(self):
 		return "{} ({})".format(self.word.reading, str(self.label).upper())
-
-	def __repr__(self):
-		return self.__str__()
-
-
-class AnnotatedDocWord():
-
-	word = None
-	score = None
-
-	def __init__(self, word, score=None):
-		self.word = word
-		self.score = score
-
-	def __lt__(self, other):
-		return self.word.lemma < other.word.lemma
-
-	def __eq__(self, other):
-		return self.word.lemma == other.word.lemma
-
-	def __hash__(self):
-		return util.string_hash(str(self.word.lemma))
-
-	def __str__(self):
-		return "[{}|{}]".format(self.word.reading, self.score)
 
 	def __repr__(self):
 		return self.__str__()
@@ -292,10 +258,11 @@ class TextArticle(Document, CreatedStamp):
 		a,b = self.sentence_positions[index]
 		return self.plaintext[a:b]
 
-	def gen_sentences(self):
+	def gen_sentences(self, words):
 		for o in self.occurrences:
-			for s in o.sentences:
-				yield self.sentence(s)
+			if o.word in words:
+				for s in o.sentences:
+					yield self.sentence(s)
 
 	def sorted_words(self):
 		from util import sorted_words
