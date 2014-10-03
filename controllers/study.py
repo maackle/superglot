@@ -66,7 +66,7 @@ def sentences():
 				# TODO: use actual reading, not lemma!
 				sentence_vocab.append(annotated_item)
 			sentences.append( (sentence, sentence_vocab) )
-			break  # TODO!!
+			# break  # TODO!!
 
 	return render_template('views/study/study_sentences.jade', **{
 		"due_vocab": due_vocab,

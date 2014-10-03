@@ -7802,12 +7802,12 @@ ul.inline-list li {
   margin: 2px auto;
 }
 /* line 216, ../../assets/styles/main.scss */
-.annotated-words.style-a .word[data-group-label="ignored"] {
+.annotated-words.style-a .word[data-score="-1"] {
   color: #aaa;
   cursor: not-allowed;
 }
 /* line 220, ../../assets/styles/main.scss */
-.annotated-words.style-a .word[data-group-label="ignored"]:hover {
+.annotated-words.style-a .word[data-score="-1"]:hover {
   border-color: transparent;
 }
 /* line 225, ../../assets/styles/main.scss */
@@ -7893,12 +7893,12 @@ ul.inline-list li {
   margin: 2px auto;
 }
 /* line 273, ../../assets/styles/main.scss */
-.annotated-words.style-b .word[data-group-label="ignored"] {
+.annotated-words.style-b .word[data-score="-1"] {
   color: #aaa;
   cursor: not-allowed;
 }
 /* line 277, ../../assets/styles/main.scss */
-.annotated-words.style-b .word[data-group-label="ignored"]:hover {
+.annotated-words.style-b .word[data-score="-1"]:hover {
   border-color: transparent;
 }
 /* line 282, ../../assets/styles/main.scss */

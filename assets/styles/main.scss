@@ -213,7 +213,7 @@ ul {
 			padding: 1px 3px;
 			margin: 2px auto;
 			
-			&[data-group-label="ignored"] {
+			&[data-score="-1"] {
 				// background: #ddd;
 				color: #aaa;
 				cursor: not-allowed;
@@ -270,7 +270,7 @@ ul {
 			padding: 1px 3px;
 			margin: 2px auto;
 			
-			&[data-group-label="ignored"] {
+			&[data-score="-1"] {
 				// background: #ddd;
 				color: #aaa;
 				cursor: not-allowed;
