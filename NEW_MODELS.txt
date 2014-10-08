@@ -1,0 +1,35 @@
+# User
+
+# Word
+- lemma:String
+- language:String
+- meanings:JSON
+
+# WordReading
+- word:Word
+- reading:String
+
+# VocabWord
+- user:User
+- word:Word
+- SRS
+	- score:Int
+	- etc...
+
+# Article
+- sentence_positions:JSON
+	- this could be a hash, where a sentence is uniquely identified by its start index, e.g.
+	{
+		0: 20,
+		21: 13,
+		34: 10,
+		(key=sentence_start, value=sentence_length)
+	}
+
+# Word Occurrence
+- word:Word
+- article:Article
+- location:Int
+- sentence_start:Int
+
+It's temping to embed these into the Article as JSON, but we want to search for word occurrences across articles too!

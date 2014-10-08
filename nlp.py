@@ -62,5 +62,5 @@ def tokenize(text):
 	return list(gen())
 
 
-def lemmatize_word(word):
-	return Word(word).lemmatize()
+def lemmatize_word(word, pos):
+	return Word(word).lemmatize(pos)

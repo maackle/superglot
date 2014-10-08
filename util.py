@@ -8,6 +8,13 @@ from cache import cache
 
 now = datetime.datetime.now
 
+def chunks(l, n):
+    """ Yield successive n-sized chunks from l.
+    """
+    for i in range(0, len(l), n):
+        yield l[i:i+n]
+
+
 @cache.memoize()
 def get_page(url):
 	req = requests.get(url)
