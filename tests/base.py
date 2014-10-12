@@ -3,13 +3,13 @@ import io
 import os
 from unittest import mock
 import requests
+from flask import url_for
+from flask.ext.sqlalchemy import SQLAlchemy
 
 from application import create_app
-import models
 import nlp
 import util
 
-from flask import url_for
 from datetime import datetime, timedelta
 
 
@@ -64,6 +64,7 @@ class SuperglotTestBase(object):
 		cls.client = cls.app.test_client()
 
 		with cls.app.app_context():
+			cls.db = SQLAlchemy(cls.app)
 			cls._add_accounts()
 			# cls._add_words()
 

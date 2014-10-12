@@ -8,3 +8,5 @@ TESTING = True
 
 CSRF_ENABLED = False
 WTF_CSRF_ENABLED = False
+
+SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/superglot_test'

@@ -8,7 +8,7 @@ import requests
 from flask import url_for
 
 from application import create_app
-import models
+from relational import models
 import nlp
 import util
 

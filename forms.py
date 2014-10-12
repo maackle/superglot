@@ -1,11 +1,20 @@
 from flask.ext.wtf import Form
-from flask.ext.mongoengine.wtf import model_form
 from wtforms import StringField, PasswordField, BooleanField, TextAreaField, HiddenField, FieldList, IntegerField
 from wtforms import validators
+from wtforms_alchemy import model_form_factory
 # from wtforms.validators import Length, EqualTo, InputRequired, Optional, ValidationError, URL
 from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
+from database import db
+
 from models import User
+
+BaseModelForm = model_form_factory(Form)
+
+class ModelForm(BaseModelForm):
+    @classmethod
+    def get_session(self):
+        return db.session
 
 required = validators.InputRequired("This field is required")
 
@@ -19,19 +28,6 @@ password_field = PasswordField('Password', [
         validators.Length(min=1, max=32)
         ])
 
-LoginForm = model_form(User, Form, only=('email', 'password',))
-RegisterForm = model_form(User, Form, only=('email', 'password', 'native_language', 'target_language'))
-UserSettingsForm = model_form(User, Form, only=('email', 'native_language', 'target_language'))
-
-# class LoginForm(Form):
-#     email = email_field
-#     password = password_field
-
-
-# class RegisterForm(Form):
-#     email = email_field
-#     password = password_field
-
 
 class AddArticleForm(Form):
     title = StringField(_('title'))
@@ -40,3 +36,22 @@ class AddArticleForm(Form):
         validators.URL()
         ])
     plaintext = TextAreaField(_('text'))
+
+
+class LoginForm(ModelForm):
+    class Meta:
+        model = models.User
+        include = ['email', 'password']
+
+
+class RegisterForm(ModelForm):
+    class Meta:
+        model = models.User
+        include = ['email', 'password', 'native_language', 'target_language']
+
+
+class UserSettings(ModelForm):
+    class Meta:
+        model = models.User
+        include = ['email', 'native_language', 'target_language']
+

@@ -42,6 +42,22 @@ class User(Base):
 	target_language_id = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=True)
 	native_language_id = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=True)
 
+	@staticmethod
+	def authenticate(email, password):
+		user = db.session.query(User).filter(email=email, password=password).first()
+		return user
+
+	@staticmethod
+	def register(email, password):
+		user = db.session.query(User).filter(email=email).first()
+		if user:
+			return (user, False)
+		else:
+			user = User(email=email, password=password)
+			db.session.add(user)
+			db.session.commit()
+			return (user, True)
+
 
 class VocabWord(Base):
 	__tablename__ = 'user_word'

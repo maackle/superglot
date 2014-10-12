@@ -21,6 +21,32 @@ def add_word(session, reading, lemma, language=english):
 	session.add(models.LemmaReading(lemma=lemma, reading=reading))
 	return word
 
+def fetch_remote_article(url):
+	ignored_tags = ['script', 'style', 'code', 'head', 'iframe']
+	req = util.get_page(url)
+	soup = BeautifulSoup(req.text)
+
+	# remove noisy content-empty tags
+	for tag in ignored_tags:
+		for t in soup(tag):
+			t.decompose()
+
+	strings = (soup.stripped_strings)
+	strings = (map(lambda x: re.sub(r"\s+", ' ', x), strings))
+	plaintext = "\n".join(strings)
+	return (plaintext, soup.title)
+
+@cache.memoize()
+def get_common_words(session, user, article):
+	'''
+	Get words that show up in user's vocab and the article
+	'''
+
+	V = models.VocabWord
+	O = models.WordOccurrence
+
+	session.query(V).join(O, V.word_id == O.word_id).all()
+
 def gen_words_from_tokens(tokens):
 	'''
 	Look up words from token objects. If not in database, create a "non-canonical" word
@@ -42,35 +68,6 @@ def gen_words_from_tokens(tokens):
 		# 	# raise
 		for word in words:
 			yield word
-
-
-def fetch_remote_article(url):
-	ignored_tags = ['script', 'style', 'code', 'head', 'iframe']
-	req = util.get_page(url)
-	soup = BeautifulSoup(req.text)
-
-	# remove noisy content-empty tags
-	for tag in ignored_tags:
-		for t in soup(tag):
-			t.decompose()
-
-	strings = (soup.stripped_strings)
-	strings = (map(lambda x: re.sub(r"\s+", ' ', x), strings))
-	plaintext = "\n".join(strings)
-	return (plaintext, soup.title)
-
-
-@cache.memoize()
-def get_common_words(session, user, article):
-	'''
-	Get words that show up in user's vocab and the article
-	'''
-
-	V = models.VocabWord
-	O = models.WordOccurrence
-
-	session.query(V).join(O, V.word_id == O.word_id).all()
-
 
 def create_article(user, title, plaintext, url=None):
 	all_tokens = list()
@@ -158,3 +155,40 @@ def find_relevant_articles(user):
 	f = percent(score >= 4) > 0.6 AND 0.1 < percent(1 <= score <= 2) < 0.3
 
 	"""
+
+def add_corncob_words():
+	from database import db
+	from relational import models
+
+	english = db.session.query(models.Language).filter_by(code='en').one()
+
+	with open('data/corncob_words.txt', 'r') as f:
+		lines = list(f)
+		items = []
+		words = defaultdict(list)
+		for reading in lines:
+			reading = reading.strip()
+			tw = textblob.Word(reading)
+			lemmata = set()
+			lemmata.add(tw.lemmatize('n'))
+			lemmata.add(tw.lemmatize('v'))
+			lemmata.add(tw.lemmatize('a'))  # adj
+			lemmata.add(tw.lemmatize('r'))  # adv
+			for lemma in lemmata:
+				words[lemma].append(reading)
+
+		db.engine.execute(models.Word.__table__.insert(),
+			[{
+				'lemma': lemma, 
+				'language_id': english.id,
+			} for lemma in words.keys()])
+
+		rows = []
+		for lemma, readings in words.items():
+			for reading in readings:
+				rows.append({
+					'lemma': lemma,
+					'reading': reading,
+				})
+		db.engine.execute(models.LemmaReading.__table__.insert(), rows)
+	app.logger.info("corncob readings added")

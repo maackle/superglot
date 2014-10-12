@@ -3,15 +3,14 @@ from flask.ext.login import LoginManager, login_user, logout_user, login_require
 from flask.ext.babel import gettext as _
 
 from forms import LoginForm, RegisterForm
-import models
-from models import User
-
+from relational import models
+from database import db
 
 login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(userid):
-	user = User.objects(id=userid).first()
+	user = db.session.query(models.User).get(userid)
 	return user
 
 blueprint = Blueprint('auth', __name__, template_folder='templates')
@@ -24,7 +23,7 @@ def login():
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			user = User.authenticate(**data)
+			user = models.User.authenticate(**data)
 			if user:
 				result = login_user(user, remember=False)
 				flash(_("Logged in successfully.").capitalize())

@@ -29,9 +29,7 @@ SCORES = {
 NATIVE_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in NATIVE_LANGUAGES)
 TARGET_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in TARGET_LANGUAGES)
 
-MONGODB_SETTINGS = {
-	'DB': 'superglot'
-}
+SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/superglot_dev'
 
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 

@@ -8,7 +8,7 @@ from flask import url_for
 from datetime import datetime, timedelta
 
 from application import create_app
-import models
+from relational import models
 import nlp
 import util
 
@@ -25,12 +25,18 @@ class TestAuth(SuperglotTestBase):
 
 	def test_register(self):
 		with self.app.test_request_context():
-			assert not models.User.objects(email=self.test_account['email']).first()
+			user, created = models.User.register("axabras@gmail.com", "axabras")
+			assert user
+			assert created
+
+	def test_register_route(self):
+		with self.app.test_request_context():
+			assert not self.db.session.query(models.User).filter(email=self.test_account['email']).first()
 			r = self.post(url_for('auth.register'), data={
 				'email': self.test_account['email'],
 				'password': self.test_account['password'],
 			})
-			user = models.User.objects(email=self.test_account['email']).first()
+			user = self.db.session.query(models.User).filter(email=self.test_account['email']).first()
 			assert r.status_code is 200
 			assert user
 

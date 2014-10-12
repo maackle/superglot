@@ -8,6 +8,7 @@ from application import create_app
 from models import User
 import nlp
 import textblob
+import superglot
 
 app = create_app()
 manager = Manager(app)
@@ -40,41 +41,7 @@ def schema_fixtures():
 
 @manager.command
 def fixture_words():
-	from database import db
-	from relational import models
-
-	english = db.session.query(models.Language).filter_by(code='en').one()
-
-	with open('data/corncob_words.txt', 'r') as f:
-		lines = list(f)
-		items = []
-		words = defaultdict(list)
-		for reading in lines:
-			reading = reading.strip()
-			tw = textblob.Word(reading)
-			lemmata = set()
-			lemmata.add(tw.lemmatize('n'))
-			lemmata.add(tw.lemmatize('v'))
-			lemmata.add(tw.lemmatize('a'))  # adj
-			lemmata.add(tw.lemmatize('r'))  # adv
-			for lemma in lemmata:
-				words[lemma].append(reading)
-
-		db.engine.execute(models.Word.__table__.insert(),
-			[{
-				'lemma': lemma, 
-				'language_id': english.id,
-			} for lemma in words.keys()])
-
-		rows = []
-		for lemma, readings in words.items():
-			for reading in readings:
-				rows.append({
-					'lemma': lemma,
-					'reading': reading,
-				})
-		db.engine.execute(models.LemmaReading.__table__.insert(), rows)
-	app.logger.info("corncob readings added")
+	superglot.add_corncob_words()
 
 
 @manager.command
