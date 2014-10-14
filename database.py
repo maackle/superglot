@@ -1,6 +1,20 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from config.settings import SQLALCHEMY_DATABASE_URI
+from contextlib import contextmanager
 
-from flask import current_app as app
+engine = create_engine(SQLALCHEMY_DATABASE_URI)
+Session = sessionmaker(bind=engine)
 
-from flask.ext.sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy(app)
+@contextmanager
+def session():
+    """Provide a transactional scope around a series of operations."""
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()

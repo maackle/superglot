@@ -7,11 +7,9 @@ import requests
 from flask import url_for
 from datetime import datetime, timedelta
 
-from application import create_app
 from relational import models
 import nlp
 import util
-from database import db
 
 from .base import SuperglotTestBase
 

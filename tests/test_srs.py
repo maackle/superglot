@@ -7,10 +7,11 @@ from datetime import datetime, timedelta
 import requests
 from flask import url_for
 
-from application import create_app
 from relational import models
 import nlp
 import util
+from config import settings
+import database as db
 
 from .base import SuperglotTestBase
 
@@ -20,14 +21,15 @@ class TestSRS(SuperglotTestBase):
 	lemmata_fixture = ['']
 
 	def test(self):
-		with self.app.app_context():
-			user = models.User.objects.first()
-			ignored_words = models.Word.objects[0:20]
+		with db.session() as session:
+			user = session.query(models.User).first()
+			words = session.query(models.Word)
+			ignored_words = words[0:20]
 			wordsets = {
-				1: models.Word.objects[20:40],
-				2: models.Word.objects[20:40],
-				3: models.Word.objects[40:60],
-				4: models.Word.objects[60:80],
+				1: words[20:40],
+				2: words[20:40],
+				3: words[40:60],
+				4: words[60:80],
 			}
 
 			# TODO: once the SRS scheme is solidified, simulate a bunch of updates over days and months and see if they make sense
@@ -37,7 +39,7 @@ class TestSRS(SuperglotTestBase):
 				}
 			]
 
-			user.update_words(ignored_words, self.app.config['SCORES']['ignored'])
+			user.update_words(ignored_words, settings['SCORES']['ignored'])
 
 			for score, words in wordsets.items():
 				num = user.update_words(words, score)

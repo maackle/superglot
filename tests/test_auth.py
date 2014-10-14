@@ -7,7 +7,6 @@ import requests
 from flask import url_for
 from datetime import datetime, timedelta
 
-from application import create_app
 from relational import models
 import nlp
 import util
@@ -25,7 +24,7 @@ class TestAuth(SuperglotTestBase):
 
 	def test_register(self):
 		with self.app.test_request_context():
-			user, created = models.User.register("axabras@gmail.com", "axabras")
+			user, created = superglot.register_user("axabras@gmail.com", "axabras")
 			assert user
 			assert created
 

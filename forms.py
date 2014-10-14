@@ -5,16 +5,15 @@ from wtforms_alchemy import model_form_factory
 # from wtforms.validators import Length, EqualTo, InputRequired, Optional, ValidationError, URL
 from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
-from database import db
-
-from models import User
+from relational import models
+import database as db
 
 BaseModelForm = model_form_factory(Form)
 
 class ModelForm(BaseModelForm):
     @classmethod
     def get_session(self):
-        return db.session
+        return db.Session()
 
 required = validators.InputRequired("This field is required")
 
@@ -47,11 +46,11 @@ class LoginForm(ModelForm):
 class RegisterForm(ModelForm):
     class Meta:
         model = models.User
-        include = ['email', 'password', 'native_language', 'target_language']
+        include = ['email', 'password']
 
 
-class UserSettings(ModelForm):
+class UserSettingsForm(ModelForm):
     class Meta:
         model = models.User
-        include = ['email', 'native_language', 'target_language']
+        include = ['email']
 

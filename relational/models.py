@@ -1,24 +1,28 @@
-from database import db
+import sqlalchemy as sa
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.ext.declarative import declarative_base
 
-Base = db.Model
+import database as db
+
+Base = declarative_base()
 
 class Language(Base):
 	__tablename__ = 'language'
 
-	id = db.Column(db.Integer, primary_key=True)
-	code = db.Column(db.String(8))
+	id = sa.Column(sa.Integer, primary_key=True)
+	code = sa.Column(sa.String(8))
 	
 
 class Word(Base):
 	__tablename__ = 'word'
 
-	id = db.Column(db.Integer, primary_key=True)
-	lemma = db.Column(db.String(256), unique=True)
-	language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
-	canonical = db.Column(db.Boolean(), default=True)
+	id = sa.Column(sa.Integer, primary_key=True)
+	lemma = sa.Column(sa.String(256), unique=True)
+	language_id = sa.Column(sa.Integer, sa.ForeignKey('language.id'))
+	canonical = sa.Column(sa.Boolean(), default=True)
 	
-	language = db.relationship(Language)
+	language = relationship(Language)
 
 	def __str__(self):
 		return "Word({})".format(self.lemma)
@@ -28,65 +32,52 @@ class Word(Base):
 class LemmaReading(Base):
 	__tablename__ = 'lemma_reading'
 
-	id = db.Column(db.Integer, primary_key=True)
-	lemma = db.Column(db.String(256))
-	reading = db.Column(db.String(256))
+	id = sa.Column(sa.Integer, primary_key=True)
+	lemma = sa.Column(sa.String(256))
+	reading = sa.Column(sa.String(256))
 	
 
 class User(Base):
 	__tablename__ = 'user'
 	
-	id = db.Column(db.Integer, primary_key=True)
-	email = db.Column(db.String(256))
-	password = db.Column(db.String(256))
-	target_language_id = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=True)
-	native_language_id = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=True)
+	id = sa.Column(sa.Integer, primary_key=True)
+	email = sa.Column(sa.String(256))
+	password = sa.Column(sa.String(256))
+	target_language_id = sa.Column(sa.Integer, sa.ForeignKey('language.id'), nullable=True)
+	native_language_id = sa.Column(sa.Integer, sa.ForeignKey('language.id'), nullable=True)
 
-	@staticmethod
-	def authenticate(email, password):
-		user = db.session.query(User).filter(email=email, password=password).first()
-		return user
-
-	@staticmethod
-	def register(email, password):
-		user = db.session.query(User).filter(email=email).first()
-		if user:
-			return (user, False)
-		else:
-			user = User(email=email, password=password)
-			db.session.add(user)
-			db.session.commit()
-			return (user, True)
+	target_language = relationship(Language, foreign_keys=[target_language_id])
+	native_language = relationship(Language, foreign_keys=[native_language_id])
 
 
 class VocabWord(Base):
 	__tablename__ = 'user_word'
 
-	id = db.Column(db.Integer, primary_key=True)  # TODO: composite key
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-	word_id = db.Column(db.Integer, db.ForeignKey('word.id'))
+	id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
+	user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id'))
+	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'))
 
 
 
 class Article(Base):
 	__tablename__ = 'article'
 
-	id = db.Column(db.Integer, primary_key=True)
-	plaintext = db.Column(db.Text)
-	sentence_positions = db.Column(JSON)
+	id = sa.Column(sa.Integer, primary_key=True)
+	plaintext = sa.Column(sa.Text)
+	sentence_positions = sa.Column(JSON)
 
-	user_id = db.Column(db.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
-	title = db.Column(db.String(256))
-	source = db.Column(db.String(256), nullable=True)
+	user_id = sa.Column(sa.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
+	title = sa.Column(sa.String(256))
+	source = sa.Column(sa.String(256), nullable=True)
 	
 
 class WordOccurrence(Base):
 	__tablename__ = 'article_word'
 
-	id = db.Column(db.Integer, primary_key=True)  # TODO: composite key
-	article_id = db.Column(db.Integer, db.ForeignKey('article.id', ondelete='CASCADE'))
-	word_id = db.Column(db.Integer, db.ForeignKey('word.id'))
-	article_sentence_start = db.Column(db.Integer)  # a unique identifier for an article sentence
-	# article_position = db.Column(db.Integer)
+	id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
+	article_id = sa.Column(sa.Integer, sa.ForeignKey('article.id', ondelete='CASCADE'))
+	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'))
+	article_sentence_start = sa.Column(sa.Integer)  # a unique identifier for an article sentence
+	# article_position = sa.Column(sa.Integer)
 	
-	article = db.relationship(Article, backref='word_occurrences')
+	article = relationship(Article, backref='word_occurrences')

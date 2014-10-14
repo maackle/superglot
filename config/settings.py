@@ -29,9 +29,18 @@ SCORES = {
 NATIVE_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in NATIVE_LANGUAGES)
 TARGET_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in TARGET_LANGUAGES)
 
-SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/superglot_dev'
-
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 pwd = "v(4K9HUg9!sAba~"
 
+import importlib
+import os
+
+try:
+	mod = importlib.import_module(os.environ['SUPERGLOT_SETTINGS'])
+	ldict = locals()
+	for k in mod.__dict__:
+	    if not k.startswith('__') or not k.endswith('__'):
+	        ldict[k] = mod.__dict__[k]
+except KeyError:
+	from config.development import *

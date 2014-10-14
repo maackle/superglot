@@ -9,16 +9,28 @@ from flask.ext.assets import Environment, Bundle
 from flask.ext.login import current_user
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.babel import Babel
+from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 
-from controllers.api import blueprint as api_blueprint
-from controllers.chrome_api import blueprint as chrome_api_blueprint
-from controllers.auth import login_manager, blueprint as auth_blueprint
-from controllers.frontend import blueprint as frontend_blueprint
-from controllers.study import blueprint as study_blueprint
-from controllers.user import blueprint as user_blueprint
 from cache import cache
 
+def setup_blueprints(app):
+
+	from controllers.api import blueprint as api_blueprint
+	from controllers.chrome_api import blueprint as chrome_api_blueprint
+	from controllers.auth import login_manager, blueprint as auth_blueprint
+	from controllers.frontend import blueprint as frontend_blueprint
+	from controllers.study import blueprint as study_blueprint
+	from controllers.user import blueprint as user_blueprint
+
+	app.register_blueprint(api_blueprint, url_prefix='/api')
+	app.register_blueprint(chrome_api_blueprint, url_prefix='/chrome')
+	app.register_blueprint(auth_blueprint, url_prefix='/auth')
+	app.register_blueprint(study_blueprint, url_prefix='/study')
+	app.register_blueprint(user_blueprint, url_prefix='/user')
+	app.register_blueprint(frontend_blueprint, url_prefix='')
+
+	login_manager.init_app(app)
 
 def create_app(**extra_config):
 
@@ -27,22 +39,16 @@ def create_app(**extra_config):
 	app = Flask(__name__)
 	app.config.from_object('config.settings')
 
-	try:
-		app.config.from_envvar('SUPERGLOT_SETTINGS')
-		print("Loaded config from envvar SUPERGLOT_SETTINGS")
-	except:
-		app.config.from_object('config.development')
-		print("Loaded DEVELOPMENT config")
-
-	app.config.update(extra_config)
+	# try:
+	# 	app.config.from_envvar('SUPERGLOT_SETTINGS')
+	# 	print("Loaded config from envvar SUPERGLOT_SETTINGS")
+	# except:
+	# 	app.config.from_object('config.development')
+	# 	print("Loaded DEVELOPMENT config")
 
 	app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
-	app.register_blueprint(api_blueprint, url_prefix='/api')
-	app.register_blueprint(chrome_api_blueprint, url_prefix='/chrome')
-	app.register_blueprint(auth_blueprint, url_prefix='/auth')
-	app.register_blueprint(study_blueprint, url_prefix='/study')
-	app.register_blueprint(user_blueprint, url_prefix='/user')
-	app.register_blueprint(frontend_blueprint, url_prefix='')
+
+	setup_blueprints(app)
 
 	assets = Environment(app)
 	assets.url = app.static_url_path
@@ -55,8 +61,6 @@ def create_app(**extra_config):
 		'CACHE_THRESHOLD': 1000000,
 		'CACHE_DEFAULT_TIMEOUT': 60*60*60*24,  # one day
 		})
-
-	login_manager.init_app(app)
 
 	toolbar = DebugToolbarExtension(app)
 
@@ -108,6 +112,7 @@ def create_app(**extra_config):
 		return locale.split('-')[0]
 
 	return app
+
 
 if __name__ == '__main__':
 	app = create_app()

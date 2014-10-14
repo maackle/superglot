@@ -4,7 +4,7 @@ from flask.ext.babel import gettext as _
 
 from forms import LoginForm, RegisterForm
 from relational import models
-from database import db
+import superglot
 
 login_manager = LoginManager()
 
@@ -23,7 +23,7 @@ def login():
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			user = models.User.authenticate(**data)
+			user = superglot.authenticate_user(**data)
 			if user:
 				result = login_user(user, remember=False)
 				flash(_("Logged in successfully.").capitalize())
@@ -51,7 +51,7 @@ def register():
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			(user, created) = User.register(email=data['email'], password= data['password'])
+			(user, created) = superglot.register_user(email=data['email'], password= data['password'])
 			if created:
 				flash(_("You're all signed up! Now you can log in."))
 				return redirect(url_for('auth.login'))

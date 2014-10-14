@@ -5,53 +5,53 @@ from collections import defaultdict
 from flask.ext.script import Manager, Command
 
 from application import create_app
-from models import User
-import nlp
-import textblob
-import superglot
 
 app = create_app()
 manager = Manager(app)
 
+import nlp
+import textblob
+from relational import models
+import database as db
+
+
 @manager.command
 def reset_schema():
-	from database import db
-	from relational.models import User
-
+	db.engine.dispose()
 	call('psql -c "DROP DATABASE superglot_dev;"', shell=True)
 	call('psql -c "CREATE DATABASE superglot_dev;"', shell=True)
 	call('psql -c "GRANT ALL ON DATABASE superglot_dev TO superglot_dev;"', shell=True)
-	db.create_all()
+	models.Base.metadata.create_all(db.engine)
 
 @manager.command
 def schema_fixtures():
-	from database import db
 	from relational import models
 
 	languages = {}
-	for code in ('en', 'it', 'ja',):
-		languages[code] = models.Language(code=code)
-		db.session.add(languages[code])
-	db.session.commit()
+	with db.session() as session:
+		for code in ('en', 'it', 'ja',):
+			languages[code] = models.Language(code=code)
+			session.add(languages[code])
 
-	user = models.User(email='michael@lv11.co', password='1234')
-	db.session.add(user)
-	db.session.commit()
+	with db.session() as session:
+		user = models.User(email='michael@lv11.co', password='1234')
+		session.add(user)
 	app.logger.info("schema fixtures created")
 
 @manager.command
 def fixture_words():
-	superglot.add_corncob_words()
+	import superglot
+	superglot.add_fixture_words()
 
 
 @manager.command
 def rebuild_db():
-	from database import db
-	from relational.models import User
-
 	reset_schema()
 	schema_fixtures()
 	fixture_words()
+	db.engine.dispose()
+	call('psql -c "DROP DATABASE superglot_test;"', shell=True)
+	call('psql -c "CREATE DATABASE superglot_test WITH TEMPLATE superglot_dev OWNER superglot_test;"', shell=True)
 
 
 @manager.command

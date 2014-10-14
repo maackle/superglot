@@ -9,9 +9,11 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from application import create_app
 import nlp
 import util
+from relational import models
+import superglot
 
 from datetime import datetime, timedelta
-
+import database as db
 
 class SuperglotTestBase(object):
 
@@ -30,46 +32,20 @@ class SuperglotTestBase(object):
 	@classmethod
 	def _add_accounts(cls):
 		for account in cls.account_fixtures:
-			user, created = models.User.register(email=account['email'], password=account['password'])
+			user, created = superglot.register_user(email=account['email'], password=account['password'])
 			assert user
 			assert created
 
-	# @classmethod
-	# def _add_words(cls):
-	# 	with open('tests/fixtures/initial-words.txt', 'r') as infile:
-	# 		def gen():
-	# 			for line in infile:
-	# 				reading = line.strip()
-	# 				# yield models.Word(reading=reading, lemma=nlp.lemmatize_word(reading), language='en')
-	# 				yield {
-	# 					"reading": reading, "lemma": nlp.lemmatize_word(reading), "language": 'en',
-	# 				}
-	# 		models.Word.objects.insert(gen())
-	# 		num = models.Word.objects.count()
-	# 		cls.app.logger.info("{} words added".format(num))
-
-	# @classmethod
-	# def _teardown_db(cls):
-	# 	from mongoengine import connect
-	# 	from config import testing as config
-	# 	db_name = config.MONGODB_SETTINGS['DB']
-	# 	assert db_name == 'superglot_test'
-	# 	db = connect(db_name)
-	# 	db.drop_database(db_name)
-
 	@classmethod
 	def setup_class(cls):
-		os.environ["SUPERGLOT_SETTINGS"] = 'config/testing.py'
 		cls.app = create_app()
 		cls.client = cls.app.test_client()
 
 		with cls.app.app_context():
-			cls.db = SQLAlchemy(cls.app)
 			cls._add_accounts()
 			# cls._add_words()
 
 	@classmethod
 	def teardown_class(cls):
-		models.User.drop_collection()
-
-
+		with db.session() as session:
+			session.query(models.User).delete()

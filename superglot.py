@@ -5,18 +5,22 @@ Complex queries, calculations, etc.
 from flask import current_app as app
 from bs4 import BeautifulSoup
 
-from relational import models
-from database import db
 import nlp
 from cache import cache
 import util
-import sqlalchemy
+from relational import models
+import database as db
 
-
-english = db.session.query(models.Language).filter_by(code='en').first()
+try:
+	with db.session() as session:
+		english = session.query(models.Language).filter_by(code='en').first()
+		session.expunge(english)
+except:
+	raise
+	english = None
 
 def add_word(session, reading, lemma, language=english):
-	word = models.Word(lemma=lemma, language=english, canonical=False)
+	word = models.Word(lemma=lemma, language_id=english.id, canonical=False)
 	session.add(word)
 	session.add(models.LemmaReading(lemma=lemma, reading=reading))
 	return word
@@ -104,6 +108,22 @@ def create_article(user, title, plaintext, url=None):
 	return article
 
 
+def authenticate_user(email, password):
+	with db.session() as session:
+		user = session.query(models.User).filter_by(email=email, password=password).first()
+	return user
+
+def register_user(email, password):
+	with db.session() as session:
+		user = session.query(models.User).filter_by(email=email).first()
+		if user:
+			return (user, False)
+		else:
+			user = models.User(email=email, password=password)
+			session.add(user)
+			session.commit()
+			return (user, True)
+
 
 #############################################################
 
@@ -156,13 +176,12 @@ def find_relevant_articles(user):
 
 	"""
 
-def add_corncob_words():
-	from database import db
+def add_fixture_words(filename='data/en-2000.txt'):
 	from relational import models
+	from collections import defaultdict
+	import textblob
 
-	english = db.session.query(models.Language).filter_by(code='en').one()
-
-	with open('data/corncob_words.txt', 'r') as f:
+	with open(filename, 'r') as f:
 		lines = list(f)
 		items = []
 		words = defaultdict(list)
