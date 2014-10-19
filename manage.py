@@ -12,13 +12,13 @@ manager = Manager(app)
 import nlp
 import textblob
 from relational import models
-import database as db
+import database
 from config import settings
 
 
 def load_schema_fixtures():
 	languages = {}
-	with db.session() as session:
+	with database.session() as session:
 		for i, code in enumerate(settings.SUPPORTED_NATIVE_LANGUAGES):
 			language_id = i + 1
 			languages[code] = models.Language(id=language_id, code=code)
@@ -31,12 +31,18 @@ def load_schema_fixtures():
 
 @manager.command
 def reset_schema():
-	print('resetting schema for database {0}'.format(settings.DATABASE_NAME))
-	db.engine.dispose()
-	call('psql -c "DROP DATABASE {0};"'.format(settings.DATABASE_NAME), shell=True)
-	call('psql -c "CREATE DATABASE {0};"'.format(settings.DATABASE_NAME), shell=True)
-	call('psql -c "GRANT ALL ON DATABASE {0} TO {0};"'.format(settings.DATABASE_NAME), shell=True)
-	models.Base.metadata.create_all(db.engine)
+	dbname = settings.DATABASE_NAME
+	print('resetting schema for database {0}'.format(dbname))
+	database.engine.dispose()
+	# call('psql -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = \'{0}\'"'.format(dbname), shell=True)
+	# if call('psql -c "DROP DATABASE {0};"'.format(dbname), shell=True):
+	# 	if call('dropdb {0}'.format(dbname)):
+	# 		raise "Couldn't drop DB"
+	# call('psql -c "CREATE DATABASE {0};"'.format(dbname), shell=True)
+	# call('psql -c "GRANT ALL ON DATABASE {0} TO {0};"'.format(dbname), shell=True)
+	call('bin/db-drop-create.sh {0}'.format(dbname), shell=True)
+	print('building schema')
+	models.Base.metadata.create_all(database.engine)
 	load_schema_fixtures()
 
 
@@ -51,9 +57,6 @@ def rebuild_db():
 	reset_schema()
 	load_fixture_words()
 	db.engine.dispose()
-	call('psql -c "DROP DATABASE superglot_test;"', shell=True)
-	call('psql -c "CREATE DATABASE superglot_test WITH TEMPLATE superglot_dev OWNER superglot_test;"', shell=True)
-
 
 @manager.command
 def translate(task, lang=None):

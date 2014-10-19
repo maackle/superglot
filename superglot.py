@@ -15,7 +15,7 @@ try:
 	with database.session() as session:
 		english = session.query(models.Language).filter_by(code='en').first()
 except:
-	raise
+	print("WARNING: tried to access Language model without schema")
 	english = None
 
 def add_word(session, reading, lemma, language=english):
@@ -204,7 +204,7 @@ def add_fixture_words(filename='data/en-2000.txt'):
 			for lemma in lemmata:
 				words[lemma].append(reading)
 
-		db.engine.execute(models.Word.__table__.insert(),
+		app.db.engine.execute(models.Word.__table__.insert(),
 			[{
 				'lemma': lemma, 
 				'language_id': english.id,
@@ -217,5 +217,5 @@ def add_fixture_words(filename='data/en-2000.txt'):
 					'lemma': lemma,
 					'reading': reading,
 				})
-		db.engine.execute(models.LemmaReading.__table__.insert(), rows)
+		app.db.engine.execute(models.LemmaReading.__table__.insert(), rows)
 	app.logger.info("corncob readings added")
