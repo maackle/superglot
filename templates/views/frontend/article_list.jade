@@ -8,7 +8,7 @@ block main_content
 		input.big-search-input(placeholder=_("search by name (TODO)")|capitalize)
 
 	h1= _("texts") | title
-		a(href=url_for('frontend.article_create')).btn.btn-primary.add-text-button + 
+		a(href=url_for('frontend.articles.article_create')).btn.btn-primary.add-text-button + 
 			= _("upload new") | title
 
 	if doc_pairs|length > 0
@@ -27,8 +27,8 @@ block main_content
 				for doc, stats in doc_pairs
 					tr
 						td
-							a(href=url_for('frontend.article_read', doc_id=doc.id))= doc.title
-							//- a(href=url_for('frontend.article_edit', doc_id=doc.id)) edit
+							a(href=url_for('frontend.articles.article_read', doc_id=doc.id))= doc.title
+							//- a(href=url_for('frontend.articles.article_edit', doc_id=doc.id)) edit
 						td
 							+vocab_progress_bar(stats)
 						td.align-center= stats.total
@@ -40,10 +40,10 @@ block main_content
 									= _("original")
 									|  &rarr;
 						td
-							a(href=url_for('frontend.article_delete', doc_id=doc.id)) &times;
+							a(href=url_for('frontend.articles.article_delete', doc_id=doc.id)) &times;
 	else
 		.callout-notice
 			h3= _("you have nothing to read!") | capitalize
 			p
-				a(href="#{ url_for('frontend.article_create') }")= _("go add some texts") | capitalize
+				a(href="#{ url_for('frontend.articles.article_create') }")= _("go add some texts") | capitalize
 				= _(", and they will show up here.")

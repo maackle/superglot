@@ -21,6 +21,8 @@ def setup_blueprints(app):
 	from controllers.chrome_api import blueprint as chrome_api_blueprint
 	from controllers.auth import blueprint as auth_blueprint
 	from controllers.frontend import blueprint as frontend_blueprint
+	from controllers.frontend.articles import blueprint as frontend_articles_blueprint
+	from controllers.frontend.words import blueprint as frontend_words_blueprint
 	from controllers.study import blueprint as study_blueprint
 	from controllers.user import blueprint as user_blueprint
 
@@ -30,13 +32,15 @@ def setup_blueprints(app):
 	app.register_blueprint(study_blueprint, url_prefix='/study')
 	app.register_blueprint(user_blueprint, url_prefix='/user')
 	app.register_blueprint(frontend_blueprint, url_prefix='')
+	app.register_blueprint(frontend_articles_blueprint, url_prefix='')
+	app.register_blueprint(frontend_words_blueprint, url_prefix='')
 
 	login_manager = LoginManager()
 	login_manager.init_app(app)
 
 	@login_manager.user_loader
 	def load_user(userid):
-		from relational import models
+		import models
 		user = app.db.session.query(models.User).get(userid)
 		return user
 

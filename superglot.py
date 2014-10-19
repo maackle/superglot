@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import nlp
 from cache import cache
 import util
-from relational import models
+import models
 import database
 
 try:
@@ -40,15 +40,17 @@ def fetch_remote_article(url):
 	return (plaintext, soup.title)
 
 @cache.memoize()
-def get_common_words(session, user, article):
+def get_common_words(user, article):
 	'''
 	Get words that show up in user's vocab and the article
 	'''
 
 	V = models.VocabWord
 	O = models.WordOccurrence
-	with database.session() as session:
-		session.query(V).join(O, V.word_id == O.word_id).all()
+	return app.db.session.query(V).\
+			join(O, V.word_id == O.word_id and O.article_id == article_id).\
+			filter(V.user_id==user.id).\
+			all()
 
 def gen_words_from_tokens(tokens):
 	'''
@@ -92,7 +94,7 @@ def create_article(user, title, plaintext, url=None):
 		title=title,
 		plaintext=plaintext,
 		sentence_positions=sentence_positions,
-		)
+	)
 
 	app.db.session.add(article)
 	app.db.session.commit()
@@ -104,7 +106,7 @@ def create_article(user, title, plaintext, url=None):
 
 	# cache.delete_memoized(get_common_words, user=user, article=article)
 
-	return article
+	return article, True
 
 
 def authenticate_user(email, password):
@@ -125,12 +127,24 @@ def register_user(email, password):
 	return (user, created)
 
 def update_user_words(user, words, rating):
+	created = 0
+	updated = 0
+	ignored = 0
 	for word in words:
-		vocab_word = user.vocab.filter_by(word_id=word.id).first()
-		if vocab_word:
-			vocab_word.rating = rating
-			app.db.session.save(vocab_word)
+		if word.id:
+			vocab_word = user.vocab.filter_by(word_id=word.id).first()
+			if vocab_word:
+				vocab_word.rating = rating
+				app.db.session.merge(vocab_word)
+				updated += 1
+			else:
+				vocab_word = models.VocabWord(user_id=user.id, word_id=word.id, rating=rating)
+				app.db.session.add(vocab_word)
+				created += 1
+		else:
+			ignored += 1
 	app.db.session.commit()
+	return created, updated, ignored
 
 
 #############################################################
@@ -183,39 +197,3 @@ def find_relevant_articles(user):
 	f = percent(rating >= 4) > 0.6 AND 0.1 < percent(1 <= rating <= 2) < 0.3
 
 	"""
-
-def add_fixture_words(filename='data/en-2000.txt'):
-	from relational import models
-	from collections import defaultdict
-	import textblob
-
-	with open(filename, 'r') as f:
-		lines = list(f)
-		items = []
-		words = defaultdict(list)
-		for reading in lines:
-			reading = reading.strip()
-			tw = textblob.Word(reading)
-			lemmata = set()
-			lemmata.add(tw.lemmatize('n'))
-			lemmata.add(tw.lemmatize('v'))
-			lemmata.add(tw.lemmatize('a'))  # adj
-			lemmata.add(tw.lemmatize('r'))  # adv
-			for lemma in lemmata:
-				words[lemma].append(reading)
-
-		app.db.engine.execute(models.Word.__table__.insert(),
-			[{
-				'lemma': lemma, 
-				'language_id': english.id,
-			} for lemma in words.keys()])
-
-		rows = []
-		for lemma, readings in words.items():
-			for reading in readings:
-				rows.append({
-					'lemma': lemma,
-					'reading': reading,
-				})
-		app.db.engine.execute(models.LemmaReading.__table__.insert(), rows)
-	app.logger.info("corncob readings added")

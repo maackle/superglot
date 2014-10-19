@@ -2,7 +2,7 @@ from nose.tools import *
 
 from flask import url_for
 
-from relational import models
+import models
 import superglot
 
 from .base import SuperglotTestBase

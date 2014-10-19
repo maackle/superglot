@@ -3,7 +3,7 @@ from flask.ext.login import login_user, logout_user, login_required
 from flask.ext.babel import gettext as _
 
 from forms import LoginForm, RegisterForm
-from relational import models
+import models
 import superglot
 import database as db
 

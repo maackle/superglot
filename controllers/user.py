@@ -8,7 +8,6 @@ from flask.ext.babel import lazy_gettext as _
 from mongoengine.errors import NotUniqueError
 
 from forms import UserSettingsForm
-from models import User, Word, TextArticle, WordOccurrence
 from controllers import api
 from util import sorted_words
 import nlp

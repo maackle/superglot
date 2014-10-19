@@ -8,7 +8,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 import nlp
 import util
-from relational import models
+import models
 import superglot
 
 from datetime import datetime, timedelta

@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import requests
 from flask import url_for
 
-from relational import models
+import models
 import nlp
 import util
 from config import settings

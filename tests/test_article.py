@@ -7,7 +7,7 @@ import requests
 from flask import url_for
 from datetime import datetime, timedelta
 
-from relational import models
+import models
 import nlp
 import util
 
@@ -27,7 +27,7 @@ class TestArticle(SuperglotTestBase):
 
 	def test_create_article(self):
 		import superglot
-		from relational import models
+		import models
 
 		user = self.db.session.query(models.User).first()
 

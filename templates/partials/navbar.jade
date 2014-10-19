@@ -3,9 +3,9 @@ nav.navbar: .container
 	ul.left
 		if current_user.is_authenticated()
 			li
-				a(href=url_for('frontend.article_list'))= _("texts") | title
+				a(href=url_for('frontend.articles.article_list'))= _("texts") | title
 			li
-				a(href=url_for('frontend.word_list_all'))= _("vocabulary") | title
+				a(href=url_for('frontend.words.word_list_all'))= _("vocabulary") | title
 			li
 				a(href=url_for('study.home'))= _("study") | title
 	ul.right

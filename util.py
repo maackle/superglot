@@ -3,16 +3,17 @@ from bs4 import BeautifulSoup
 import requests
 from collections import defaultdict
 import datetime
+from flask import url_for
 
 from cache import cache
 
 now = datetime.datetime.now
 
 def chunks(l, n):
-    """ Yield successive n-sized chunks from l.
-    """
-    for i in range(0, len(l), n):
-        yield l[i:i+n]
+	""" Yield successive n-sized chunks from l.
+	"""
+	for i in range(0, len(l), n):
+		yield l[i:i+n]
 
 
 @cache.memoize()
@@ -68,3 +69,14 @@ def get_remote_article(url):
 	# for tag in soup.find_all(allowed_tags):
 	# 	text += ' ' + tag.text	
 	return (text, title)
+
+def get_site_links(app):
+	links = []
+	for rule in app.url_map.iter_rules():
+		# Filter out rules we can't navigate to in a browser
+		# and rules that require parameters
+		print(rule.endpoint, '||', rule.defaults, '||', rule.arguments)
+		if "GET" in rule.methods and len(rule.defaults or []) >= len(rule.arguments):
+			url = url_for(rule.endpoint)
+			links.append((url, rule))
+	return links

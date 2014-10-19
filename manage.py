@@ -11,7 +11,7 @@ manager = Manager(app)
 
 import nlp
 import textblob
-from relational import models
+import models
 import database
 from config import settings
 
@@ -47,16 +47,50 @@ def reset_schema():
 
 
 @manager.command
-def load_fixture_words():
-	import superglot
-	superglot.add_fixture_words()
+def load_fixture_words(filename='data/en-2000.txt'):
+	from collections import defaultdict
+	import textblob
+	import database
+
+	english_id = 1
+
+	with open(filename, 'r') as f:
+		lines = list(f)
+		items = []
+		words = defaultdict(list)
+		for reading in lines:
+			reading = reading.strip()
+			tw = textblob.Word(reading)
+			lemmata = set()
+			lemmata.add(tw.lemmatize('n'))
+			lemmata.add(tw.lemmatize('v'))
+			lemmata.add(tw.lemmatize('a'))  # adj
+			lemmata.add(tw.lemmatize('r'))  # adv
+			for lemma in lemmata:
+				words[lemma].append(reading)
+
+		database.engine.execute(models.Word.__table__.insert(),
+			[{
+				'lemma': lemma, 
+				'language_id': english_id,
+			} for lemma in words.keys()])
+
+		rows = []
+		for lemma, readings in words.items():
+			for reading in readings:
+				rows.append({
+					'lemma': lemma,
+					'reading': reading,
+				})
+		database.engine.execute(models.LemmaReading.__table__.insert(), rows)
+	app.logger.info("corncob readings added")
 
 
 @manager.command
 def rebuild_db():
 	reset_schema()
 	load_fixture_words()
-	db.engine.dispose()
+	database.engine.dispose()
 
 @manager.command
 def translate(task, lang=None):

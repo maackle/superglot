@@ -5,4 +5,4 @@ import manage
 
 
 def setup_package():
-	manage.reset_schema()
+	manage.rebuild_db()

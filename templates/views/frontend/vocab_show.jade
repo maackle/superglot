@@ -4,32 +4,34 @@ block main_content
 	h1= _("vocabulary") | title
 
 	.vocab-stats
-		p= _("you know %(num)d words", num=vocab.known|length) | capitalize
-		p= _("you are learning %(num)d words", num=vocab.learning|length) | capitalize
+		p TODO: stats on words by rating
+
+	for item in vocab
+		li= item.word.lemma
 
 	h2= _("add words?") | capitalize
 	.row
 		.col-sm-4
 			h3= _("known") | capitalize
-			form(method="POST", action=url_for('frontend.add_words', label='known'))
+			form(method="POST", action=url_for('frontend.words.add_words', label='known'))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 		.col-sm-4
 			h3= _("learning") | capitalize
-			form(method="POST", action=url_for('frontend.add_words', label='learning'))
+			form(method="POST", action=url_for('frontend.words.add_words', label='learning'))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 		.col-sm-4
 			h3= _("ignored") | capitalize
-			form(method="POST", action=url_for('frontend.add_words', label='ignored'))
+			form(method="POST", action=url_for('frontend.words.add_words', label='ignored'))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 
-	h2= _("known") | capitalize
-	+vocab_list(vocab.known)
+	//- h2= _("known") | capitalize
+	//- +vocab_list(vocab.known)
 			
-	h2= _("learning") | capitalize
-	+vocab_list(vocab.learning)
+	//- h2= _("learning") | capitalize
+	//- +vocab_list(vocab.learning)
 					
-	h2= _("ignored") | capitalize
-	+vocab_list(vocab.ignored)
+	//- h2= _("ignored") | capitalize
+	//- +vocab_list(vocab.ignored)

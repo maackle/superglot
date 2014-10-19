@@ -7,7 +7,7 @@ import requests
 from flask import url_for
 from datetime import datetime, timedelta
 
-from relational import models
+import models
 import nlp
 import util
 
@@ -21,3 +21,8 @@ class TestMisc(SuperglotTestBase):
 			eq_(url_for('auth.register'), '/auth/register/')
 			eq_(url_for('auth.login'), '/auth/login/')
 			eq_(url_for('study.words'), '/study/words/')
+
+	# def test_page_renders(self):
+	# 	for endpoint, rule in util.get_site_links(self.app):
+	# 		r = requests.get('http:/'+endpoint)
+	# 		eq_(r, 200)

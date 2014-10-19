@@ -1,275 +1,97 @@
-import datetime
-from collections import defaultdict
-
-from flask import session, jsonify, current_app as app
+import sqlalchemy as sa
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.login import UserMixin
-from mongoengine import *
-from mongoengine import signals
-from flask.ext.mongoengine import Document
-from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
-from cache import cache
-from decorators import memoized, lazyprop
-import util
-import models
-import nlp
-import srs
-from config import settings
+import database as db
 
-email_field = lambda: StringField(max_length=128, required=True, verbose_name=_('email').capitalize())
-password_field = lambda: StringField(max_length=32, required=True, verbose_name=_('password').capitalize())
+Base = declarative_base()
 
-word_reading_field = lambda: StringField(max_length=128, verbose_name=_('reading'))
-word_lemma_field = lambda: StringField(max_length=128, verbose_name=_('lemma'))
-native_language_field = lambda: StringField(max_length=8, verbose_name=_('native language').capitalize(), default="en", choices=settings.NATIVE_LANGUAGE_CHOICES)
-target_language_field = lambda: StringField(max_length=8, verbose_name=_('target language').capitalize(), default="en", choices=settings.TARGET_LANGUAGE_CHOICES)
+class Language(Base):
+	__tablename__ = 'language'
 
-lemmata_field = lambda: SortedListField(StringField(max_length=256, unique=True))
-
-
-class CreatedStamp:
-
-	created_at = DateTimeField(default=util.now)
-
-
-class UpdatedStamp:
-
-	updated_at = DateTimeField(default=util.now)
-
-
-class WordMeaning(EmbeddedDocument):
-	language = StringField(max_length=8, required=True)
-	meaning = StringField(max_length=256, required=True)
-
-
-class Word(Document):
-
-	meta = {
-		# 'index_options': {
-		# 	'unique': True,
-		# 	'dropDups': True,
-		# 	},
-		'indexes': [ {
-			'unique': False,
-			'fields': ('lemma',  'language'),
-		}]
-	}
-
-	reading = word_reading_field()
-	lemma = word_lemma_field()
-	language = native_language_field()
-	meanings = MapField(EmbeddedDocumentField(WordMeaning))
-	recognized = BooleanField(default=True)
-
-	def pair(self):
-		return (self.reading, self.lemma)
-
-	def lookup(self, language):
-		if language in self.meanings:
-			return self.meanings[language]
-		else:
-			text = nlp.translate_word(self.reading, language)
-			meaning = self.meanings[language] = WordMeaning(language=language, meaning=text)
-			self.save()
-			return meaning
-
-
-	def __lt__(self, other):
-		return self.reading.lower() < other.reading.lower()
-
-	def __eq__(self, other):
-		return self.language == other.language and self.lemma == other.lemma and self.reading.lower() == other.reading.lower()
-
-	def __hash__(self):
-		return util.string_hash(self.lemma + self.reading)
-
-	def __str__(self):
-		return "Word({})".format(self.reading)
-
-Word.sort_key = lambda w: w.lemma
-
-words_field = lambda: ListField(ReferenceField(Word))
-
-
-class VocabWord(EmbeddedDocument, UpdatedStamp):
-
-	word = ReferenceField(Word)
-	score = IntField(default=0)
-
-	last_scored = DateTimeField(default=util.now)
-	last_repetition = DateTimeField(default=util.now)
-	next_repetition = DateTimeField(default=util.now)
+	id = sa.Column(sa.Integer, primary_key=True)
+	code = sa.Column(sa.String(8), info={
+		'choices': [('en', 'English')]
+		})
 	
-	srs_score = IntField(default=0)
-	srs_ease_factor = DecimalField(default=2.5)
-	srs_num_repetitions = IntField(default=0)
 
-	def last_studied_interval(self):
-		# TODO: hook this up
-		delta = util.now() - self.last_repetition
-		return delta
+class Word(Base):
+	__tablename__ = 'word'
 
-	def record_score(self, score):
-		'''This should happen when the word score is updated after the next interval time'''
-
-		interval, self.srs_ease_factor, self.srs_num_repetitions = srs.process_answer(score, float(self.srs_ease_factor), self.srs_num_repetitions)
-		self.srs_score = score
-		self.last_repetition = util.now()
-		self.next_repetition = util.now() + datetime.timedelta(days=interval)
-		
-	@property
-	def label(self):
-		if not self.score:
-			return None
-		elif self.score == settings.RATING_NAMES['ignored']:
-			return 'ignored'
-		elif self.score > 0 and self.score <= settings.RATING_NAMES['learning']:
-			return 'learning'
-		elif self.score <= settings.RATING_NAMES['known']:
-			return 'known'
-		else:
-			return None
-
-	def __lt__(self, other):
-		return self.word.reading.lower() < other.word.reading.lower()
-
-	def __eq__(self, other):
-		return self.word.lemma == other.word.lemma
-
-	def __hash__(self):
-		return util.string_hash(str(self.word.lemma))
+	id = sa.Column(sa.Integer, primary_key=True)
+	lemma = sa.Column(sa.String(256), unique=True)
+	language_id = sa.Column(sa.Integer, sa.ForeignKey('language.id'))
+	canonical = sa.Column(sa.Boolean(), default=True)
+	
+	language = relationship(Language)
 
 	def __str__(self):
-		return "{} ({})".format(self.word.reading, str(self.label).upper())
-
-	def __repr__(self):
-		return self.__str__()
-
-VocabWord.sort_key = lambda v: v.word.lemma
+		return "Word({})".format(self.lemma)
 
 
-class User(Document, UserMixin, CreatedStamp):
+class LemmaReading(Base):
+	__tablename__ = 'lemma_reading'
 
-	email = email_field()
-	password = password_field()
-	vocab = ListField(EmbeddedDocumentField(VocabWord))
-	# target_languages = ListField(target_language_field())
-	target_language = target_language_field()
-	native_language = native_language_field()
+	id = sa.Column(sa.Integer, primary_key=True)
+	lemma = sa.Column(sa.String(256))
+	reading = sa.Column(sa.String(256))
+	
 
-	meta = {
-		'index_options': {
-			'unique': True,
-			'dropDups': True,
-			},
-		'indexes': [
-			'+vocab',
-			]
-	}
+class User(Base, UserMixin):
+	__tablename__ = 'user'
+	
+	id = sa.Column(sa.Integer, primary_key=True)
+	email = sa.Column(sa.String(256))
+	password = sa.Column(sa.String(256))
+	target_language_id = sa.Column(sa.Integer, sa.ForeignKey('language.id'), nullable=True)
+	native_language_id = sa.Column(sa.Integer, sa.ForeignKey('language.id'), nullable=True)
 
-	def __str__(self):
-		return "User({})".format(self.id)
+	target_language = relationship(Language, foreign_keys=[target_language_id])
+	native_language = relationship(Language, foreign_keys=[native_language_id])
+
+	vocab = relationship('VocabWord', lazy='dynamic')
 
 	def get_id(self):
 		return str(self.id)
 
-	@cache.memoize()
-	def vocab_lists(self):
-		partitions = defaultdict(set)
-		for item in self.vocab:
-			partitions[item.label].add(item.word)
-		for label in partitions:
-			partitions[label] = sorted(partitions[label])
-		return partitions
 
-	def words(self):
-		for item in self.vocab:
-			yield item.word
+class VocabWord(Base):
+	__tablename__ = 'user_word'
 
-	def update_words(self, words, score):
-		new_vocab = set(VocabWord(word=word, score=score, srs_score=score) for word in words)
-		now = util.now()
-		self.vocab = list(set(self.vocab) | new_vocab)
-		# NOTE: the above set union used to be in the reverse order. The current order breaks "add/move words". There should be a notice when adding words that already exist, instead of just switching them over.
-		self.save()
-		num_recorded = 0
-		for item in self.vocab:
-			if item in new_vocab:
-				item.last_scored = now
-				item.score = score
-				if item.next_repetition < now:
-					num_recorded += 1
-					item.record_score(score)
-		self.save()
-		cache.delete_memoized(self.vocab_lists)
-		return num_recorded
+	id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
+	user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'), nullable=False)
+
+	rating = sa.Column(sa.Integer)
+
+	srs_data = sa.Column(JSON)
+
+	word = relationship(Word, cascade="all, delete", single_parent=True)
+	user = relationship(User, cascade="all, delete", single_parent=True)
+
+
+
+class Article(Base):
+	__tablename__ = 'article'
+
+	id = sa.Column(sa.Integer, primary_key=True)
+	plaintext = sa.Column(sa.Text)
+	sentence_positions = sa.Column(JSON)
+
+	user_id = sa.Column(sa.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
+	title = sa.Column(sa.String(256))
+	source = sa.Column(sa.String(256), nullable=True)
 	
-	def delete_all_words(self):
-		self.vocab = []
-		self.save()
-		cache.delete_memoized(self.vocab_lists)
 
-	@staticmethod
-	def authenticate(email, password):
-		user = User.objects(email=email, password=password).first()
-		return user
+class WordOccurrence(Base):
+	__tablename__ = 'article_word'
 
-	@staticmethod
-	def register(email, password):
-		return User.objects.get_or_create(
-			email=email,
-			defaults={
-				'password': password,
-				'vocab': models.User.default_vocab(),
-				'native_language': 'en',
-			})
-
-	@staticmethod
-	def default_vocab():
-		ignored_lemmata = []
-		with open('config/ignored-en.txt') as f:
-			for line in f.readlines():
-				lemma = line.strip()
-				ignored_lemmata.append(lemma)
-		ignored_words = Word.objects(lemma__in=ignored_lemmata)
-		return (VocabWord(word=word, score=app.config['SCORES']['ignored']) for word in ignored_words)
-
-
-
-class WordOccurrence(EmbeddedDocument):
-
-	word = ReferenceField(Word)
-	locations = ListField(IntField())
-	sentences = ListField(IntField())
-
-
-class TextArticle(Document, CreatedStamp):
+	id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
+	article_id = sa.Column(sa.Integer, sa.ForeignKey('article.id', ondelete='CASCADE'))
+	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'))
+	article_sentence_start = sa.Column(sa.Integer)  # a unique identifier for an article sentence
+	# article_position = sa.Column(sa.Integer)
 	
-	title = StringField(max_length=256, verbose_name=_('title'))
-	plaintext = StringField(verbose_name=_('plaintext'))
-	source = StringField(verbose_name=_('source'))
-	words = words_field()
-	user = ReferenceField(User)
-	occurrences = ListField(EmbeddedDocumentField(WordOccurrence))
-	sentence_positions = ListField(ListField(IntField()))  # list of doubles
-	updated_at = DateTimeField(default=util.now)
-
-	def sentence(self, index):
-		a,b = self.sentence_positions[index]
-		return self.plaintext[a:b]
-
-	def gen_sentences(self, words):
-		for o in self.occurrences:
-			if o.word in words:
-				for s in o.sentences:
-					yield self.sentence(s)
-
-	def sorted_words(self):
-		from util import sorted_words
-		return sorted_words(self.words)
-
-	def sorted_lemmata(self):
-		return sorted(set(map(lambda x: x.lemma, self.words)), key=str.lower)
-
-	def __str__(self):
-		return 'TextArticle({})'.format(self.id)
+	article = relationship(Article, backref='word_occurrences')

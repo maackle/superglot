@@ -5,7 +5,7 @@ from wtforms_alchemy import model_form_factory, ModelFormField
 # from wtforms.validators import Length, EqualTo, InputRequired, Optional, ValidationError, URL
 from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
-from relational import models
+import models
 import database as db
 
 BaseModelForm = model_form_factory(Form)
