@@ -1,7 +1,7 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, PasswordField, BooleanField, TextAreaField, HiddenField, FieldList, IntegerField
 from wtforms import validators
-from wtforms_alchemy import model_form_factory
+from wtforms_alchemy import model_form_factory, ModelFormField
 # from wtforms.validators import Length, EqualTo, InputRequired, Optional, ValidationError, URL
 from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
@@ -37,6 +37,11 @@ class AddArticleForm(Form):
     plaintext = TextAreaField(_('text'))
 
 
+class LanguageForm(ModelForm):
+    class Meta:
+        model = models.Language
+        include = ['code']
+
 class LoginForm(ModelForm):
     class Meta:
         model = models.User
@@ -48,9 +53,13 @@ class RegisterForm(ModelForm):
         model = models.User
         include = ['email', 'password']
 
+    target_language = ModelFormField(LanguageForm)
+
 
 class UserSettingsForm(ModelForm):
     class Meta:
         model = models.User
         include = ['email']
 
+    target_language = ModelFormField(LanguageForm)
+    native_language = ModelFormField(LanguageForm)

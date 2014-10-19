@@ -1,18 +1,18 @@
 from flask import current_app as app
 
 
-SCORES = [1, 2, 3, 4]
-SCORE_MIN = 1
-SCORE_MAX = 4
-PASS_SCORE_MIN = 2
+RATINGS = [1, 2, 3, 4]
+RATING_MIN = 1
+RATING_MAX = 4
+PASS_RATING_MIN = 2
 
-def process_answer(score, ease_factor, num_repetitions):
-	if not _passing_score(score):
+def process_answer(rating, ease_factor, num_repetitions):
+	if not _passing_rating(rating):
 		num_repetitions = 0
 		interval = 0
 	else:
-		ease_factor = _calculate_ease_factor(ease_factor, score)
-		if score == PASS_SCORE_MIN:
+		ease_factor = _calculate_ease_factor(ease_factor, rating)
+		if rating == PASS_RATING_MIN:
 			interval = 0
 		else:
 			num_repetitions += 1
@@ -24,11 +24,11 @@ def process_answer(score, ease_factor, num_repetitions):
 				interval *= ease_factor
 	return (interval, ease_factor, num_repetitions)
 
-def _passing_score(score):
-	return score >= PASS_SCORE_MIN
+def _passing_rating(rating):
+	return rating >= PASS_RATING_MIN
 		
-def _calculate_ease_factor(ease_factor, score):
-	ease_factor += (0.1-(SCORE_MAX-score)*(0.08+(SCORE_MAX-score)*0.02))
+def _calculate_ease_factor(ease_factor, rating):
+	ease_factor += (0.1-(RATING_MAX-rating)*(0.08+(RATING_MAX-rating)*0.02))
 	return max(ease_factor, 1.3)
 
 
@@ -42,13 +42,13 @@ def _calculate_ease_factor(ease_factor, score):
 # 	next_repetition = None
 # 	interval = 0
 
-# 	def process_answer(self, score):
-# 		if not SRS.passing_score(score):
+# 	def process_answer(self, rating):
+# 		if not SRS.passing_rating(rating):
 # 			self.num_repetitions = 0
 # 			self.interval = 0
 # 		else:
-# 			self.ease_factor = SRS.calculate_ease_factor(self.ease_factor, score)
-# 			if score == SRS.PASS_SCORE_MIN:
+# 			self.ease_factor = SRS.calculate_ease_factor(self.ease_factor, rating)
+# 			if rating == SRS.PASS_RATING_MIN:
 # 				self.interval = 0
 # 			else:
 # 				self.num_repetitions += 1
@@ -61,10 +61,10 @@ def _calculate_ease_factor(ease_factor, score):
 # 		self.next_repetition = 
 
 # 	@staticmethod
-# 	def passing_score(score):
-# 		return score >= SRS.PASS_SCORE_MIN
+# 	def passing_rating(rating):
+# 		return rating >= SRS.PASS_RATING_MIN
 		
 # 	@staticmethod
-# 	def calculate_ease_factor(ease_factor, score):
-# 		ease_factor += (0.1-(SRS.SCORE_MAX-score)*(0.08+(SRS.SCORE_MAX-score)*0.02))
+# 	def calculate_ease_factor(ease_factor, rating):
+# 		ease_factor += (0.1-(SRS.RATING_MAX-rating)*(0.08+(SRS.RATING_MAX-rating)*0.02))
 #		return max(ease_factor, 1.3)

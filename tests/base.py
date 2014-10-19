@@ -6,16 +6,16 @@ import requests
 from flask import url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from application import create_app
 import nlp
 import util
 from relational import models
 import superglot
 
 from datetime import datetime, timedelta
-import database as db
 
-class SuperglotTestBase(object):
+from flask.ext.testing import TestCase
+
+class SuperglotTestBase(TestCase):
 
 	app = None
 	client = None
@@ -29,6 +29,17 @@ class SuperglotTestBase(object):
 	def post(self, uri, data={}, follow_redirects=True):
 		return self.client.post(self.make_url(uri), data=data, follow_redirects=follow_redirects)
 
+	def create_app(self):
+		import application
+		return application.create_app()
+
+	def setUp(self):
+		self._add_accounts()
+
+	def tearDown(self):
+		self.db.session.query(models.User).delete()
+		self.db.session.commit()
+
 	@classmethod
 	def _add_accounts(cls):
 		for account in cls.account_fixtures:
@@ -38,14 +49,13 @@ class SuperglotTestBase(object):
 
 	@classmethod
 	def setup_class(cls):
+		from application import create_app
 		cls.app = create_app()
 		cls.client = cls.app.test_client()
+		cls.db = cls.app.db
 
-		with cls.app.app_context():
-			cls._add_accounts()
 			# cls._add_words()
 
 	@classmethod
 	def teardown_class(cls):
-		with db.session() as session:
-			session.query(models.User).delete()
+		cls.db.session.close()

@@ -9,12 +9,11 @@ import nlp
 from cache import cache
 import util
 from relational import models
-import database as db
+import database
 
 try:
-	with db.session() as session:
+	with database.session() as session:
 		english = session.query(models.Language).filter_by(code='en').first()
-		session.expunge(english)
 except:
 	raise
 	english = None
@@ -48,8 +47,8 @@ def get_common_words(session, user, article):
 
 	V = models.VocabWord
 	O = models.WordOccurrence
-
-	session.query(V).join(O, V.word_id == O.word_id).all()
+	with database.session() as session:
+		session.query(V).join(O, V.word_id == O.word_id).all()
 
 def gen_words_from_tokens(tokens):
 	'''
@@ -61,7 +60,7 @@ def gen_words_from_tokens(tokens):
 		words = []
 		for token in chunk:
 			reading, lemma = token.tup()
-			word = db.session.query(models.Word).filter_by(lemma=lemma, language_id=english.id).first()
+			word = app.db.session.query(models.Word).filter_by(lemma=lemma, language_id=english.id).first()
 			if not word:
 				word = models.Word(lemma=lemma, language_id=english.id, canonical=False)
 			words.append(word)
@@ -95,13 +94,13 @@ def create_article(user, title, plaintext, url=None):
 		sentence_positions=sentence_positions,
 		)
 
-	db.session.add(article)
-	db.session.commit()
+	app.db.session.add(article)
+	app.db.session.commit()
 
 	for o in occurrences:
 		o.article_id = article.id
-		db.session.add(o)
-	db.session.commit()
+		app.db.session.add(o)
+	app.db.session.commit()
 
 	# cache.delete_memoized(get_common_words, user=user, article=article)
 
@@ -109,20 +108,29 @@ def create_article(user, title, plaintext, url=None):
 
 
 def authenticate_user(email, password):
-	with db.session() as session:
-		user = session.query(models.User).filter_by(email=email, password=password).first()
+	# with database.session() as session:
+	user = app.db.session.query(models.User).filter_by(email=email, password=password).first()
 	return user
 
 def register_user(email, password):
-	with db.session() as session:
+	with database.session() as session:
 		user = session.query(models.User).filter_by(email=email).first()
 		if user:
-			return (user, False)
+			created = False
 		else:
 			user = models.User(email=email, password=password)
 			session.add(user)
 			session.commit()
-			return (user, True)
+			created = True
+	return (user, created)
+
+def update_user_words(user, words, rating):
+	for word in words:
+		vocab_word = user.vocab.filter_by(word_id=word.id).first()
+		if vocab_word:
+			vocab_word.rating = rating
+			app.db.session.save(vocab_word)
+	app.db.session.commit()
 
 
 #############################################################
@@ -144,13 +152,13 @@ def find_relevant_articles(user):
 
 	"""SELECT
 	( # this subquery seems mostly right
-		SELECT v.score, v.word_id, o.article_id from word_occurrence as o
+		SELECT v.rating, v.word_id, o.article_id from word_occurrence as o
 		JOIN vocab_word as v ON (word_id = o.word_id)
 		WHERE v.user_id = {user.id}
 		GROUP BY o.article_id
 	) as a
-	WHERE count(a.score >= 4) > { T_OK }
-	ORDER BY count(a.score > 4) / count(a.score < 2)  # horribly wrong, but for example.
+	WHERE count(a.rating >= 4) > { T_OK }
+	ORDER BY count(a.rating > 4) / count(a.rating < 2)  # horribly wrong, but for example.
 	"""
 
 	"""
@@ -172,7 +180,7 @@ def find_relevant_articles(user):
 	possible utility functions:
 
 	f = P(OK|EDGE|BAD) * P(OK|EDGE) / P(BAD)
-	f = percent(score >= 4) > 0.6 AND 0.1 < percent(1 <= score <= 2) < 0.3
+	f = percent(rating >= 4) > 0.6 AND 0.1 < percent(1 <= rating <= 2) < 0.3
 
 	"""
 

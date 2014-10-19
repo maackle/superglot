@@ -7,6 +7,7 @@ import mongoengine
 from flask import Flask, render_template, request, redirect, session, flash, url_for, g
 from flask.ext.assets import Environment, Bundle
 from flask.ext.login import current_user
+from flask.ext.login import LoginManager
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.babel import Babel
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -18,7 +19,7 @@ def setup_blueprints(app):
 
 	from controllers.api import blueprint as api_blueprint
 	from controllers.chrome_api import blueprint as chrome_api_blueprint
-	from controllers.auth import login_manager, blueprint as auth_blueprint
+	from controllers.auth import blueprint as auth_blueprint
 	from controllers.frontend import blueprint as frontend_blueprint
 	from controllers.study import blueprint as study_blueprint
 	from controllers.user import blueprint as user_blueprint
@@ -30,14 +31,25 @@ def setup_blueprints(app):
 	app.register_blueprint(user_blueprint, url_prefix='/user')
 	app.register_blueprint(frontend_blueprint, url_prefix='')
 
+	login_manager = LoginManager()
 	login_manager.init_app(app)
+
+	@login_manager.user_loader
+	def load_user(userid):
+		from relational import models
+		user = app.db.session.query(models.User).get(userid)
+		return user
+
+
 
 def create_app(**extra_config):
 
-	requests.packages.urllib3.add_stderr_logger()
+	# requests.packages.urllib3.add_stderr_logger()
 
 	app = Flask(__name__)
 	app.config.from_object('config.settings')
+	db = SQLAlchemy(app)
+	app.db = db
 
 	# try:
 	# 	app.config.from_envvar('SUPERGLOT_SETTINGS')
@@ -106,7 +118,7 @@ def create_app(**extra_config):
 		if current_user.is_authenticated():
 			locale = current_user.native_language
 		else:
-			locale = request.accept_languages.best_match(app.config['TARGET_LANGUAGES'])
+			locale = request.accept_languages.best_match(app.config['SUPPORTED_TARGET_LANGUAGES'])
 		if not locale:
 			locale = 'en'
 		return locale.split('-')[0]

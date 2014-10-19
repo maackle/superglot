@@ -1,17 +1,11 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app as app
-from flask.ext.login import LoginManager, login_user, logout_user, login_required
+from flask.ext.login import login_user, logout_user, login_required
 from flask.ext.babel import gettext as _
 
 from forms import LoginForm, RegisterForm
 from relational import models
 import superglot
-
-login_manager = LoginManager()
-
-@login_manager.user_loader
-def load_user(userid):
-	user = db.session.query(models.User).get(userid)
-	return user
+import database as db
 
 blueprint = Blueprint('auth', __name__, template_folder='templates')
 

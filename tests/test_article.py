@@ -18,13 +18,22 @@ class TestArticle(SuperglotTestBase):
 	
 	test_account = {'email': 'test@superglot.com', 'password': '1234'}
 
+	test_articles = [
+		{
+			'file': 'data/articles/little-prince-1.txt',
+			'num_sentences': 34,
+		}
+	]
+
 	def test_create_article(self):
-		with self.app.test_request_context():
-			import superglot
-			from relational import models
-			user = db.session.query(models.User).first()
-			
-			with open('data/articles/moby-dick-full.txt', 'r') as f:
+		import superglot
+		from relational import models
+
+		user = self.db.session.query(models.User).first()
+
+		for article_def in self.test_articles:
+			with open(article_def['file'], 'r') as f:
 				plaintext = f.read()
 				article = superglot.create_article(user=user, title="Moby Dick", plaintext=plaintext[0:])
+				eq_(len(article.sentence_positions.keys()), article_def['num_sentences'])
 				print(article.sentence_positions)

@@ -11,7 +11,7 @@ from relational import models
 import nlp
 import util
 from config import settings
-import database as db
+import superglot
 
 from .base import SuperglotTestBase
 
@@ -21,9 +21,8 @@ class TestSRS(SuperglotTestBase):
 	lemmata_fixture = ['']
 
 	def test(self):
-		with db.session() as session:
-			user = session.query(models.User).first()
-			words = session.query(models.Word)
+			user = self.db.session.query(models.User).first()
+			words = self.db.session.query(models.Word)
 			ignored_words = words[0:20]
 			wordsets = {
 				1: words[20:40],
@@ -39,13 +38,13 @@ class TestSRS(SuperglotTestBase):
 				}
 			]
 
-			user.update_words(ignored_words, settings['SCORES']['ignored'])
+			superglot.update_user_words(user, ignored_words, settings.RATING_NAMES['ignored'])
 
 			for score, words in wordsets.items():
-				num = user.update_words(words, score)
+				num = superglot.update_user_words(user, words, score)
 
 			with mock.patch('util.now'):
 				util.now.return_value = datetime.now() + timedelta(days=1)
 				for score, words in wordsets.items():
-					num = user.update_words(words, score)
+					num = superglot.update_user_words(user, words, score)
 					

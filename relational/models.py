@@ -2,6 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.ext.declarative import declarative_base
+from flask.ext.login import UserMixin
 
 import database as db
 
@@ -11,7 +12,9 @@ class Language(Base):
 	__tablename__ = 'language'
 
 	id = sa.Column(sa.Integer, primary_key=True)
-	code = sa.Column(sa.String(8))
+	code = sa.Column(sa.String(8), info={
+		'choices': [('en', 'English')]
+		})
 	
 
 class Word(Base):
@@ -28,7 +31,6 @@ class Word(Base):
 		return "Word({})".format(self.lemma)
 
 
-
 class LemmaReading(Base):
 	__tablename__ = 'lemma_reading'
 
@@ -37,7 +39,7 @@ class LemmaReading(Base):
 	reading = sa.Column(sa.String(256))
 	
 
-class User(Base):
+class User(Base, UserMixin):
 	__tablename__ = 'user'
 	
 	id = sa.Column(sa.Integer, primary_key=True)
@@ -49,6 +51,11 @@ class User(Base):
 	target_language = relationship(Language, foreign_keys=[target_language_id])
 	native_language = relationship(Language, foreign_keys=[native_language_id])
 
+	vocab = relationship('VocabWord', lazy='dynamic')
+
+	def get_id(self):
+		return str(self.id)
+
 
 class VocabWord(Base):
 	__tablename__ = 'user_word'
@@ -56,6 +63,12 @@ class VocabWord(Base):
 	id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
 	user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id'))
 	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'))
+
+	rating = sa.Column(sa.Integer)
+
+	srs_data = sa.Column(JSON)
+
+	word = relationship(Word)
 
 
 

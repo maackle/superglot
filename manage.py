@@ -13,33 +13,35 @@ import nlp
 import textblob
 from relational import models
 import database as db
+from config import settings
+
+
+def load_schema_fixtures():
+	languages = {}
+	with db.session() as session:
+		for i, code in enumerate(settings.SUPPORTED_NATIVE_LANGUAGES):
+			language_id = i + 1
+			languages[code] = models.Language(id=language_id, code=code)
+			session.add(languages[code])
+		user = models.User(email='michael@lv11.co', password='1234')
+		session.add(user)
+		session.commit()
+	app.logger.info("schema fixtures created")
 
 
 @manager.command
 def reset_schema():
+	print('resetting schema for database {0}'.format(settings.DATABASE_NAME))
 	db.engine.dispose()
-	call('psql -c "DROP DATABASE superglot_dev;"', shell=True)
-	call('psql -c "CREATE DATABASE superglot_dev;"', shell=True)
-	call('psql -c "GRANT ALL ON DATABASE superglot_dev TO superglot_dev;"', shell=True)
+	call('psql -c "DROP DATABASE {0};"'.format(settings.DATABASE_NAME), shell=True)
+	call('psql -c "CREATE DATABASE {0};"'.format(settings.DATABASE_NAME), shell=True)
+	call('psql -c "GRANT ALL ON DATABASE {0} TO {0};"'.format(settings.DATABASE_NAME), shell=True)
 	models.Base.metadata.create_all(db.engine)
+	load_schema_fixtures()
+
 
 @manager.command
-def schema_fixtures():
-	from relational import models
-
-	languages = {}
-	with db.session() as session:
-		for code in ('en', 'it', 'ja',):
-			languages[code] = models.Language(code=code)
-			session.add(languages[code])
-
-	with db.session() as session:
-		user = models.User(email='michael@lv11.co', password='1234')
-		session.add(user)
-	app.logger.info("schema fixtures created")
-
-@manager.command
-def fixture_words():
+def load_fixture_words():
 	import superglot
 	superglot.add_fixture_words()
 
@@ -47,19 +49,11 @@ def fixture_words():
 @manager.command
 def rebuild_db():
 	reset_schema()
-	schema_fixtures()
-	fixture_words()
+	load_fixture_words()
 	db.engine.dispose()
 	call('psql -c "DROP DATABASE superglot_test;"', shell=True)
 	call('psql -c "CREATE DATABASE superglot_test WITH TEMPLATE superglot_dev OWNER superglot_test;"', shell=True)
 
-
-@manager.command
-def edit_user():
-	data = db.users.find_one({'email': 'maackle.d@gmail.com'})
-	michael = User(**data)
-	michael.password = 'asdf'
-	michael.save()
 
 @manager.command
 def translate(task, lang=None):
@@ -76,10 +70,6 @@ def translate(task, lang=None):
 			raise Exception("missing language")
 		call("pybabel init -i {} -d translations -l {}".format(potfile, lang), shell=True)
 
-# class Translate(Command):
-
-# 	def run(self):
-# 		pass
 
 if __name__ == "__main__":
     manager.run()

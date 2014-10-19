@@ -5,4 +5,6 @@ MONGODB_SETTINGS = {
 
 SERVER_PORT = 31337
 BASE_URL = 'http://localhost:{}/'.format(SERVER_PORT)
-SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/superglot_dev'
+
+DATABASE_NAME = 'superglot_dev'
+SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/{}'.format(DATABASE_NAME)

@@ -9,4 +9,5 @@ TESTING = True
 CSRF_ENABLED = False
 WTF_CSRF_ENABLED = False
 
-SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/superglot_test'
+DATABASE_NAME = 'superglot_test'
+SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/{}'.format(DATABASE_NAME)

@@ -78,11 +78,11 @@ def word_list(partition):
 @login_required
 def add_words(label):
 	if label == 'ignored':
-		score = settings.SCORES['ignored']
+		score = settings.RATING_NAMES['ignored']
 	elif label == 'learning':
-		score = settings.SCORES['learning']
+		score = settings.RATING_NAMES['learning']
 	elif label == 'known':
-		score = settings.SCORES['known']
+		score = settings.RATING_NAMES['known']
 	else:
 		raise "Invalid label"
 	tokens = nlp.tokenize(request.form['words'])

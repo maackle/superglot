@@ -1,6 +1,8 @@
 import os
-
 os.environ["SUPERGLOT_SETTINGS"] = 'config.testing'
 
+import manage
+
+
 def setup_package():
-	pass
+	manage.reset_schema()

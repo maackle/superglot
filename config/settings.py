@@ -9,9 +9,9 @@ DEBUG = True
 
 SERVER_PORT = 31337
 
-NATIVE_LANGUAGES = ('en', 'es', 'it', 'ja')
+SUPPORTED_NATIVE_LANGUAGES = ('en', 'es', 'it', 'ja')
 
-TARGET_LANGUAGES = ('en',)
+SUPPORTED_TARGET_LANGUAGES = ('en',)
 
 LANGUAGE_NAMES = {
 	'en': 'English',
@@ -20,14 +20,14 @@ LANGUAGE_NAMES = {
 	'ja': '日本語',
 }
 
-SCORES = {
+RATING_NAMES = {
 	'ignored': -1,
 	'learning': 2,
 	'known': 4,
 }
 
-NATIVE_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in NATIVE_LANGUAGES)
-TARGET_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in TARGET_LANGUAGES)
+NATIVE_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in SUPPORTED_NATIVE_LANGUAGES)
+TARGET_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in SUPPORTED_TARGET_LANGUAGES)
 
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 

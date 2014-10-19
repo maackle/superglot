@@ -121,11 +121,11 @@ class VocabWord(EmbeddedDocument, UpdatedStamp):
 	def label(self):
 		if not self.score:
 			return None
-		elif self.score == settings.SCORES['ignored']:
+		elif self.score == settings.RATING_NAMES['ignored']:
 			return 'ignored'
-		elif self.score > 0 and self.score <= settings.SCORES['learning']:
+		elif self.score > 0 and self.score <= settings.RATING_NAMES['learning']:
 			return 'learning'
-		elif self.score <= settings.SCORES['known']:
+		elif self.score <= settings.RATING_NAMES['known']:
 			return 'known'
 		else:
 			return None
