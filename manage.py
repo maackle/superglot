@@ -13,6 +13,7 @@ import nlp
 import textblob
 import models
 import database
+import superglot
 from config import settings
 
 
@@ -31,10 +32,20 @@ def load_schema_fixtures():
 			language_id = i + 1
 			languages[code] = models.Language(id=language_id, code=code)
 			session.add(languages[code])
-		user = models.User(email='michael@lv11.co', password='1234')
-		session.add(user)
 		session.commit()
 	app.logger.info("schema fixtures created")
+
+def load_sample_data():
+	user = models.User(email='michael@lv11.co', password='1234')
+	app.db.session.add(user)
+	app.db.session.commit()
+	article, created = superglot.create_article(
+		user=user,
+		title='Sample Text',
+		plaintext="""
+This is a sample text. Hope you enjoy it.
+			"""
+	)
 
 @manager.command
 def make_dump():
@@ -103,13 +114,14 @@ def load_fixture_words(filename='data/en-2000.txt'):
 
 
 @manager.command
-def rebuild_db():
-	if os.path.isfile(dumpfile(settings.DATABASE_NAME)):
+def rebuild_db(force=False):
+	if not force and os.path.isfile(dumpfile(settings.DATABASE_NAME)):
 		db_drop_create()
 		load_dump()
 	else:
 		reset_schema()
 		load_fixture_words()
+		load_sample_data()
 		database.engine.dispose()
 		make_dump()
 

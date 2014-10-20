@@ -41,6 +41,7 @@ def words():
 @blueprint.route('/sentences/')
 @login_required
 def sentences():
+	raise NotImplementedError
 
 	# all_vocab = set(filter(lambda item: item.rating is not 0, current_user.vocab))
 	all_vocab = set(current_user.vocab)
@@ -49,9 +50,9 @@ def sentences():
 	due_words = set(map(lambda item: item.word, due_vocab))
 
 	sentences = list()
-	for article in models.TextArticle.objects.filter(user=current_user.id):
+	for article in models.Article.query().filter_by(user_id=current_user.id):
 		for sentence in article.gen_sentences(due_words):
-			sentence_vocab_list = list(models.VocabWord(word=token.word()) for token in nlp.tokenize(sentence))
+			sentence_vocab_list = list(models.VocabWord.query.filter_by(word_id=token.word().id) for token in nlp.tokenize(sentence))
 			sentence_vocab_set = all_vocab | set(sentence_vocab_list)
 			sentence_vocab = list()
 			for item in sentence_vocab_list:

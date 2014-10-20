@@ -2,15 +2,24 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.ext.declarative import declarative_base
+
+from flask import current_app
 from flask.ext.login import UserMixin
 from config import settings
 
-import database as db
+import database
 import util
 
 Base = declarative_base()
 
-class Language(Base):
+class Model(Base):
+	__abstract__ = True
+	
+	@classmethod
+	def query(cls):
+		return current_app.db.session.query(cls)
+
+class Language(Model):
 	__tablename__ = 'language'
 
 	id = sa.Column(sa.Integer, primary_key=True)
@@ -19,7 +28,7 @@ class Language(Base):
 		})
 	
 
-class Word(Base):
+class Word(Model):
 	__tablename__ = 'word'
 
 	id = sa.Column(sa.Integer, primary_key=True)
@@ -39,7 +48,7 @@ class Word(Base):
 		return util.string_hash(self.lemma)
 
 
-class LemmaReading(Base):
+class LemmaReading(Model):
 	__tablename__ = 'lemma_reading'
 
 	id = sa.Column(sa.Integer, primary_key=True)
@@ -47,7 +56,7 @@ class LemmaReading(Base):
 	reading = sa.Column(sa.String(256))
 	
 
-class User(Base, UserMixin):
+class User(Model, UserMixin):
 	__tablename__ = 'user'
 	
 	id = sa.Column(sa.Integer, primary_key=True)
@@ -65,7 +74,7 @@ class User(Base, UserMixin):
 		return str(self.id)
 
 
-class VocabWord(Base):
+class VocabWord(Model):
 	__tablename__ = 'user_word'
 	__table_args__ = (
 		sa.PrimaryKeyConstraint("user_id", "word_id"),
@@ -75,10 +84,21 @@ class VocabWord(Base):
 	user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
 	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'), nullable=False)
 
-	rating = sa.Column(sa.Integer)
+	rating = sa.Column(sa.Integer, default=0)
 
-	srs_next_repetition = sa.Column(sa.DateTime())
-	srs_data = sa.Column(JSON)
+	srs_rating = sa.Column(sa.Integer, default=0)
+	srs_last_rated = sa.Column(sa.DateTime(), default=util.now, nullable=False)
+	srs_last_repetition = sa.Column(sa.DateTime(), default=util.now, nullable=False)
+	srs_next_repetition = sa.Column(sa.DateTime(), default=util.now, nullable=False)
+	srs_ease_factor = sa.Column(sa.Integer, default=1.4)
+	srs_num_repetitions = sa.Column(sa.Integer, default=0)
+	
+	srs_data = sa.Column(JSON, default={})
+	
+	# srs_score = IntField(default=0)
+	# srs_ease_factor = DecimalField(default=2.5)
+	# srs_num_repetitions = IntField(default=0)
+
 
 	word = relationship(Word, cascade="all, delete", single_parent=True)
 	user = relationship(User, cascade="all, delete", single_parent=True)
@@ -95,7 +115,7 @@ class VocabWord(Base):
 
 
 
-class Article(Base):
+class Article(Model):
 	__tablename__ = 'article'
 
 	id = sa.Column(sa.Integer, primary_key=True)
@@ -107,7 +127,7 @@ class Article(Base):
 	source = sa.Column(sa.String(256), nullable=True)
 	
 
-class WordOccurrence(Base):
+class WordOccurrence(Model):
 	__tablename__ = 'article_word'
 
 	# id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key

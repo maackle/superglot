@@ -1,7 +1,7 @@
 '''
 Complex queries, calculations, etc.
 '''
-
+import datetime
 from sqlalchemy import distinct
 from flask import current_app as app
 from bs4 import BeautifulSoup
@@ -11,6 +11,7 @@ from cache import cache
 import util
 import models
 import database
+import srs
 
 try:
 	with database.session() as session:
@@ -145,16 +146,45 @@ def register_user(email, password):
 			created = True
 	return (user, created)
 
+
+def _record_rating(vocab_word, rating):
+	stats = srs.process_answer(
+		rating, 
+		float(vocab_word.srs_ease_factor), 
+		vocab_word.srs_num_repetitions
+	)
+	interval, ease_factor, num_repetitions = stats
+	# interval = 1
+	vocab_word.srs_rating = rating
+	vocab_word.srs_last_repetition = util.now()
+	vocab_word.srs_next_repetition = util.now() + datetime.timedelta(days=interval)
+	vocab_word.srs_ease_factor = ease_factor
+	vocab_word.srs_num_repetitions = num_repetitions
+			
+
 def update_user_words(user, words, rating):
 	updated = 0
 	ignored = 0
+	num_recorded = 0
+	updated_vocab = []
 	for word in set(words):
 		if word.id:
-			vocab_word = models.VocabWord(user_id=user.id, word_id=word.id, rating=rating)
-			app.db.session.merge(vocab_word)
+			vocab_word = app.db.session.merge(models.VocabWord(
+				user_id=user.id, 
+				word_id=word.id, 
+				rating=rating,
+				srs_last_rated=util.now(),
+			))
+			updated_vocab.append(vocab_word)
 			updated += 1
 		else:
 			ignored += 1
+	app.db.session.commit()
+	for v in updated_vocab:
+		if v.srs_next_repetition < util.now():
+			num_recorded += 1
+			_record_rating(v, rating)
+			app.db.session.merge(v)
 	app.db.session.commit()
 	return updated, ignored
 
