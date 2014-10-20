@@ -34,7 +34,7 @@ class TestArticle(SuperglotTestBase):
 		for article_def in self.test_articles:
 			with open(article_def['file'], 'r') as f:
 				plaintext = f.read()
-				article = superglot.create_article(user=user, title="Moby Dick", plaintext=plaintext[0:])
+				article, created = superglot.create_article(user=user, title="Moby Dick", plaintext=plaintext[0:])
 				eq_(
 					len(article.sentence_positions.keys()), 
 					article_def['num_sentences']

@@ -2,7 +2,7 @@ import re
 from bs4 import BeautifulSoup
 import requests
 
-from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app as app
+from flask import Blueprint, abort, render_template, request, flash, redirect, url_for, current_app as app
 from flask.ext.login import current_user, login_required
 from flask.ext.babel import gettext as _
 from mongoengine.errors import NotUniqueError
@@ -25,41 +25,46 @@ blueprint = Blueprint('frontend.articles', __name__, template_folder='templates'
 @blueprint.route('/user/texts/', methods=['GET', 'POST'])
 @login_required
 def article_list():
-	docs = list(app.db.session.query(models.Article).filter_by(user_id=current_user.id))
+	articles = list(app.db.session.query(models.Article).filter_by(user_id=current_user.id))
 	def stats():
-		for doc in docs:
-			common = superglot.get_common_words(current_user, doc)
+		for article in articles:
+			common = superglot.get_common_vocab(current_user, article)
 			yield util.vocab_stats(common)
-	return render_template('views/frontend/article_list.jade', doc_pairs=list(zip(docs, stats())))
+	return render_template('views/frontend/article_list.jade', article_pairs=list(zip(articles, stats())))
 
 
-@blueprint.route('/user/texts/<doc_id>/read', methods=['GET', 'POST'])
+@blueprint.route('/user/texts/<article_id>/read', methods=['GET', 'POST'])
 @login_required
-def article_read(doc_id):
+def article_read(article_id):
 	'''
 	TODO: words with the same lemma are not marked as known
 	'''
-	doc = app.db.session.query(models.Article).filter_by(user=current_user.id, id=doc_id).first_or_404()
-	doc_vocab = superglot.get_common_words(current_user, doc)
-	stats = util.vocab_stats(doc_vocab)
+	article = app.db.session.query(models.Article).filter_by(user_id=current_user.id, id=article_id).first()
+	if not article:
+		abort(404)
+	article_vocab = superglot.get_common_vocab(current_user, article)
+	stats = util.vocab_stats(article_vocab)
+	pprint(article_vocab)
+	pprint(stats)
 
 	return render_template('views/frontend/article_read.jade', 
-		doc=doc, 
+		article=article, 
 		stats=stats,
-		annotated_words=sorted(doc_vocab))
+		annotated_words=sorted(article_vocab))
 
 
 
-@blueprint.route('/user/texts/<doc_id>/delete/', methods=['GET', 'POST'])
+@blueprint.route('/user/texts/<article_id>/delete/', methods=['GET', 'POST'])
 @login_required
-def article_delete(doc_id):
+def article_delete(article_id):
 	'''
 	TODO: ensure the user owns the article!!
 	'''
-	doc = app.db.session.query(models.Article).filter_by(id=doc_id).first()
-	if doc:
-		flash(_('Deleted "%(title)s"', title=doc.title))
-		doc.delete()
+	article = app.db.session.query(models.Article).filter_by(id=article_id).first()
+	if article:
+		flash(_('Deleted "%(title)s"', title=article.title))
+		app.db.session.delete(article)
+		app.db.session.commit()
 	return redirect(url_for('.article_list'))
 
 @blueprint.route('/user/texts/add/', methods=['GET', 'POST'])

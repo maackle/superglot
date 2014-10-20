@@ -22,6 +22,20 @@ class SuperglotTestBase(TestCase):
 
 	account_fixtures = [{'email': "%04i@test.com" % i, 'password': "test%04i" % i} for i in range(1, 4)]
 
+	test_articles = [
+		{
+			'file': 'data/articles/game-for-fools.txt',
+			'title': 'The Game For Fools',
+			# 'num_sentences': 34,
+			'num_words': 197,
+		},
+		{
+			'file': 'data/articles/little-prince-1.txt',
+			'title': 'The Little Prince Ch. 1',
+			'num_sentences': 34,
+		},
+	]
+
 	def make_url(self, uri):
 		base = 'http://localhost:31338/'
 		return base + uri
@@ -37,8 +51,15 @@ class SuperglotTestBase(TestCase):
 		self._add_accounts()
 
 	def tearDown(self):
+		# delete everything other than Word
 		self.db.session.query(models.User).delete()
+		self.db.session.query(models.VocabWord).delete()
+		self.db.session.query(models.WordOccurrence).delete()
+		self.db.session.query(models.Article).delete()
 		self.db.session.commit()
+
+		# qs = get_debug_queries()
+		# print(qs)
 
 	@classmethod
 	def _add_accounts(cls):

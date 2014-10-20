@@ -1,9 +1,9 @@
 extends layouts/base.jade
 
 block main_content
-	h1= doc.title
-	if doc.source
-		a(href=doc.source, target="_blank") 
+	h1= article.title
+	if article.source
+		a(href=article.source, target="_blank") 
 			= _("original")
 			|  &rarr;
 	h3 words
@@ -25,13 +25,13 @@ block main_content
 
 	.accordion
 		h3.header raw text
-		pre= doc.plaintext
+		pre= article.plaintext
 
 	.accordion
 		h3.header Sample Sentences
 		div
-			for o in doc.occurrences
+			for o in article.occurrences
 				h4= o.word.reading
 				ul
 					for s in o.sentences
-						li= doc.sentence(s)
+						li= article.sentence(s)

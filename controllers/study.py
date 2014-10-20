@@ -18,7 +18,7 @@ import nlp
 blueprint = Blueprint('study', __name__, template_folder='templates')
 
 def gen_due_vocab():
-	return (item for item in current_user.vocab if item.score >= srs.SCORE_MIN and item.next_repetition and item.next_repetition < util.now())
+	return (item for item in current_user.vocab if item.rating >= srs.RATING_MIN and item.srs_next_repetition and item.srs_next_repetition < util.now())
 
 
 @blueprint.route('/')
@@ -42,7 +42,7 @@ def words():
 @login_required
 def sentences():
 
-	# all_vocab = set(filter(lambda item: item.score is not 0, current_user.vocab))
+	# all_vocab = set(filter(lambda item: item.rating is not 0, current_user.vocab))
 	all_vocab = set(current_user.vocab)
 
 	due_vocab = list(gen_due_vocab())

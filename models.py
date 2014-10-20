@@ -3,8 +3,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.login import UserMixin
+from config import settings
 
 import database as db
+import util
 
 Base = declarative_base()
 
@@ -29,6 +31,12 @@ class Word(Base):
 
 	def __str__(self):
 		return "Word({})".format(self.lemma)
+
+	def __eq__(self, other):
+		return (self.id and self.id == other.id) or self.lemma == other.lemma
+
+	def __hash__(self):
+		return util.string_hash(self.lemma)
 
 
 class LemmaReading(Base):
@@ -59,17 +67,31 @@ class User(Base, UserMixin):
 
 class VocabWord(Base):
 	__tablename__ = 'user_word'
+	__table_args__ = (
+		sa.PrimaryKeyConstraint("user_id", "word_id"),
+	)
 
-	id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
+	# id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
 	user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
 	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'), nullable=False)
 
 	rating = sa.Column(sa.Integer)
 
+	srs_next_repetition = sa.Column(sa.DateTime())
 	srs_data = sa.Column(JSON)
 
 	word = relationship(Word, cascade="all, delete", single_parent=True)
 	user = relationship(User, cascade="all, delete", single_parent=True)
+
+	@property
+	def label(self):
+		return settings.rating_name(self.rating)
+
+	def __str__(self):
+		return "VocabWord<{}>".format(self.word.lemma)
+
+	def __lt__(self, other):
+		return self.word.lemma < other.word.lemma
 
 
 
@@ -88,10 +110,19 @@ class Article(Base):
 class WordOccurrence(Base):
 	__tablename__ = 'article_word'
 
-	id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
+	# id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
 	article_id = sa.Column(sa.Integer, sa.ForeignKey('article.id', ondelete='CASCADE'))
 	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'))
 	article_sentence_start = sa.Column(sa.Integer)  # a unique identifier for an article sentence
 	# article_position = sa.Column(sa.Integer)
 	
+	word = relationship(Word, backref='word_occurrences', cascade='delete')
 	article = relationship(Article, backref='word_occurrences')
+
+
+	__table_args__ = (
+		sa.PrimaryKeyConstraint(article_id, word_id),
+	)
+
+	def __str__(self):
+		return "WordOccurrence<{}>".format(self.word.lemma)

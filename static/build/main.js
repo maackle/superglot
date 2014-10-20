@@ -1,21 +1,21 @@
 (function() {
-  var SRS_SCORE_CHOICES, addMeaningTooltip, markWords, setupAnnotation,
+  var SRS_RATING_CHOICES, addMeaningTooltip, markWords, setupAnnotation,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  SRS_SCORE_CHOICES = [1, 2, 3, 4];
+  SRS_RATING_CHOICES = [1, 2, 3, 4];
 
-  markWords = function(lemmata, score, after) {
+  markWords = function(lemmata, rating, after) {
     var lemmataString;
-    if (score === 'known') {
-      score = 4;
-    } else if (score === 'learning') {
-      score = 2;
+    if (rating === 'known') {
+      rating = 4;
+    } else if (rating === 'learning') {
+      rating = 2;
     }
-    score = parseInt(score, 10);
+    rating = parseInt(rating, 10);
     lemmataString = lemmata.join("\n");
     return $.post('/api/user/words/update/', {
       lemmata: lemmataString,
-      score: score
+      rating: rating
     }, after);
   };
 
@@ -28,8 +28,8 @@
 
   setupAnnotation = function() {
     var $popup, $popupChoices, attachAnnotationControls, deselectWords, hideWordScorePopup, selectWord, setPopupScore, showWordScorePopup, updateWord;
-    $popup = $('#word-score-popup');
-    $popupChoices = $popup.find('.scores .choice');
+    $popup = $('#word-rating-popup');
+    $popupChoices = $popup.find('.ratings .choice');
     selectWord = function(el) {
       var $word;
       $word = $(el);
@@ -45,39 +45,39 @@
       $('.annotated-words li').removeClass('selected');
       return hideWordScorePopup();
     };
-    updateWord = function(el, score) {
+    updateWord = function(el, rating) {
       var label, lemma;
       lemma = $(el).attr('data-lemma');
-      if (score <= 0) {
+      if (rating <= 0) {
         label = null;
-      } else if (score < 3) {
+      } else if (rating < 3) {
         label = 'learning';
       } else {
         label = 'known';
       }
-      return markWords([lemma], score, function(data) {
+      return markWords([lemma], rating, function(data) {
         var $set;
         if (data) {
           $set = $(".word[data-lemma='" + lemma + "']");
           $set.attr('data-group-label', label);
-          $set.attr('data-score', score);
+          $set.attr('data-rating', rating);
           return deselectWords();
         }
       });
     };
-    setPopupScore = function(score) {
+    setPopupScore = function(rating) {
       $popupChoices.removeClass('selected');
-      return $popupChoices.filter("[data-score=" + score + "]").addClass('selected');
+      return $popupChoices.filter("[data-rating=" + rating + "]").addClass('selected');
     };
     showWordScorePopup = function(el) {
       $popup.addClass('visible').focus();
       $popup.find('.lemma').text($(el).attr('data-lemma'));
-      setPopupScore($(el).attr('data-score'));
+      setPopupScore($(el).attr('data-rating'));
       $popupChoices.click(function(e) {
-        var score;
-        score = parseInt($(this).attr('data-score'), 10);
-        setPopupScore(score);
-        return updateWord(el, score);
+        var rating;
+        rating = parseInt($(this).attr('data-rating'), 10);
+        setPopupScore(rating);
+        return updateWord(el, rating);
       });
       $(document).on('keyup', function(e) {
         if (e.keyCode === 27) {
@@ -85,22 +85,22 @@
         }
       });
       return $(document).on('keypress', function(e) {
-        var char, score;
+        var char, rating;
         char = String.fromCharCode(e.keyCode);
-        score = parseInt(char, 10);
-        if (__indexOf.call(SRS_SCORE_CHOICES, score) >= 0) {
-          return $popup.find(".choice[data-score=\"" + score + "\"]").trigger('click');
+        rating = parseInt(char, 10);
+        if (__indexOf.call(SRS_RATING_CHOICES, rating) >= 0) {
+          return $popup.find(".choice[data-rating=\"" + rating + "\"]").trigger('click');
         }
       });
     };
     hideWordScorePopup = function(el) {
-      $popup = $('#word-score-popup');
+      $popup = $('#word-rating-popup');
       $popup.removeClass('visible');
       $popupChoices.off('click');
       return $(document).off('keyup keypress');
     };
     attachAnnotationControls = function($el) {
-      $popup = $('#word-score-popup');
+      $popup = $('#word-rating-popup');
       return $el.click(function(e) {
         return selectWord(this);
       });

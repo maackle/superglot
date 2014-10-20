@@ -38,13 +38,13 @@ class TestSRS(SuperglotTestBase):
 				}
 			]
 
-			superglot.update_user_words(user, ignored_words, settings.RATING_NAMES['ignored'])
+			superglot.update_user_words(user, ignored_words, settings.RATING_VALUES['ignored'])
 
 			for score, words in wordsets.items():
-				num = superglot.update_user_words(user, words, score)
+				superglot.update_user_words(user, words, score)
 
 			with mock.patch('util.now'):
 				util.now.return_value = datetime.now() + timedelta(days=1)
 				for score, words in wordsets.items():
-					num = superglot.update_user_words(user, words, score)
+					superglot.update_user_words(user, words, score)
 					

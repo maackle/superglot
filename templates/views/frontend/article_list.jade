@@ -11,7 +11,7 @@ block main_content
 		a(href=url_for('frontend.articles.article_create')).btn.btn-primary.add-text-button + 
 			= _("upload new") | title
 
-	if doc_pairs|length > 0
+	if article_pairs|length > 0
 		table.table
 			thead
 				tr
@@ -24,23 +24,23 @@ block main_content
 					th 
 						//- Action
 			tbody
-				for doc, stats in doc_pairs
+				for article, stats in article_pairs
 					tr
 						td
-							a(href=url_for('frontend.articles.article_read', doc_id=doc.id))= doc.title
-							//- a(href=url_for('frontend.articles.article_edit', doc_id=doc.id)) edit
+							a(href=url_for('frontend.articles.article_read', article_id=article.id))= article.title
+							//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
 						td
 							+vocab_progress_bar(stats)
 						td.align-center= stats.total
 						td.align-center= "%2.0f%%"|format(stats.percents.known)
 						td.align-center= "%2.0f%%"|format(stats.percents.learning)
 						td
-							if doc.source
-								a(href=doc.source, target="_blank") 
+							if article.source
+								a(href=article.source, target="_blank") 
 									= _("original")
 									|  &rarr;
 						td
-							a(href=url_for('frontend.articles.article_delete', doc_id=doc.id)) &times;
+							a(href=url_for('frontend.articles.article_delete', article_id=article.id)) &times;
 	else
 		.callout-notice
 			h3= _("you have nothing to read!") | capitalize

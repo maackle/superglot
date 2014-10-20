@@ -20,11 +20,21 @@ LANGUAGE_NAMES = {
 	'ja': '日本語',
 }
 
-RATING_NAMES = {
+RATING_VALUES = {
 	'ignored': -1,
 	'learning': 2,
 	'known': 4,
 }
+
+def rating_name(rating):
+	if rating == -1:
+		return 'ignored'
+	elif rating >= 0 and rating <= 2:
+		return 'learning'
+	elif rating <= 4:
+		return 'known'
+	else:
+		return None
 
 NATIVE_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in SUPPORTED_NATIVE_LANGUAGES)
 TARGET_LANGUAGE_CHOICES = tuple((code, LANGUAGE_NAMES[code]) for code in SUPPORTED_TARGET_LANGUAGES)

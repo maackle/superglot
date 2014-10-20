@@ -49,18 +49,18 @@ def word_list(partition):
 @login_required
 def add_words(label):
 	if label == 'ignored':
-		rating = settings.RATING_NAMES['ignored']
+		rating = settings.RATING_VALUES['ignored']
 	elif label == 'learning':
-		rating = settings.RATING_NAMES['learning']
+		rating = settings.RATING_VALUES['learning']
 	elif label == 'known':
-		rating = settings.RATING_NAMES['known']
+		rating = settings.RATING_VALUES['known']
 	else:
 		raise "Invalid label"
 	tokens = nlp.tokenize(request.form['words'])
 	new_words = superglot.gen_words_from_tokens(tokens)
-	created, updated, ignored = superglot.update_user_words(current_user, new_words, rating)
-	if created + updated == 0:
+	updated, ignored = superglot.update_user_words(current_user, new_words, rating)
+	if updated == 0:
 		flash('None of those words were recognized :(')
 	else:
-		flash('Created {}, updated {}, ignored {}'.format(created, updated, ignored))
+		flash('updated {}, ignored {}'.format(updated, ignored))
 	return redirect(url_for('frontend.words.word_list_all'))

@@ -39,7 +39,7 @@ def _calculate_ease_factor(ease_factor, rating):
 
 # 	ease_factor = 2.5
 # 	num_repetitions = 0
-# 	next_repetition = None
+# 	srs_next_repetition = None
 # 	interval = 0
 
 # 	def process_answer(self, rating):
@@ -58,7 +58,7 @@ def _calculate_ease_factor(ease_factor, rating):
 # 					self.interval = 6
 # 				else:
 # 					self.interval *= self.ease_factor
-# 		self.next_repetition = 
+# 		self.srs_next_repetition = 
 
 # 	@staticmethod
 # 	def passing_rating(rating):

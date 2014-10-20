@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from subprocess import call
 from collections import defaultdict
 
@@ -16,6 +16,14 @@ import database
 from config import settings
 
 
+dbname = settings.DATABASE_NAME
+
+def psql(cmd):
+	call("psql -c \"{}\"".format(cmd), shell=True)
+
+def dumpfile(dbname):
+	return "dump/{0}.sql".format(dbname)
+
 def load_schema_fixtures():
 	languages = {}
 	with database.session() as session:
@@ -28,19 +36,27 @@ def load_schema_fixtures():
 		session.commit()
 	app.logger.info("schema fixtures created")
 
+@manager.command
+def make_dump():
+	filename = dumpfile(settings.DATABASE_NAME)
+	print("writing PG dump to {}".format(filename))
+	call("pg_dump -i -F c -f {1} {0}".format(settings.DATABASE_NAME, filename), shell=True)
+
+@manager.command
+def load_dump():
+	filename = dumpfile(settings.DATABASE_NAME)
+	print("reading PG dump {0}".format(filename))
+	call("pg_restore -i -d {0} {1}".format(settings.DATABASE_NAME, filename), shell=True)
+
+def db_drop_create():
+	call('bin/db-drop-create.sh {0}'.format(dbname), shell=True)
+	database.engine.dispose()
 
 @manager.command
 def reset_schema():
 	dbname = settings.DATABASE_NAME
 	print('resetting schema for database {0}'.format(dbname))
-	database.engine.dispose()
-	# call('psql -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = \'{0}\'"'.format(dbname), shell=True)
-	# if call('psql -c "DROP DATABASE {0};"'.format(dbname), shell=True):
-	# 	if call('dropdb {0}'.format(dbname)):
-	# 		raise "Couldn't drop DB"
-	# call('psql -c "CREATE DATABASE {0};"'.format(dbname), shell=True)
-	# call('psql -c "GRANT ALL ON DATABASE {0} TO {0};"'.format(dbname), shell=True)
-	call('bin/db-drop-create.sh {0}'.format(dbname), shell=True)
+	db_drop_create()
 	print('building schema')
 	models.Base.metadata.create_all(database.engine)
 	load_schema_fixtures()
@@ -88,9 +104,14 @@ def load_fixture_words(filename='data/en-2000.txt'):
 
 @manager.command
 def rebuild_db():
-	reset_schema()
-	load_fixture_words()
-	database.engine.dispose()
+	if os.path.isfile(dumpfile(settings.DATABASE_NAME)):
+		db_drop_create()
+		load_dump()
+	else:
+		reset_schema()
+		load_fixture_words()
+		database.engine.dispose()
+		make_dump()
 
 @manager.command
 def translate(task, lang=None):

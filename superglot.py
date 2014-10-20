@@ -2,6 +2,7 @@
 Complex queries, calculations, etc.
 '''
 
+from sqlalchemy import distinct
 from flask import current_app as app
 from bs4 import BeautifulSoup
 
@@ -47,8 +48,22 @@ def get_common_words(user, article):
 
 	V = models.VocabWord
 	O = models.WordOccurrence
+	return app.db.session.query(V, O).\
+			filter(V.word_id == O.word_id and O.article_id == article.id).\
+			filter(V.user_id==user.id).\
+			all()
+
+@cache.memoize()
+def get_common_vocab(user, article):
+	'''
+	Get VocabWords in the article
+	'''
+
+	V = models.VocabWord
+	O = models.WordOccurrence
 	return app.db.session.query(V).\
-			join(O, V.word_id == O.word_id and O.article_id == article_id).\
+			join(O, V.word_id == O.word_id).\
+			filter(O.article_id == article.id).\
 			filter(V.user_id==user.id).\
 			all()
 
@@ -79,6 +94,7 @@ def create_article(user, title, plaintext, url=None):
 
 	sentence_positions = {}
 	occurrences = []
+	all_words = set()
 	for i, sentence in enumerate(nlp.get_sentences(plaintext)):
 		sentence_positions[sentence.start] = len(sentence)
 		sentence_tokens = nlp.tokenize(sentence.string)
@@ -86,6 +102,7 @@ def create_article(user, title, plaintext, url=None):
 			if word.id:
 				occurrence = models.WordOccurrence(word_id=word.id, article_sentence_start=sentence.start)
 				occurrences.append(occurrence)
+				all_words.add(word)
 		all_tokens.extend(sentence_tokens)
 
 	article = models.Article(
@@ -101,7 +118,9 @@ def create_article(user, title, plaintext, url=None):
 
 	for o in occurrences:
 		o.article_id = article.id
-		app.db.session.add(o)
+		app.db.session.merge(o)
+	for word in all_words:
+		app.db.session.add(models.VocabWord(user_id=user.id, word_id=word.id, rating=0))
 	app.db.session.commit()
 
 	# cache.delete_memoized(get_common_words, user=user, article=article)
@@ -127,24 +146,17 @@ def register_user(email, password):
 	return (user, created)
 
 def update_user_words(user, words, rating):
-	created = 0
 	updated = 0
 	ignored = 0
-	for word in words:
+	for word in set(words):
 		if word.id:
-			vocab_word = user.vocab.filter_by(word_id=word.id).first()
-			if vocab_word:
-				vocab_word.rating = rating
-				app.db.session.merge(vocab_word)
-				updated += 1
-			else:
-				vocab_word = models.VocabWord(user_id=user.id, word_id=word.id, rating=rating)
-				app.db.session.add(vocab_word)
-				created += 1
+			vocab_word = models.VocabWord(user_id=user.id, word_id=word.id, rating=rating)
+			app.db.session.merge(vocab_word)
+			updated += 1
 		else:
 			ignored += 1
 	app.db.session.commit()
-	return created, updated, ignored
+	return updated, ignored
 
 
 #############################################################

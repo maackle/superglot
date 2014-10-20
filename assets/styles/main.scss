@@ -213,7 +213,7 @@ ul {
 			padding: 1px 3px;
 			margin: 2px auto;
 			
-			&[data-score="-1"] {
+			&[data-rating="-1"] {
 				// background: #ddd;
 				color: #aaa;
 				cursor: not-allowed;
@@ -226,11 +226,11 @@ ul {
 				border-color: rgba(black, 0.2);
 			}
 
-			&[data-score="1"] { color: $color-score-1; border-bottom-color: $color-score-1; }
-			&[data-score="2"] { color: $color-score-2; border-bottom-color: $color-score-2; }
-			&[data-score="3"] { color: $color-score-3; border-bottom-color: $color-score-3; }
-			&[data-score="4"] { color: $color-score-4; border-bottom-color: $color-score-4; }
-			&[data-score="5"] { color: $color-score-5; border-bottom-color: $color-score-5; }
+			&[data-rating="1"] { color: $color-rating-1; border-bottom-color: $color-rating-1; }
+			&[data-rating="2"] { color: $color-rating-2; border-bottom-color: $color-rating-2; }
+			&[data-rating="3"] { color: $color-rating-3; border-bottom-color: $color-rating-3; }
+			&[data-rating="4"] { color: $color-rating-4; border-bottom-color: $color-rating-4; }
+			&[data-rating="5"] { color: $color-rating-5; border-bottom-color: $color-rating-5; }
 
 			&.selected {
 				border-color: black;
@@ -238,11 +238,11 @@ ul {
 			
 			&.due {
 				color: inherit;
-				&[data-score="1"] { background: $color-score-1; }
-				&[data-score="2"] { background: $color-score-2; }
-				&[data-score="3"] { background: $color-score-3; }
-				&[data-score="4"] { background: $color-score-4; }
-				&[data-score="5"] { background: $color-score-5; }
+				&[data-rating="1"] { background: $color-rating-1; }
+				&[data-rating="2"] { background: $color-rating-2; }
+				&[data-rating="3"] { background: $color-rating-3; }
+				&[data-rating="4"] { background: $color-rating-4; }
+				&[data-rating="5"] { background: $color-rating-5; }
 				
 				position: relative;
 				.due-marker {
@@ -270,7 +270,7 @@ ul {
 			padding: 1px 3px;
 			margin: 2px auto;
 			
-			&[data-score="-1"] {
+			&[data-rating="-1"] {
 				// background: #ddd;
 				color: #aaa;
 				cursor: not-allowed;
@@ -283,11 +283,11 @@ ul {
 				border-color: rgba(black, 0.2);
 			}
 
-			&[data-score="1"] { color: $color-score-1; border-bottom-color: $color-score-1; }
-			&[data-score="2"] { color: $color-score-2; border-bottom-color: $color-score-2; }
-			&[data-score="3"] { color: $color-score-3; border-bottom-color: $color-score-3; }
-			&[data-score="4"] { color: $color-score-4; border-bottom-color: $color-score-4; }
-			&[data-score="5"] { color: $color-score-5; border-bottom-color: $color-score-5; }
+			&[data-rating="1"] { color: $color-rating-1; border-bottom-color: $color-rating-1; }
+			&[data-rating="2"] { color: $color-rating-2; border-bottom-color: $color-rating-2; }
+			&[data-rating="3"] { color: $color-rating-3; border-bottom-color: $color-rating-3; }
+			&[data-rating="4"] { color: $color-rating-4; border-bottom-color: $color-rating-4; }
+			&[data-rating="5"] { color: $color-rating-5; border-bottom-color: $color-rating-5; }
 
 			&.selected {
 				border-color: black;
@@ -295,11 +295,11 @@ ul {
 			
 			&.due {
 				color: inherit;
-				&[data-score="1"] { border-color: $color-score-1; }
-				&[data-score="2"] { border-color: $color-score-2; }
-				&[data-score="3"] { border-color: $color-score-3; }
-				&[data-score="4"] { border-color: $color-score-4; }
-				&[data-score="5"] { border-color: $color-score-5; }
+				&[data-rating="1"] { border-color: $color-rating-1; }
+				&[data-rating="2"] { border-color: $color-rating-2; }
+				&[data-rating="3"] { border-color: $color-rating-3; }
+				&[data-rating="4"] { border-color: $color-rating-4; }
+				&[data-rating="5"] { border-color: $color-rating-5; }
 				
 				position: relative;
 				.due-marker {
@@ -342,7 +342,7 @@ ul {
 	border: gray;
 }
 
-#word-score-popup {
+#word-rating-popup {
 	@include border-radius(8px);
 	@include transition(height 200ms);
 
@@ -370,7 +370,7 @@ ul {
 		font-size: 2.4rem;
 	}
 
-	.scores {
+	.ratings {
 		display: inline-block;
 
 		.choice {
@@ -393,25 +393,25 @@ ul {
 				color: white;
 				color: rgba(black, 0.3);
 
-				&[data-score="1"] { background: $color-score-1; }
-				&[data-score="2"] { background: $color-score-2; }
-				&[data-score="3"] { background: $color-score-3; }
-				&[data-score="4"] { background: $color-score-4; }
-				&[data-score="5"] { background: $color-score-5; }
+				&[data-rating="1"] { background: $color-rating-1; }
+				&[data-rating="2"] { background: $color-rating-2; }
+				&[data-rating="3"] { background: $color-rating-3; }
+				&[data-rating="4"] { background: $color-rating-4; }
+				&[data-rating="5"] { background: $color-rating-5; }
 
 				&:hover {
 					color: black;
 				}
 				&.selected {
-					&:not([data-score="0"]) {
+					&:not([data-rating="0"]) {
 						border: 3px solid black;
 						color: black;
 					}
-					&[data-score="1"] { background: $color-score-1; }
-					&[data-score="2"] { background: $color-score-2; }
-					&[data-score="3"] { background: $color-score-3; }
-					&[data-score="4"] { background: $color-score-4; }
-					&[data-score="5"] { background: $color-score-5; }
+					&[data-rating="1"] { background: $color-rating-1; }
+					&[data-rating="2"] { background: $color-rating-2; }
+					&[data-rating="3"] { background: $color-rating-3; }
+					&[data-rating="4"] { background: $color-rating-4; }
+					&[data-rating="5"] { background: $color-rating-5; }
 				}
 			}
 

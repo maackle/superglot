@@ -1,17 +1,17 @@
-SRS_SCORE_CHOICES = [1,2,3,4]  # the scores that can be selected by pressing the keypad
+SRS_RATING_CHOICES = [1,2,3,4]  # the ratings that can be selected by pressing the keypad
 
-markWords = (lemmata, score, after) ->
-	if score == 'known'
-		score = 4
-	else if score == 'learning'
-		score = 2
+markWords = (lemmata, rating, after) ->
+	if rating == 'known'
+		rating = 4
+	else if rating == 'learning'
+		rating = 2
 
-	score = parseInt(score, 10)
+	rating = parseInt(rating, 10)
 
 	lemmataString = lemmata.join("\n")
 	$.post '/api/user/words/update/', {
 		lemmata: lemmataString
-		score: score
+		rating: rating
 	}, after
 
 addMeaningTooltip = (el, meaning) ->
@@ -20,8 +20,8 @@ addMeaningTooltip = (el, meaning) ->
 		placement: 'left'
 
 setupAnnotation = ->
-	$popup = $('#word-score-popup')
-	$popupChoices = $popup.find('.scores .choice')
+	$popup = $('#word-rating-popup')
+	$popupChoices = $popup.find('.ratings .choice')
 
 	selectWord = (el) ->
 		$word = $(el)
@@ -36,52 +36,52 @@ setupAnnotation = ->
 		$('.annotated-words li').removeClass('selected')
 		hideWordScorePopup()
 
-	updateWord = (el, score) ->
+	updateWord = (el, rating) ->
 		lemma = $(el).attr('data-lemma')
-		if score <= 0
+		if rating <= 0
 			label = null
-		else if score < 3
+		else if rating < 3
 			label = 'learning'
 		else
 			label = 'known'
-		markWords [lemma], score, (data) ->
+		markWords [lemma], rating, (data) ->
 			if data
 				$set = $(".word[data-lemma='#{ lemma }']")
 				$set.attr('data-group-label', label)
-				$set.attr('data-score', score)
+				$set.attr('data-rating', rating)
 				deselectWords()
 
-	setPopupScore = (score) ->
+	setPopupScore = (rating) ->
 		$popupChoices.removeClass('selected')
-		$popupChoices.filter("[data-score=#{ score }]").addClass('selected')
+		$popupChoices.filter("[data-rating=#{ rating }]").addClass('selected')
 
 	showWordScorePopup = (el) ->
-		# TODO: link score to word, must switch over from labels... 
+		# TODO: link rating to word, must switch over from labels... 
 		$popup.addClass('visible').focus()
 		$popup.find('.lemma').text($(el).attr('data-lemma'))
-		setPopupScore($(el).attr('data-score'))
+		setPopupScore($(el).attr('data-rating'))
 		$popupChoices.click (e) ->
-			score = parseInt($(this).attr('data-score'), 10);
-			setPopupScore(score)
-			updateWord(el, score)
+			rating = parseInt($(this).attr('data-rating'), 10);
+			setPopupScore(rating)
+			updateWord(el, rating)
 		$(document).on 'keyup', (e) ->
 			if e.keyCode == 27  # esc
 				deselectWords()
 		$(document).on 'keypress', (e) ->
 			char = String.fromCharCode(e.keyCode)
-			score = parseInt(char, 10)
-			if score in SRS_SCORE_CHOICES
-				$popup.find(".choice[data-score=\"#{ score }\"]").trigger('click')
+			rating = parseInt(char, 10)
+			if rating in SRS_RATING_CHOICES
+				$popup.find(".choice[data-rating=\"#{ rating }\"]").trigger('click')
 
 
 	hideWordScorePopup = (el) ->
-		$popup = $('#word-score-popup')
+		$popup = $('#word-rating-popup')
 		$popup.removeClass('visible')
 		$popupChoices.off 'click'
 		$(document).off 'keyup keypress'
 
 	attachAnnotationControls = ($el) ->
-		$popup = $('#word-score-popup')
+		$popup = $('#word-rating-popup')
 		$el.click (e) ->
 			selectWord(this)
 

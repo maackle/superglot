@@ -42,7 +42,7 @@ def vocab_stats(vocab):
 	total_significant = total - counts['ignored']
 
 	for label in counts:
-		percents[label] = 100 * counts[label] / total_significant
+		percents[label] = 100 * counts[label] / (total_significant or 1)
 
 	return {
 		'counts': counts,
