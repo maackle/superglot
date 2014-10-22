@@ -1,14 +1,12 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-
 import requests
-import mongoengine
+
 from flask import Flask, render_template, request, redirect, session, flash, url_for, g
 from flask.ext.assets import Environment, Bundle
 from flask.ext.login import current_user
 from flask.ext.login import LoginManager
-from flask.ext.mongoengine import MongoEngine
 from flask.ext.babel import Babel
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension

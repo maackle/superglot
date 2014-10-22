@@ -14,10 +14,8 @@ PyYAML==3.10
 WTForms==1.0.5
 Werkzeug==0.9.4
 beautifulsoup4==4.3.2
--e git+git@github.com:maackle/flask-mongoengine.git@b3547546ea7805b1f12c2da656bb4c9bd5190c37#egg=flask_mongoengine-master
 gunicorn==18.0
 itsdangerous==0.23
-mongoengine==0.8.7
 newrelic==2.22.1.20
 -e git+git@github.com:maackle/pybabel-jade.git@a69f1c07b05426d6c006d8edda50a23b79fd8252#egg=pybabel_jade
 -e git+git@github.com:SyrusAkbary/pyjade.git@c397ba21f94673f26d383fbff1bd734b53d501a5#egg=pyjade-master

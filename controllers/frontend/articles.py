@@ -5,7 +5,6 @@ import requests
 from flask import Blueprint, abort, render_template, request, flash, redirect, url_for, current_app as app
 from flask.ext.login import current_user, login_required
 from flask.ext.babel import gettext as _
-from mongoengine.errors import NotUniqueError
 
 from cache import cache
 from forms import AddArticleForm

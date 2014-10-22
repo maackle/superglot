@@ -17,3 +17,6 @@ __pycache__
 .flask-cache
 .ruby-version
 @*
+
+.coverage
+coverage/

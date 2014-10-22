@@ -5,7 +5,6 @@ import requests
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.ext.login import current_user, login_required
 from flask.ext.babel import lazy_gettext as _
-from mongoengine.errors import NotUniqueError
 
 from forms import UserSettingsForm
 from controllers import api
