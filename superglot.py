@@ -12,6 +12,7 @@ import util
 import models
 import database
 import srs
+import superglot
 
 try:
 	with database.session() as session:
@@ -41,8 +42,8 @@ def fetch_remote_article(url):
 	plaintext = "\n".join(strings)
 	return (plaintext, soup.title)
 
-@cache.memoize()
-def get_common_words(user, article):
+# @cache.memoize()
+def get_common_word_pairs(user, article):
 	'''
 	Get words that show up in user's vocab and the article
 	'''
@@ -54,8 +55,7 @@ def get_common_words(user, article):
 			filter(V.user_id==user.id).\
 			all()
 
-@cache.memoize()
-def get_common_vocab(user, article):
+def _get_common_vocab_query(user, article):
 	'''
 	Get VocabWords in the article
 	'''
@@ -65,8 +65,24 @@ def get_common_vocab(user, article):
 	return app.db.session.query(V).\
 			join(O, V.word_id == O.word_id).\
 			filter(O.article_id == article.id).\
-			filter(V.user_id==user.id).\
-			all()
+			filter(V.user_id==user.id)
+
+# @cache.memoize()
+def get_common_vocab(user, article):
+	'''
+	Get VocabWords in the article
+	'''
+
+	return _get_common_vocab_query(user, article).all()
+
+# @cache.memoize()
+def get_common_word_ids(user, article):
+	'''
+	Get Words in the article
+	'''
+
+	V = models.VocabWord
+	return (v[0] for v in _get_common_vocab_query(user, article).values(V.word_id))
 
 def gen_words_from_tokens(tokens):
 	'''
@@ -95,7 +111,7 @@ def create_article(user, title, plaintext, url=None):
 
 	sentence_positions = {}
 	occurrences = []
-	all_words = set()
+	all_word_ids = set()
 	for i, sentence in enumerate(nlp.get_sentences(plaintext)):
 		sentence_positions[sentence.start] = len(sentence)
 		sentence_tokens = nlp.tokenize(sentence.string)
@@ -103,7 +119,7 @@ def create_article(user, title, plaintext, url=None):
 			if word.id:
 				occurrence = models.WordOccurrence(word_id=word.id, article_sentence_start=sentence.start)
 				occurrences.append(occurrence)
-				all_words.add(word)
+				all_word_ids.add(word.id)
 		all_tokens.extend(sentence_tokens)
 
 	article = models.Article(
@@ -120,11 +136,15 @@ def create_article(user, title, plaintext, url=None):
 	for o in occurrences:
 		o.article_id = article.id
 		app.db.session.merge(o)
-	for word in all_words:
-		app.db.session.add(models.VocabWord(user_id=user.id, word_id=word.id, rating=0))
 	app.db.session.commit()
 
-	# cache.delete_memoized(get_common_words, user=user, article=article)
+	existing_vocab_word_ids = set(superglot.get_common_word_ids(user, article))
+
+	for word_id in all_word_ids - existing_vocab_word_ids:
+		app.db.session.add(models.VocabWord(user_id=user.id, word_id=word_id, rating=0))
+	app.db.session.commit()
+
+	# cache.delete_memoized(get_common_word_pairs, user=user, article=article)
 
 	return article, True
 
@@ -149,8 +169,8 @@ def register_user(email, password):
 
 def _record_rating(vocab_word, rating):
 	stats = srs.process_answer(
-		rating, 
-		float(vocab_word.srs_ease_factor), 
+		rating,
+		float(vocab_word.srs_ease_factor),
 		vocab_word.srs_num_repetitions
 	)
 	interval, ease_factor, num_repetitions = stats
@@ -160,7 +180,7 @@ def _record_rating(vocab_word, rating):
 	vocab_word.srs_next_repetition = util.now() + datetime.timedelta(days=interval)
 	vocab_word.srs_ease_factor = ease_factor
 	vocab_word.srs_num_repetitions = num_repetitions
-			
+
 
 def update_user_words(user, words, rating):
 	updated = 0
@@ -170,8 +190,8 @@ def update_user_words(user, words, rating):
 	for word in set(words):
 		if word.id:
 			vocab_word = app.db.session.merge(models.VocabWord(
-				user_id=user.id, 
-				word_id=word.id, 
+				user_id=user.id,
+				word_id=word.id,
 				rating=rating,
 				srs_last_rated=util.now(),
 			))
@@ -231,7 +251,7 @@ def find_relevant_articles(user):
 	Sorting factors:
 	- P(X) is high
 	- P(EDGE) is high
-	- P(OK|EDGE) / P(BAD) ratio is decent 
+	- P(OK|EDGE) / P(BAD) ratio is decent
 
 	possible utility functions:
 

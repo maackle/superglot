@@ -26,13 +26,14 @@ class SuperglotTestBase(TestCase):
 		{
 			'file': 'data/articles/game-for-fools.txt',
 			'title': 'The Game For Fools',
-			# 'num_sentences': 34,
+			'num_sentences': 1,
 			'num_words': 197,
 		},
 		{
 			'file': 'data/articles/little-prince-1.txt',
 			'title': 'The Little Prince Ch. 1',
 			'num_sentences': 34,
+			'num_words': 999,
 		},
 	]
 

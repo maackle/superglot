@@ -14,7 +14,7 @@ Base = declarative_base()
 
 class Model(Base):
 	__abstract__ = True
-	
+
 	@classmethod
 	def query(cls):
 		return current_app.db.session.query(cls)
@@ -26,7 +26,7 @@ class Language(Model):
 	code = sa.Column(sa.String(8), info={
 		'choices': [('en', 'English')]
 		})
-	
+
 
 class Word(Model):
 	__tablename__ = 'word'
@@ -35,7 +35,7 @@ class Word(Model):
 	lemma = sa.Column(sa.String(256), unique=True)
 	language_id = sa.Column(sa.Integer, sa.ForeignKey('language.id'))
 	canonical = sa.Column(sa.Boolean(), default=True)
-	
+
 	language = relationship(Language)
 
 	def __str__(self):
@@ -54,11 +54,11 @@ class LemmaReading(Model):
 	id = sa.Column(sa.Integer, primary_key=True)
 	lemma = sa.Column(sa.String(256))
 	reading = sa.Column(sa.String(256))
-	
+
 
 class User(Model, UserMixin):
 	__tablename__ = 'user'
-	
+
 	id = sa.Column(sa.Integer, primary_key=True)
 	email = sa.Column(sa.String(256))
 	password = sa.Column(sa.String(256))
@@ -92,13 +92,12 @@ class VocabWord(Model):
 	srs_next_repetition = sa.Column(sa.DateTime(), default=util.now, nullable=False)
 	srs_ease_factor = sa.Column(sa.Integer, default=1.4)
 	srs_num_repetitions = sa.Column(sa.Integer, default=0)
-	
+
 	srs_data = sa.Column(JSON, default={})
-	
+
 	# srs_score = IntField(default=0)
 	# srs_ease_factor = DecimalField(default=2.5)
 	# srs_num_repetitions = IntField(default=0)
-
 
 	word = relationship(Word, cascade="all, delete", single_parent=True)
 	user = relationship(User, cascade="all, delete", single_parent=True)
@@ -113,6 +112,12 @@ class VocabWord(Model):
 	def __lt__(self, other):
 		return self.word.lemma < other.word.lemma
 
+	# def __eq__(self, other):
+	# 	return (self.user_id == other.user_id) and (self.word_id == other.word_id)
+
+	# def __hash__(self):
+	# 	return util.string_hash(self.user_id + ' ' + self.word_id)
+
 
 
 class Article(Model):
@@ -125,19 +130,19 @@ class Article(Model):
 	user_id = sa.Column(sa.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
 	title = sa.Column(sa.String(256))
 	source = sa.Column(sa.String(256), nullable=True)
-	
+
 
 class WordOccurrence(Model):
 	__tablename__ = 'article_word'
 
 	# id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
 	article_id = sa.Column(sa.Integer, sa.ForeignKey('article.id', ondelete='CASCADE'))
-	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'))
+	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id', ondelete='CASCADE'))
 	article_sentence_start = sa.Column(sa.Integer)  # a unique identifier for an article sentence
 	# article_position = sa.Column(sa.Integer)
-	
-	word = relationship(Word, backref='word_occurrences', cascade='delete')
-	article = relationship(Article, backref='word_occurrences')
+
+	word = relationship(Word, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)
+	article = relationship(Article, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)
 
 
 	__table_args__ = (

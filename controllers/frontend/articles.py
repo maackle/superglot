@@ -44,11 +44,9 @@ def article_read(article_id):
 		abort(404)
 	article_vocab = superglot.get_common_vocab(current_user, article)
 	stats = util.vocab_stats(article_vocab)
-	pprint(article_vocab)
-	pprint(stats)
 
-	return render_template('views/frontend/article_read.jade', 
-		article=article, 
+	return render_template('views/frontend/article_read.jade',
+		article=article,
 		stats=stats,
 		annotated_words=sorted(article_vocab))
 
@@ -61,10 +59,10 @@ def article_delete(article_id):
 	TODO: ensure the user owns the article!!
 	'''
 	article = app.db.session.query(models.Article).filter_by(id=article_id).first()
-	if article:
+	t = models.Article.__table__
+	deleted = app.db.engine.execute(t.delete().where(t.c.id == article_id))
+	if deleted:
 		flash(_('Deleted "%(title)s"', title=article.title))
-		app.db.session.delete(article)
-		app.db.session.commit()
 	return redirect(url_for('.article_list'))
 
 @blueprint.route('/user/texts/add/', methods=['GET', 'POST'])
@@ -94,7 +92,7 @@ def article_create():
 
 		if form.plaintext.data:
 			plaintext = form.plaintext.data
-			
+
 		if url:
 			(page_text, page_title) = read_page(url)
 			if not plaintext:
@@ -115,7 +113,7 @@ def article_create():
 			url=url,
 		)
 
-		cache.delete_memoized(superglot.get_common_words, current_user, article)
+		# cache.delete_memoized(superglot.get_common_word_pairs, current_user, article)
 
 		if created:
 			flash("Added {}".format(title), 'success')

@@ -9,5 +9,7 @@ def setup_sql_logging():
 	logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 def setup_package():
-	manage.rebuild_db()
-	
+	import application
+	app = application.create_app()
+	with app.app_context():
+		manage.rebuild_db()
