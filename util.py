@@ -15,6 +15,12 @@ def chunks(l, n):
 	for i in range(0, len(l), n):
 		yield l[i:i+n]
 
+def dict_from_seq(s, mapper=None):
+	if mapper:
+		t = map(mapper, s)
+	else:
+		t = s
+	return dict(zip(t, s))
 
 @cache.memoize()
 def get_page(url):

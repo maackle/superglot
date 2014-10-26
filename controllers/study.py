@@ -13,12 +13,10 @@ import models
 import util
 import srs
 import nlp
+import superglot
 
 
 blueprint = Blueprint('study', __name__, template_folder='templates')
-
-def gen_due_vocab():
-	return (item for item in current_user.vocab if item.rating >= srs.RATING_MIN and item.srs_next_repetition and item.srs_next_repetition < util.now())
 
 
 @blueprint.route('/')
@@ -31,7 +29,7 @@ def home():
 @login_required
 def words():
 
-	due_vocab = gen_due_vocab()
+	due_vocab = superglot.gen_due_vocab(current_user)
 
 	return render_template('views/study/study_words.jade', **{
 		'due_vocab': due_vocab,
@@ -41,33 +39,35 @@ def words():
 @blueprint.route('/sentences/')
 @login_required
 def sentences():
-	raise NotImplementedError
-
+	W = models.Word
+	V = models.VocabWord
+	O = models.WordOccurrence
 	# all_vocab = set(filter(lambda item: item.rating is not 0, current_user.vocab))
 	all_vocab = set(current_user.vocab)
 
-	due_vocab = list(gen_due_vocab())
+	due_vocab = list(superglot.gen_due_vocab(current_user))
 	due_words = set(map(lambda item: item.word, due_vocab))
 
 	sentences = list()
 	for article in models.Article.query().filter_by(user_id=current_user.id):
-		for sentence in article.gen_sentences(due_words):
-			sentence_vocab_list = list(models.VocabWord.query.filter_by(word_id=token.word().id) for token in nlp.tokenize(sentence))
-			sentence_vocab_set = all_vocab | set(sentence_vocab_list)
-			sentence_vocab = list()
-			for item in sentence_vocab_list:
-				# items = sentence_vocab_set & set((item,))  # this doesn't work, so...
-				items = set(filter(lambda i: i == item, sentence_vocab_set))
-				try:
-					annotated_item = items.pop()
-				except KeyError:
-					app.logger.info(sentence_vocab_set)
-					app.logger.info(item)
-					raise
-				# TODO: use actual reading, not lemma!
-				sentence_vocab.append(annotated_item)
-			sentences.append( (sentence, sentence_vocab) )
-			# break  # TODO!!
+		for sentence in superglot.get_article_sentences(article, due_words):
+			tokens = nlp.tokenize(sentence)
+			lemmata = (tok.lemma for tok in tokens)
+			pairs = (
+				app.db.session.query(V, O)
+				.join(W)
+				.filter(V.word_id == O.word_id)
+				.filter(W.lemma.in_(lemmata))
+			)
+			vocabmap = util.dict_from_seq(
+				pairs,
+				lambda p: p[0].word.lemma
+			)
+			vocab = []
+			for tok in tokens:
+				vocab_pair = vocabmap[tok.lemma]
+				vocab.append(vocab_pair)
+			sentences.append( (sentence, vocab) )
 
 	return render_template('views/study/study_sentences.jade', **{
 		"due_vocab": due_vocab,
@@ -79,7 +79,7 @@ def sentences():
 @login_required
 def all():
 
-	due_vocab = gen_due_vocab()
+	due_vocab = superglot.gen_due_vocab(current_user)
 
 	return render_template('views/study/study_all.jade', **{
 		'due_vocab': due_vocab,

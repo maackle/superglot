@@ -3,7 +3,7 @@
 mixin form_field(field, placeholder="", type=None)
 	.form-group(class=('has-error' if field.errors else ''))
 		= field.label(class="control-label")
-		|  
+		|
 		if type
 			!= field(class="form-control", placeholder=placeholder, type=type)
 		else
@@ -76,13 +76,19 @@ mixin vocab_list(words)
 		+simple_vocab_list(words)
 
 
-mixin annotated_vocab_word(a_word)
+mixin annotated_vocab_word(a_word, reading=None)
+	if reading
+		- var text = reading
+	elif a_word.reading
+		- var text = a_word.reading
+	else
+		- var text = a_word.word.lemma
 	if a_word.rating > 0 and util.now() > a_word.srs_next_repetition
-		li.word.due(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-rating=a_word.rating|int) 
+		li.word.due(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
 			//- div.due-marker
 				//- = a_word.srs_next_repetition
-			= a_word.word.lemma
+			= text
 	else
-		li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-rating=a_word.rating|int) 
-			= a_word.word.lemma
+		li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
+			= text
 

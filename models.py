@@ -12,6 +12,9 @@ import util
 
 Base = declarative_base()
 
+def query(*models):
+	return current_app.db.session.query(*models)
+
 class Model(Base):
 	__abstract__ = True
 
@@ -109,6 +112,9 @@ class VocabWord(Model):
 	def __str__(self):
 		return "VocabWord<{}>".format(self.word.lemma)
 
+	def __repr__(self):
+		return "VocabWord<{}>".format(self.word.lemma)
+
 	def __lt__(self, other):
 		return self.word.lemma < other.word.lemma
 
@@ -138,6 +144,7 @@ class WordOccurrence(Model):
 	# id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
 	article_id = sa.Column(sa.Integer, sa.ForeignKey('article.id', ondelete='CASCADE'))
 	word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id', ondelete='CASCADE'))
+	reading = sa.Column(sa.String(256))
 	article_sentence_start = sa.Column(sa.Integer)  # a unique identifier for an article sentence
 	# article_position = sa.Column(sa.Integer)
 
@@ -151,3 +158,6 @@ class WordOccurrence(Model):
 
 	def __str__(self):
 		return "WordOccurrence<{}>".format(self.word.lemma)
+
+	def __repr__(self):
+		return self.__str__()

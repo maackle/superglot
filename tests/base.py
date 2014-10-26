@@ -48,6 +48,9 @@ class SuperglotTestBase(TestCase):
 		import application
 		return application.create_app()
 
+	def get_user(self):
+		return models.User.query().first()
+
 	def setUp(self):
 		self._add_accounts()
 

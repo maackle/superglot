@@ -75,6 +75,17 @@ def get_common_vocab(user, article):
 
 	return _get_common_vocab_query(user, article).all()
 
+def gen_due_vocab(user):
+	'''
+	Get VocabWords that are due for study for this user
+	'''
+
+	return (item for item in user.vocab.all()
+		if item.rating >= srs.RATING_MIN
+		and item.srs_next_repetition
+		and item.srs_next_repetition < util.now()
+	)
+
 # @cache.memoize()
 def get_common_word_ids(user, article):
 	'''
@@ -115,9 +126,13 @@ def create_article(user, title, plaintext, url=None):
 	for i, sentence in enumerate(nlp.get_sentences(plaintext)):
 		sentence_positions[sentence.start] = len(sentence)
 		sentence_tokens = nlp.tokenize(sentence.string)
-		for word in gen_words_from_tokens(sentence_tokens):
+		for token, word in zip(sentence_tokens, gen_words_from_tokens(sentence_tokens)):
 			if word.id:
-				occurrence = models.WordOccurrence(word_id=word.id, article_sentence_start=sentence.start)
+				occurrence = models.WordOccurrence(
+					word_id=word.id,
+					reading=token.reading,
+					article_sentence_start=sentence.start
+				)
 				occurrences.append(occurrence)
 				all_word_ids.add(word.id)
 		all_tokens.extend(sentence_tokens)
@@ -218,9 +233,18 @@ def get_article_sentences(article, words):
 	SELECT sentence_start from word_occurrence
 	WHERE word_id IN ({word_ids}) AND article_id = {article.id}
 	"""
+
+	O = models.WordOccurrence
+	word_ids = list(w.id for w in words)
+	sentence_starts = set(map(lambda r: r[0], (O.query()
+		.filter(O.word_id.in_(word_ids))
+		.values(O.article_sentence_start)
+	)))
 	sentences = list()
-	for start in indices:
-		sentence_text = article.plaintext[start:end]
+	for start in sentence_starts:
+		# unfortunately PG JSON keys are strings...
+		length = article.sentence_positions[str(start)]
+		sentence_text = article.plaintext[start:start+length].strip()
 		sentences.append(sentence_text)
 	return sentences
 

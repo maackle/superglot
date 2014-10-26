@@ -20,31 +20,40 @@ class TestSRS(SuperglotTestBase):
 
 	lemmata_fixture = ['']
 
-	def test(self):
-			user = self.db.session.query(models.User).first()
-			words = self.db.session.query(models.Word)
-			ignored_words = words[0:20]
-			wordsets = {
-				1: words[20:40],
-				2: words[20:40],
-				3: words[40:60],
-				4: words[60:80],
+	def _add_sample_vocab_words(self, user):
+		words = models.query(models.Word)
+		wordsets = {
+			settings.RATING_VALUES['ignored']: set(words[0:20]),
+			1: set(words[20:40]),
+			2: set(words[40:60]),
+			3: set(words[60:80]),
+			4: set(words[80:100]),
+		}
+		for score, words in wordsets.items():
+			superglot.update_user_words(user, words, score)
+		return wordsets
+
+
+	def test_due(self):
+		user = self.get_user()
+		wordsets = self._add_sample_vocab_words(user)
+		due_vocab = superglot.gen_due_vocab(user)
+
+
+	def test_intervals(self):
+		user = self.get_user()
+
+		wordsets = self._add_sample_vocab_words(user)
+
+		# TODO: once the SRS scheme is solidified, simulate a bunch of updates over days and months and see if they make sense
+		intervals = [
+			{
+
 			}
+		]
 
-			# TODO: once the SRS scheme is solidified, simulate a bunch of updates over days and months and see if they make sense
-			intervals = [
-				{
-
-				}
-			]
-
-			superglot.update_user_words(user, ignored_words, settings.RATING_VALUES['ignored'])
-
+		with mock.patch('util.now'):
+			util.now.return_value = datetime.now() + timedelta(days=1)
 			for score, words in wordsets.items():
 				superglot.update_user_words(user, words, score)
 
-			with mock.patch('util.now'):
-				util.now.return_value = datetime.now() + timedelta(days=1)
-				for score, words in wordsets.items():
-					superglot.update_user_words(user, words, score)
-					

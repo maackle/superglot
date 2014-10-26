@@ -1,4 +1,5 @@
-from textblob import TextBlob, Word
+import textblob
+import models
 import util
 
 class Token:
@@ -13,10 +14,6 @@ class Token:
 	def tup(self):
 		return (self.reading, self.lemma)
 
-	def word(self):
-		import models
-		return models.Word(reading=self.reading, lemma=self.lemma)
-
 	def __eq__(self, other):
 		return self.reading == other.reading
 
@@ -24,15 +21,15 @@ class Token:
 		return util.string_hash(self.lemma + self.reading)
 
 def translate_word(text, language):
-	blob = TextBlob(text)
+	blob = textblob.TextBlob(text)
 	return str(blob.translate(to=language))
 
 def get_sentences(text):
-	return TextBlob(text).sentences
+	return textblob.TextBlob(text).sentences
 
 def tokenize(text):
 	# TODO: keep track of occurence positions
-	blob = TextBlob(text)
+	blob = textblob.TextBlob(text)
 	sentences = blob.sentences
 	tags = blob.tags
 	words = blob.words
@@ -57,10 +54,10 @@ def tokenize(text):
 			if not keep_case and not is_acronym:
 				reading = reading.lower()
 
-			yield Token(reading, Word(reading).lemmatize(pos).lower())
+			yield Token(reading, textblob.Word(reading).lemmatize(pos).lower())
 
 	return list(gen())
 
 
 def lemmatize_word(word, pos):
-	return Word(word).lemmatize(pos)
+	return textblob.Word(word).lemmatize(pos)
