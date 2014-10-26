@@ -22,6 +22,16 @@ def dict_from_seq(s, mapper=None):
 		t = s
 	return dict(zip(t, s))
 
+def multi_dict_from_seq(s, mapper=None):
+	if mapper:
+		t = map(mapper, s)
+	else:
+		t = s
+	d = defaultdict(list)
+	for k, v in zip(t, s):
+		d[k].append(v)
+	return d
+
 @cache.memoize()
 def get_page(url):
 	req = requests.get(url)

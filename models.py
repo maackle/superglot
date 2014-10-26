@@ -132,6 +132,7 @@ class Article(Model):
 	id = sa.Column(sa.Integer, primary_key=True)
 	plaintext = sa.Column(sa.Text)
 	sentence_positions = sa.Column(JSON)
+	# total_words = sa.Column(sa.Integer)
 
 	user_id = sa.Column(sa.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
 	title = sa.Column(sa.String(256))
@@ -151,7 +152,6 @@ class WordOccurrence(Model):
 	word = relationship(Word, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)
 	article = relationship(Article, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)
 
-
 	__table_args__ = (
 		sa.PrimaryKeyConstraint(article_id, word_id),
 	)
@@ -161,3 +161,16 @@ class WordOccurrence(Model):
 
 	def __repr__(self):
 		return self.__str__()
+
+
+class ArticleComputedStats(Model):
+	__tablename__ = 'article_stats'
+
+	user_id = sa.Column(sa.ForeignKey('user.id', ondelete='CASCADE'))
+	article_id = sa.Column(sa.ForeignKey('article.id', ondelete='CASCADE'))
+
+	stats = sa.Column(JSON)
+
+	__table_args__ = (
+		sa.PrimaryKeyConstraint(user_id, article_id),
+	)

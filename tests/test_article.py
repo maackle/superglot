@@ -33,7 +33,7 @@ class TestArticle(SuperglotTestBase):
 		import superglot
 		import models
 
-		user = self.db.session.query(models.User).first()
+		user = self.get_user()
 
 		for article_def in self.test_articles:
 			article, created = self._create_article(user, article_def)
@@ -52,3 +52,11 @@ class TestArticle(SuperglotTestBase):
 		article, created = self._create_article(user, article_def)
 		article, created = self._create_article(user, article_def)
 
+	def test_article_stats(self):
+
+		user = self.get_user()
+		article_def = self.test_articles[0]
+		article, created = self._create_article(user, article_def)
+		words = models.Word.query().all()
+		superglot.update_user_words(user, words[0:10], 3)
+		superglot.compute_article_stats(user, article)

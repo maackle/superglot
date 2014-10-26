@@ -21,12 +21,14 @@ def setup_blueprints(app):
 	from controllers.frontend import blueprint as frontend_blueprint
 	from controllers.frontend.articles import blueprint as frontend_articles_blueprint
 	from controllers.frontend.words import blueprint as frontend_words_blueprint
+	from controllers.search import blueprint as search_blueprint
 	from controllers.study import blueprint as study_blueprint
 	from controllers.user import blueprint as user_blueprint
 
 	app.register_blueprint(api_blueprint, url_prefix='/api')
 	app.register_blueprint(chrome_api_blueprint, url_prefix='/chrome')
 	app.register_blueprint(auth_blueprint, url_prefix='/auth')
+	app.register_blueprint(search_blueprint, url_prefix='/search')
 	app.register_blueprint(study_blueprint, url_prefix='/study')
 	app.register_blueprint(user_blueprint, url_prefix='/user')
 	app.register_blueprint(frontend_blueprint, url_prefix='')

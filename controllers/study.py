@@ -14,7 +14,7 @@ import util
 import srs
 import nlp
 import superglot
-
+from pprint import pprint
 
 blueprint = Blueprint('study', __name__, template_folder='templates')
 
@@ -65,8 +65,10 @@ def sentences():
 			)
 			vocab = []
 			for tok in tokens:
-				vocab_pair = vocabmap[tok.lemma]
-				vocab.append(vocab_pair)
+				# if not found, the token doesn't represent a Word
+				vocab_pair = vocabmap.get(tok.lemma)
+				if vocab_pair:
+					vocab.append(vocab_pair)
 			sentences.append( (sentence, vocab) )
 
 	return render_template('views/study/study_sentences.jade', **{

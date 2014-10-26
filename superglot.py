@@ -42,8 +42,19 @@ def fetch_remote_article(url):
 	plaintext = "\n".join(strings)
 	return (plaintext, soup.title)
 
+def gen_due_vocab(user):
+	'''
+	Get VocabWords that are due for study for this user
+	'''
+
+	return (item for item in user.vocab.all()
+		if item.rating >= srs.RATING_MIN
+		and item.srs_next_repetition
+		and item.srs_next_repetition < util.now()
+	)
+
 # @cache.memoize()
-def get_common_word_pairs(user, article):
+def _get_common_word_pairs(user, article):
 	'''
 	Get words that show up in user's vocab and the article
 	'''
@@ -62,10 +73,12 @@ def _get_common_vocab_query(user, article):
 
 	V = models.VocabWord
 	O = models.WordOccurrence
-	return app.db.session.query(V).\
-			join(O, V.word_id == O.word_id).\
-			filter(O.article_id == article.id).\
-			filter(V.user_id==user.id)
+	return (
+		app.db.session.query(V).
+		join(O, V.word_id == O.word_id).
+		filter(O.article_id == article.id).
+		filter(V.user_id == user.id)
+	)
 
 # @cache.memoize()
 def get_common_vocab(user, article):
@@ -74,17 +87,6 @@ def get_common_vocab(user, article):
 	'''
 
 	return _get_common_vocab_query(user, article).all()
-
-def gen_due_vocab(user):
-	'''
-	Get VocabWords that are due for study for this user
-	'''
-
-	return (item for item in user.vocab.all()
-		if item.rating >= srs.RATING_MIN
-		and item.srs_next_repetition
-		and item.srs_next_repetition < util.now()
-	)
 
 # @cache.memoize()
 def get_common_word_ids(user, article):
@@ -243,12 +245,32 @@ def get_article_sentences(article, words):
 	sentences = list()
 	for start in sentence_starts:
 		# unfortunately PG JSON keys are strings...
-		length = article.sentence_positions[str(start)]
-		sentence_text = article.plaintext[start:start+length].strip()
-		sentences.append(sentence_text)
+		length = article.sentence_positions.get(str(start))
+		if length:
+			sentence_text = article.plaintext[start:start+length].strip()
+			sentences.append(sentence_text)
 	return sentences
 
+def compute_article_stats(user, article):
+	vocab = get_common_vocab(user, article)
+	groups = util.multi_dict_from_seq(vocab, lambda v: v.rating)
+	from pprint import pprint
+	pprint(groups)
+
 def find_relevant_articles(user):
+
+	A = models.Article
+	O = models.WordOccurrence
+	V = models.VocabWord
+
+	articles = list(
+		models.query(A)
+		.join(O)
+		.join(V, V.word_id == O.word_id and V.user_id == user.id)
+		.filter(V.rating == -1)
+	)
+
+	return articles
 
 	"""SELECT
 	( # this subquery seems mostly right

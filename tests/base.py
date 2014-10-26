@@ -35,6 +35,12 @@ class SuperglotTestBase(TestCase):
 			'num_sentences': 34,
 			'num_words': 999,
 		},
+		{
+			'file': 'data/articles/little-prince-2.txt',
+			'title': 'The Little Prince Ch. 2',
+			'num_sentences': 61,
+			'num_words': 999,
+		},
 	]
 
 	def make_url(self, uri):
