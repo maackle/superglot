@@ -98,7 +98,7 @@ def load_fixture_words(filename='data/en-2000.txt'):
 
 		database.engine.execute(models.Word.__table__.insert(),
 			[{
-				'lemma': lemma, 
+				'lemma': lemma,
 				'language_id': english_id,
 			} for lemma in words.keys()])
 
@@ -121,7 +121,8 @@ def rebuild_db(force=False):
 	else:
 		reset_schema()
 		load_fixture_words()
-		load_sample_data()
+		if settings.DEVELOPMENT:
+			load_sample_data()
 		database.engine.dispose()
 		make_dump()
 

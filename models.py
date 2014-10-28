@@ -78,7 +78,7 @@ class User(Model, UserMixin):
 
 
 class VocabWord(Model):
-	__tablename__ = 'user_word'
+	__tablename__ = 'vocabword'
 	__table_args__ = (
 		sa.PrimaryKeyConstraint("user_id", "word_id"),
 	)
@@ -140,7 +140,7 @@ class Article(Model):
 
 
 class WordOccurrence(Model):
-	__tablename__ = 'article_word'
+	__tablename__ = 'wordoccurrence'
 
 	# id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
 	article_id = sa.Column(sa.Integer, sa.ForeignKey('article.id', ondelete='CASCADE'))

@@ -119,6 +119,9 @@ def gen_words_from_tokens(tokens):
 		for word in words:
 			yield word
 
+def gen_words_from_lemmata(lemmata, language_id=english.id):
+	return models.Word.query().filter(models.Word.lemma.in_(lemmata)).all()
+
 def create_article(user, title, plaintext, url=None):
 	all_tokens = list()
 
@@ -224,6 +227,11 @@ def update_user_words(user, words, rating):
 			app.db.session.merge(v)
 	app.db.session.commit()
 	return updated, ignored
+
+
+def update_user_lemmata(user, lemmata, rating):
+	words = gen_words_from_lemmata(lemmata)
+	return update_user_words(user, words, rating)
 
 
 #############################################################

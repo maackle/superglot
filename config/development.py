@@ -3,6 +3,8 @@ MONGODB_SETTINGS = {
 	# 'HOST': 'mongodb://superglot:superglot@ds027769.mongolab.com:27769/superglot'
 }
 
+DEVELOPMENT = True
+
 SERVER_PORT = 31337
 BASE_URL = 'http://localhost:{}/'.format(SERVER_PORT)
 

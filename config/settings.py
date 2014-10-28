@@ -6,6 +6,7 @@ WTF_CSRF_ENABLED = True
 EMAIL_SUPPORT = 'support@superglot.com'
 
 DEBUG = True
+DEVELOPMENT = False
 
 SERVER_PORT = 31337
 

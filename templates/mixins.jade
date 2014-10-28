@@ -3,7 +3,6 @@
 mixin form_field(field, placeholder="", type=None)
 	.form-group(class=('has-error' if field.errors else ''))
 		= field.label(class="control-label")
-		|
 		if type
 			!= field(class="form-control", placeholder=placeholder, type=type)
 		else
