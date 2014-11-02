@@ -11,3 +11,4 @@ WTF_CSRF_ENABLED = False
 
 DATABASE_NAME = 'superglot_test'
 SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/{}'.format(DATABASE_NAME)
+ES_INDEX = 'superglot_test'

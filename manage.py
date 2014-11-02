@@ -2,6 +2,7 @@ import sys, os
 from subprocess import call
 from collections import defaultdict
 
+
 from flask.ext.script import Manager, Command
 
 from application import create_app
@@ -18,6 +19,7 @@ from config import settings
 
 
 dbname = settings.DATABASE_NAME
+
 
 def psql(cmd):
 	call("psql -c \"{}\"".format(cmd), shell=True)
@@ -140,6 +142,20 @@ def translate(task, lang=None):
 		if not lang:
 			raise Exception("missing language")
 		call("pybabel init -i {} -d translations -l {}".format(potfile, lang), shell=True)
+
+@manager.command
+def sync_es():
+	from elasticsearch.helpers import bulk
+
+	def row2dict(row):
+		return dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
+
+	bulk(
+		app.es,
+		map(row2dict, models.Article.query().all()),
+		index=settings.ES_INDEX,
+		doc_type='article',
+	)
 
 
 if __name__ == "__main__":

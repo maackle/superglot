@@ -10,6 +10,7 @@ from flask.ext.login import LoginManager
 from flask.ext.babel import Babel
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
+from elasticsearch import Elasticsearch
 
 from cache import cache
 
@@ -53,7 +54,9 @@ def create_app(**extra_config):
 	app = Flask(__name__)
 	app.config.from_object('config.settings')
 	db = SQLAlchemy(app)
+	es = Elasticsearch()
 	app.db = db
+	app.es = es
 
 	# try:
 	# 	app.config.from_envvar('SUPERGLOT_SETTINGS')
