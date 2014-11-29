@@ -6,10 +6,10 @@ import requests
 from flask import url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 
-import nlp
-import util
-import models
-import superglot
+from superglot import nlp
+from superglot import util
+from superglot import models
+from superglot import core
 
 from datetime import datetime, timedelta
 
@@ -74,7 +74,7 @@ class SuperglotTestBase(TestCase):
 	@classmethod
 	def _add_accounts(cls):
 		for account in cls.account_fixtures:
-			user, created = superglot.register_user(email=account['email'], password=account['password'])
+			user, created = core.register_user(email=account['email'], password=account['password'])
 			assert user
 			assert created
 

@@ -6,16 +6,16 @@ from flask import Blueprint, abort, render_template, request, flash, redirect, u
 from flask.ext.login import current_user, login_required
 from flask.ext.babel import gettext as _
 
-from cache import cache
-from forms import AddArticleForm
-import models
+from superglot.cache import cache
+from superglot.forms import AddArticleForm
+from superglot import models
 from controllers import api
-from util import sorted_words
-import nlp
-import util
+from superglot import nlp
+from superglot import util
+from superglot.util import sorted_words
 import formatting
 from config import settings
-import superglot
+from superglot import core
 from pprint import pprint
 
 
@@ -27,7 +27,7 @@ def article_list():
 	articles = list(app.db.session.query(models.Article).filter_by(user_id=current_user.id))
 	def stats():
 		for article in articles:
-			common = superglot.get_common_vocab(current_user, article)
+			common = core.get_common_vocab(current_user, article)
 			yield util.vocab_stats(common)
 	return render_template('views/frontend/article_list.jade', article_pairs=list(zip(articles, stats())))
 
@@ -41,7 +41,7 @@ def article_read(article_id):
 	article = app.db.session.query(models.Article).filter_by(user_id=current_user.id, id=article_id).first()
 	if not article:
 		abort(404)
-	article_vocab = superglot.get_common_vocab(current_user, article)
+	article_vocab = core.get_common_vocab(current_user, article)
 	stats = util.vocab_stats(article_vocab)
 
 	return render_template('views/frontend/article_read.jade',
@@ -105,7 +105,7 @@ def article_create():
 			else:
 				title = '[untitled]'
 
-		article, created = superglot.create_article(
+		article, created = core.create_article(
 			user=current_user,
 			title=title,
 			plaintext=plaintext,

@@ -5,7 +5,7 @@ from collections import defaultdict
 import datetime
 from flask import url_for
 
-from cache import cache
+from superglot.cache import cache
 
 now = datetime.datetime.now
 

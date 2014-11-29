@@ -7,13 +7,13 @@ from datetime import datetime, timedelta
 import requests
 from flask import url_for
 
-import models
-import nlp
-import util
+from superglot import models
+from superglot import nlp
+from superglot import util
 from config import settings
-import superglot
+from superglot import core
 
-from .base import SuperglotTestBase
+from .base from superglot import coreTestBase
 
 
 class TestSRS(SuperglotTestBase):
@@ -30,14 +30,14 @@ class TestSRS(SuperglotTestBase):
 			4: set(words[80:100]),
 		}
 		for score, words in wordsets.items():
-			superglot.update_user_words(user, words, score)
+		 core.update_user_words(user, words, score)
 		return wordsets
 
 
 	def test_due(self):
 		user = self.get_user()
 		wordsets = self._add_sample_vocab_words(user)
-		due_vocab = superglot.gen_due_vocab(user)
+		due_vocab = core.gen_due_vocab(user)
 
 
 	def test_intervals(self):
@@ -55,5 +55,5 @@ class TestSRS(SuperglotTestBase):
 		with mock.patch('util.now'):
 			util.now.return_value = datetime.now() + timedelta(days=1)
 			for score, words in wordsets.items():
-				superglot.update_user_words(user, words, score)
+			 core.update_user_words(user, words, score)
 

@@ -1,6 +1,6 @@
 import textblob
-import models
-import util
+from superglot import models
+from superglot import util
 
 class Token:
 

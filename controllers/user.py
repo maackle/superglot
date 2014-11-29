@@ -6,11 +6,11 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.ext.login import current_user, login_required
 from flask.ext.babel import lazy_gettext as _
 
-from forms import UserSettingsForm
+from superglot.forms import UserSettingsForm
 from controllers import api
-from util import sorted_words
-import nlp
-import util
+from superglot import nlp
+from superglot import util
+from superglot.util import sorted_words
 import formatting
 
 

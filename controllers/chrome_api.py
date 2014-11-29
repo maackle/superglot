@@ -5,14 +5,14 @@ from bs4 import BeautifulSoup
 from textblob import TextBlob
 import requests
 
-import nlp
+from superglot import nlp
 
 blueprint = Blueprint('chrome_api', __name__, template_folder='templates')
 
 @blueprint.route('/annotate/')
 def annotate():
 	url = request.form.get('url')
-	
+
 @blueprint.route('/user/')
 def user():
 	if current_user.is_authenticated():

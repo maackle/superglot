@@ -6,9 +6,9 @@ import requests
 from flask import Blueprint, render_template, request, jsonify, current_app as app
 from flask.ext.login import current_user, login_required
 
-import nlp
-import models
-import superglot
+from superglot import nlp
+from superglot import models
+from superglot import core
 
 
 blueprint = Blueprint('api', __name__, template_folder='templates')
@@ -28,11 +28,11 @@ def update_word():
 
 	for lemma in lemmata:
 		word = app.db.session.query(models.Word).filter_by(lemma=lemma).first()
-		change = superglot.update_user_words(current_user, [word], rating)
-		
+		change = core.update_user_words(current_user, [word], rating)
+
 		if change:
 			changes.append({
-				'lemma': lemma, 
+				'lemma': lemma,
 				'rating': rating,
 			})
 		else:

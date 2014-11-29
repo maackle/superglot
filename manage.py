@@ -1,7 +1,7 @@
 import sys, os
 from subprocess import call
 from collections import defaultdict
-
+import textblob
 
 from flask.ext.script import Manager, Command
 
@@ -10,12 +10,11 @@ from application import create_app
 app = create_app()
 manager = Manager(app)
 
-import nlp
-import util
-import textblob
-import models
-import database
-import superglot
+from superglot import nlp
+from superglot import util
+from superglot import models
+from superglot import database
+from superglot import core
 from config import settings
 
 
@@ -42,7 +41,7 @@ def load_sample_data():
 	user = models.User(email='michael@lv11.co', password='1234')
 	app.db.session.add(user)
 	app.db.session.commit()
-	article, created = superglot.create_article(
+	article, created = core.create_article(
 		user=user,
 		title='Sample Text',
 		plaintext="""
@@ -80,7 +79,7 @@ def reset_schema():
 def load_fixture_words(filename='data/en-2000.txt'):
 	from collections import defaultdict
 	import textblob
-	import database
+	from superglot import database
 
 	english_id = 1
 

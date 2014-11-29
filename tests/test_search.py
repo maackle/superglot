@@ -1,10 +1,10 @@
 from nose.tools import *
 
-import models
-import superglot
+from superglot import models
+from superglot import core
 
 from sqlalchemy.sql.expression import func
-from .base import SuperglotTestBase
+from .base from superglot import coreTestBase
 from pprint import pprint
 
 class TestAuth(SuperglotTestBase):

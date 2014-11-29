@@ -6,13 +6,12 @@ from sqlalchemy import distinct
 from flask import current_app as app
 from bs4 import BeautifulSoup
 
-import nlp
-from cache import cache
-import util
-import models
-import database
-import srs
-import superglot
+from superglot import nlp
+from superglot.cache import cache
+from superglot import util
+from superglot import models
+from superglot import database
+from superglot import srs
 
 try:
 	with database.session() as session:

@@ -2,10 +2,10 @@ from nose.tools import *
 
 from flask import url_for
 
-import models
-import superglot
+from superglot import models
+from superglot import core
 
-from .base import SuperglotTestBase
+from .base from superglot import coreTestBase
 
 
 class TestAuth(SuperglotTestBase):
@@ -13,7 +13,7 @@ class TestAuth(SuperglotTestBase):
 	test_account = {'email': 'test@superglot.com', 'password': '1234'}
 
 	def test_register(self):
-		user, created = superglot.register_user("axabras@gmail.com", "axabras")
+		user, created = core.register_user("axabras@gmail.com", "axabras")
 		assert user
 		assert_true(created)
 

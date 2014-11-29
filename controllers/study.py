@@ -7,13 +7,13 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask.ext.login import current_user, login_required
 from flask.ext.babel import gettext as _
 
-from cache import cache
+from superglot.cache import cache
 from controllers import api
-import models
-import util
-import srs
-import nlp
-import superglot
+from superglot import models
+from superglot import util
+from superglot import srs
+from superglot import nlp
+from superglot import core
 from pprint import pprint
 
 blueprint = Blueprint('study', __name__, template_folder='templates')
@@ -29,7 +29,7 @@ def home():
 @login_required
 def words():
 
-	due_vocab = superglot.gen_due_vocab(current_user)
+	due_vocab = core.gen_due_vocab(current_user)
 
 	return render_template('views/study/study_words.jade', **{
 		'due_vocab': due_vocab,
@@ -50,7 +50,7 @@ def sentences():
 
 	sentences = list()
 	for article in models.Article.query().filter_by(user_id=current_user.id):
-		for sentence in superglot.get_article_sentences(article, due_words):
+		for sentence in core.get_article_sentences(article, due_words):
 			tokens = nlp.tokenize(sentence)
 			lemmata = (tok.lemma for tok in tokens)
 			pairs = (
@@ -81,7 +81,7 @@ def sentences():
 @login_required
 def all():
 
-	due_vocab = superglot.gen_due_vocab(current_user)
+	due_vocab = core.gen_due_vocab(current_user)
 
 	return render_template('views/study/study_all.jade', **{
 		'due_vocab': due_vocab,

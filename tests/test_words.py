@@ -8,12 +8,12 @@ from pprint import pprint
 from flask import url_for
 from datetime import datetime, timedelta
 
-import models
-import nlp
-import util
-import superglot
+from superglot import models
+from superglot import nlp
+from superglot import util
+from superglot import core
 
-from .base import SuperglotTestBase
+from .base from superglot import coreTestBase
 
 
 class TestWords(SuperglotTestBase):
@@ -25,11 +25,11 @@ class TestWords(SuperglotTestBase):
 
 		with open(article_def['file'], 'r') as f:
 			plaintext = f.read()
-			article, created = superglot.create_article(user=user, title=article_def['title'], plaintext=plaintext)
+			article, created = core.create_article(user=user, title=article_def['title'], plaintext=plaintext)
 
 		tokens = nlp.tokenize(plaintext)
-		words = superglot.gen_words_from_tokens(tokens)
-		updated, ignored = superglot.update_user_words(user, words, 3)
+		words = core.gen_words_from_tokens(tokens)
+		updated, ignored = core.update_user_words(user, words, 3)
 		common_words = list(superglot.get_common_vocab(user, article))
 		common_lemmata = list(map(lambda w: w.word.lemma, common_words))
 		common_set = set(common_lemmata)

@@ -7,11 +7,11 @@ import requests
 from flask import url_for
 from datetime import datetime, timedelta
 
-import models
-import nlp
-import util
+from superglot import models
+from superglot import nlp
+from superglot import util
 
-from .base import SuperglotTestBase
+from .base from superglot import coreTestBase
 
 
 class TestMisc(SuperglotTestBase):

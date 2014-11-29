@@ -12,7 +12,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from elasticsearch import Elasticsearch
 
-from cache import cache
+from superglot.cache import cache
 
 def setup_blueprints(app):
 
@@ -41,7 +41,7 @@ def setup_blueprints(app):
 
 	@login_manager.user_loader
 	def load_user(userid):
-		import models
+		from superglot import models
 		user = app.db.session.query(models.User).get(userid)
 		return user
 
@@ -86,7 +86,7 @@ def create_app(**extra_config):
 	@app.context_processor
 	def add_modules():
 		import formatting
-		import util
+		from superglot import util
 
 		return {
 			'formatting': formatting,

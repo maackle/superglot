@@ -5,8 +5,8 @@ from wtforms_alchemy import model_form_factory, ModelFormField
 # from wtforms.validators import Length, EqualTo, InputRequired, Optional, ValidationError, URL
 from flask.ext.babel import lazy_gettext as _#, ngettext as __
 
-import models
-import database as db
+from superglot import models
+from superglot import database as db
 
 BaseModelForm = model_form_factory(Form)
 
@@ -18,12 +18,12 @@ class ModelForm(BaseModelForm):
 required = validators.InputRequired("This field is required")
 
 email_field = StringField(u'Email', [
-    required, 
+    required,
     validators.Length(min=3, max=128)
     ])
 
 password_field = PasswordField('Password', [
-        required, 
+        required,
         validators.Length(min=1, max=32)
         ])
 

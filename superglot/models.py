@@ -7,8 +7,8 @@ from flask import current_app
 from flask.ext.login import UserMixin
 from config import settings
 
-import database
-import util
+from superglot import database
+from superglot import util
 
 Base = declarative_base()
 

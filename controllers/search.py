@@ -6,12 +6,12 @@ from flask.ext.login import current_user, login_required
 from flask.ext.babel import gettext as _
 
 from sqlalchemy.sql.expression import func
-from cache import cache
-import models
-import util
-import srs
-import nlp
-import superglot
+from superglot.cache import cache
+from superglot import models
+from superglot import util
+from superglot import srs
+from superglot import nlp
+from superglot import core
 from pprint import pprint
 
 blueprint = Blueprint('search', __name__, template_folder='templates')
@@ -31,23 +31,23 @@ def postgres_search():
 	V = models.VocabWord
 
 	user = models.User.query().first()
-	superglot.create_article(
+	core.create_article(
 		user=user,
 		title="sample 1",
 		plaintext="good water should be used often",
 	)
-	superglot.create_article(
+	core.create_article(
 		user=user,
 		title="sample 2",
 		plaintext="we know important information",
 	)
-	superglot.create_article(
+	core.create_article(
 		user=user,
 		title="sample 1",
 		plaintext="painting politics extra attention",
 	)
 
-	superglot.update_user_lemmata(
+	core.update_user_lemmata(
 		user=user,
 		lemmata=[
 			'good', 'water', 'information',
@@ -55,7 +55,7 @@ def postgres_search():
 		rating=1
 	)
 
-	superglot.update_user_lemmata(
+	core.update_user_lemmata(
 		user=user,
 		lemmata=[
 			'painting', 'politics',
@@ -63,7 +63,7 @@ def postgres_search():
 		rating=2
 	)
 
-	superglot.update_user_lemmata(
+	core.update_user_lemmata(
 		user=user,
 		lemmata=[
 			'often', 'know',

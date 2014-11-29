@@ -2,10 +2,10 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask.ext.login import login_user, logout_user, login_required
 from flask.ext.babel import gettext as _
 
-from forms import LoginForm, RegisterForm
-import models
-import superglot
-import database as db
+from superglot.forms import LoginForm, RegisterForm
+from superglot import models
+from superglot import core
+from superglot import database as db
 
 blueprint = Blueprint('auth', __name__, template_folder='templates')
 
@@ -17,7 +17,7 @@ def login():
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			user = superglot.authenticate_user(**data)
+			user = core.authenticate_user(**data)
 			if user:
 				result = login_user(user, remember=False)
 				flash(_("Logged in successfully.").capitalize())
@@ -45,7 +45,7 @@ def register():
 	if request.method=='POST':
 		if form.validate_on_submit():
 			data = form.data
-			(user, created) = superglot.register_user(email=data['email'], password= data['password'])
+			(user, created) = core.register_user(email=data['email'], password= data['password'])
 			if created:
 				flash(_("You're all signed up! Now you can log in."))
 				return redirect(url_for('auth.login'))

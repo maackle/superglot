@@ -7,12 +7,12 @@ import requests
 from flask import url_for
 from datetime import datetime, timedelta
 
-import models
-import nlp
-import util
-import superglot
+from superglot import models
+from superglot import nlp
+from superglot import util
+from superglot import core
 
-from .base import SuperglotTestBase
+from .base from superglot import coreTestBase
 
 
 class TestArticle(SuperglotTestBase):
@@ -22,7 +22,7 @@ class TestArticle(SuperglotTestBase):
 	def _create_article(self, user, article_def):
 		with open(article_def['file'], 'r') as f:
 			plaintext = f.read()
-			article, created = superglot.create_article(
+			article, created = core.create_article(
 				user=user,
 				title=article_def['title'],
 				plaintext=plaintext[0:]
@@ -30,8 +30,8 @@ class TestArticle(SuperglotTestBase):
 		return article, created
 
 	def test_create_article(self):
-		import superglot
-		import models
+		from superglot import core
+		from superglot import models
 
 		user = self.get_user()
 
@@ -43,8 +43,8 @@ class TestArticle(SuperglotTestBase):
 			)
 
 	def test_create_article_twice(self):
-		import superglot
-		import models
+		from superglot import core
+		from superglot import models
 
 		user = self.db.session.query(models.User).first()
 
@@ -58,5 +58,5 @@ class TestArticle(SuperglotTestBase):
 		article_def = self.test_articles[0]
 		article, created = self._create_article(user, article_def)
 		words = models.Word.query().all()
-		superglot.update_user_words(user, words[0:10], 3)
-		superglot.compute_article_stats(user, article)
+	 core.update_user_words(user, words[0:10], 3)
+	 core.compute_article_stats(user, article)
