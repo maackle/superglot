@@ -11,6 +11,7 @@ app = create_app()
 manager = Manager(app)
 
 import nlp
+import util
 import textblob
 import models
 import database
@@ -147,15 +148,30 @@ def translate(task, lang=None):
 def sync_es():
 	from elasticsearch.helpers import bulk
 
-	def row2dict(row):
+	def serialize_model(row):
 		return dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
 
-	bulk(
-		app.es,
-		map(row2dict, models.Article.query().all()),
-		index=settings.ES_INDEX,
-		doc_type='article',
-	)
+	def serialize_user(user):
+		json = serialize_model(user)
+		vocabdict = util.dict_from_seq(user.vocab, lambda v: v.word.lemma)
+		for k in vocabdict:
+			vocabdict[k] = serialize_model(vocabdict[k])
+			del vocabdict[k]['user_id']
+		json['vocab'] = vocabdict
+		del json['password']
+		return json
+
+	def add_stuff(doc_type, coll):
+		bulk(
+			app.es,
+			coll,
+			index=settings.ES_INDEX,
+			doc_type=doc_type,
+		)
+
+	add_stuff('user', map(serialize_user, models.User.query().all()))
+	add_stuff('word', map(serialize_model, models.Word.query().all()))
+	add_stuff('article', map(serialize_model, models.Article.query().all()))
 
 
 if __name__ == "__main__":
