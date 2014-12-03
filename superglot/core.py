@@ -6,12 +6,14 @@ from sqlalchemy import distinct
 from flask import current_app as app
 from bs4 import BeautifulSoup
 
-from superglot import nlp
 from superglot.cache import cache
-from superglot import util
-from superglot import models
-from superglot import database
-from superglot import srs
+from superglot import (
+	nlp,
+	util,
+	models,
+	database,
+	srs,
+)
 
 try:
 	with database.session() as session:
@@ -121,6 +123,14 @@ def gen_words_from_tokens(tokens):
 def gen_words_from_lemmata(lemmata, language_id=english.id):
 	return models.Word.query().filter(models.Word.lemma.in_(lemmata)).all()
 
+def make_words_from_lemmata(lemmata, language_id=english.id):
+	words = []
+	for lemma in lemmata:
+		word = models.Word(lemma=lemma)
+		words.append(app.db.session.merge(word))
+	app.db.session.commit()
+	return words
+
 def create_article(user, title, plaintext, url=None):
 	all_tokens = list()
 
@@ -157,7 +167,7 @@ def create_article(user, title, plaintext, url=None):
 		app.db.session.merge(o)
 	app.db.session.commit()
 
-	existing_vocab_word_ids = set(superglot.get_common_word_ids(user, article))
+	existing_vocab_word_ids = set(get_common_word_ids(user, article))
 
 	for word_id in all_word_ids - existing_vocab_word_ids:
 		app.db.session.add(models.VocabWord(user_id=user.id, word_id=word_id, rating=0))
@@ -174,15 +184,15 @@ def authenticate_user(email, password):
 	return user
 
 def register_user(email, password):
-	with database.session() as session:
-		user = session.query(models.User).filter_by(email=email).first()
-		if user:
-			created = False
-		else:
-			user = models.User(email=email, password=password)
-			session.add(user)
-			session.commit()
-			created = True
+	session = app.db.session
+	user = session.query(models.User).filter_by(email=email).first()
+	if user:
+		created = False
+	else:
+		user = models.User(email=email, password=password)
+		session.add(user)
+		session.commit()
+		created = True
 	return (user, created)
 
 

@@ -10,8 +10,8 @@ from flask.ext.login import LoginManager
 from flask.ext.babel import Babel
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
-from elasticsearch import Elasticsearch
 
+from superglot import elasticsearch
 from superglot.cache import cache
 
 def setup_blueprints(app):
@@ -54,7 +54,7 @@ def create_app(**extra_config):
 	app = Flask(__name__)
 	app.config.from_object('config.settings')
 	db = SQLAlchemy(app)
-	es = Elasticsearch()
+	es = elasticsearch.get_client()
 	app.db = db
 	app.es = es
 

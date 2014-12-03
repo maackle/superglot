@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from sqlalchemy import event
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.ext.declarative import declarative_base
@@ -76,6 +77,9 @@ class User(Model, UserMixin):
 	def get_id(self):
 		return str(self.id)
 
+	def __str__(self):
+		return "<User: {}>".format(str(self.email))
+
 
 class VocabWord(Model):
 	__tablename__ = 'vocabword'
@@ -137,6 +141,12 @@ class Article(Model):
 	user_id = sa.Column(sa.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
 	title = sa.Column(sa.String(256))
 	source = sa.Column(sa.String(256), nullable=True)
+
+	def __str__(self):
+		return '<Article "{}" ({}...)>'.format(
+			self.title,
+			self.plaintext[0:40],
+		)
 
 
 class WordOccurrence(Model):

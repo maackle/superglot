@@ -43,6 +43,16 @@ class SuperglotTestBase(TestCase):
 		},
 	]
 
+	def _create_article(self, user, article_def):
+		with open(article_def['file'], 'r') as f:
+			plaintext = f.read()
+			article, created = core.create_article(
+				user=user,
+				title=article_def['title'],
+				plaintext=plaintext[0:]
+			)
+		return article, created
+
 	def make_url(self, uri):
 		base = 'http://localhost:31338/'
 		return base + uri

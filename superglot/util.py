@@ -99,3 +99,26 @@ def get_site_links(app):
 			url = url_for(rule.endpoint)
 			links.append((url, rule))
 	return links
+
+
+def random_string(N):
+	import random
+	import string
+	return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
+
+import time
+
+class Timer(object):
+	def __init__(self, verbose=False):
+		self.verbose = verbose
+
+	def __enter__(self):
+		self.start = time.time()
+		return self
+
+	def __exit__(self, *args):
+		self.end = time.time()
+		self.secs = self.end - self.start
+		self.msecs = self.secs * 1000  # millisecs
+		if self.verbose:
+			print('elapsed time: %f ms' % self.msecs)

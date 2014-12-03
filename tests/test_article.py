@@ -19,16 +19,6 @@ class TestArticle(SuperglotTestBase):
 
 	test_account = {'email': 'test@superglot.com', 'password': '1234'}
 
-	def _create_article(self, user, article_def):
-		with open(article_def['file'], 'r') as f:
-			plaintext = f.read()
-			article, created = core.create_article(
-				user=user,
-				title=article_def['title'],
-				plaintext=plaintext[0:]
-			)
-		return article, created
-
 	def test_create_article(self):
 		from superglot import core
 		from superglot import models
@@ -58,5 +48,5 @@ class TestArticle(SuperglotTestBase):
 		article_def = self.test_articles[0]
 		article, created = self._create_article(user, article_def)
 		words = models.Word.query().all()
-	 core.update_user_words(user, words[0:10], 3)
-	 core.compute_article_stats(user, article)
+		core.update_user_words(user, words[0:10], 3)
+		core.compute_article_stats(user, article)

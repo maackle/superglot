@@ -15,7 +15,10 @@ from superglot import util
 from superglot import models
 from superglot import database
 from superglot import core
+from superglot import elasticsearch as es
 from config import settings
+
+from pprint import pprint
 
 
 dbname = settings.DATABASE_NAME
@@ -24,8 +27,10 @@ dbname = settings.DATABASE_NAME
 def psql(cmd):
 	call("psql -c \"{}\"".format(cmd), shell=True)
 
+
 def dumpfile(dbname):
 	return "dump/{0}.sql".format(dbname)
+
 
 def load_schema_fixtures():
 	languages = {}
@@ -36,6 +41,7 @@ def load_schema_fixtures():
 			session.add(languages[code])
 		session.commit()
 	app.logger.info("schema fixtures created")
+
 
 def load_sample_data():
 	user = models.User(email='michael@lv11.co', password='1234')
@@ -49,11 +55,18 @@ This is a sample text. Hope you enjoy it.
 			"""
 	)
 
+
+def db_drop_create():
+	call('bin/db-drop-create.sh {0}'.format(dbname), shell=True)
+	database.engine.dispose()
+
+
 @manager.command
 def make_dump():
 	filename = dumpfile(settings.DATABASE_NAME)
 	print("writing PG dump to {}".format(filename))
 	call("pg_dump -i -F c -f {1} {0}".format(settings.DATABASE_NAME, filename), shell=True)
+
 
 @manager.command
 def load_dump():
@@ -61,9 +74,6 @@ def load_dump():
 	print("reading PG dump {0}".format(filename))
 	call("pg_restore -i -d {0} {1}".format(settings.DATABASE_NAME, filename), shell=True)
 
-def db_drop_create():
-	call('bin/db-drop-create.sh {0}'.format(dbname), shell=True)
-	database.engine.dispose()
 
 @manager.command
 def reset_schema():
@@ -128,6 +138,7 @@ def rebuild_db(force=False):
 		database.engine.dispose()
 		make_dump()
 
+
 @manager.command
 def translate(task, lang=None):
 	potfile = 'translations/messages.pot'
@@ -143,35 +154,64 @@ def translate(task, lang=None):
 			raise Exception("missing language")
 		call("pybabel init -i {} -d translations -l {}".format(potfile, lang), shell=True)
 
+
 @manager.command
 def sync_es():
-	from elasticsearch.helpers import bulk
+	es.rebuild_index(app.es)
+	print("ES index rebuilt")
 
-	def serialize_model(row):
-		return dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
 
-	def serialize_user(user):
-		json = serialize_model(user)
-		vocabdict = util.dict_from_seq(user.vocab, lambda v: v.word.lemma)
-		for k in vocabdict:
-			vocabdict[k] = serialize_model(vocabdict[k])
-			del vocabdict[k]['user_id']
-		json['vocab'] = vocabdict
-		del json['password']
-		return json
+@manager.command
+def create_test_data():
 
-	def add_stuff(doc_type, coll):
-		bulk(
-			app.es,
-			coll,
-			index=settings.ES_INDEX,
-			doc_type=doc_type,
-		)
+	test_articles = [
+		{
+			'file': 'data/articles/game-for-fools.txt',
+			'title': 'The Game For Fools',
+		},
+		{
+			'file': 'data/articles/little-prince-1.txt',
+			'title': 'The Little Prince Ch. 1',
+		},
+		{
+			'file': 'data/articles/little-prince-2.txt',
+			'title': 'The Little Prince Ch. 2',
+		},
+		{
+			'file': 'data/articles/moby-dick-1.txt',
+			'title': 'Moby Dick Ch. 1',
+		},
+		# {
+		# 	'file': 'data/articles/moby-dick-full.txt',
+		# 	'title': 'Moby Dick (Full)',
+		# },
+	]
 
-	add_stuff('user', map(serialize_user, models.User.query().all()))
-	add_stuff('word', map(serialize_model, models.Word.query().all()))
-	add_stuff('article', map(serialize_model, models.Article.query().all()))
+	test_users = []
+	for i in range(1,4):
+		u, created = core.register_user('{}@test.com'.format(i), str(i))
+		test_users.append(u)
 
+	def _create_article(user, article_def):
+		with open(article_def['file'], 'r') as f:
+			plaintext = f.read()
+			with util.Timer() as t:
+				article, created = core.create_article(
+					user=user,
+					title=article_def['title'],
+					plaintext=plaintext[0:]
+				)
+			print("created '{}' (length: {}) in {} ms".format(
+				article.title,
+				len(article.plaintext),
+				t.msecs
+			))
+		return article, created
+
+	for i, article_def in enumerate(test_articles):
+		user_index = i % len(test_users)
+		article, created = _create_article(test_users[user_index], article_def)
+	sync_es()
 
 if __name__ == "__main__":
     manager.run()
