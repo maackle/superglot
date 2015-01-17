@@ -214,13 +214,16 @@ def _record_rating(vocab_word, rating):
 	vocab_word.srs_num_repetitions = num_repetitions
 
 
-def update_user_words(user, words, rating):
+def update_user_words(user, words, rating, force=False):
 	updated = 0
 	ignored = 0
 	num_recorded = 0
 	updated_vocab = []
 	for word in set(words):
-		if word.id:
+		if word.id or force:
+			if force:
+				app.db.session.add(word)
+				app.db.session.commit()
 			vocab_word = app.db.session.merge(models.VocabWord(
 				user_id=user.id,
 				word_id=word.id,
@@ -277,36 +280,43 @@ def compute_article_stats(user, article):
 	from pprint import pprint
 	pprint(groups)
 
+def find_all_articles(user):
+
+	results = app.es.search(settings.ES_INDEX, 'article', {
+		# 'sort': [
+		# 	'_score',
+		# ],
+	}, size=1000000)
+	hits = results['hits']['hits']
+	articles = [(h['_score'], h['_source']) for h in hits]
+	return articles
+
 def find_relevant_articles(user):
+
+	vocab_string = " ".join([w.word.lemma for w in user.vocab])
+	shoulds = [{
+		'match': {'plaintext': v.word.lemma}
+	} for v in user.vocab if v.rating > 0]
+
 	results = app.es.search(settings.ES_INDEX, 'article', {
 		'query': {
-			'bool': {
-				'should': shoulds
-			}
-		}
+			'filtered': {
+				'query': {
+					'bool': {
+						'should': shoulds
+					}
+				},
+				# 'filter': {
+				# 	'limit': {'value': 2},
+				# },
+			},
+		},
+		'sort': [
+			'_score',
+		],
 	})
+	hits = results['hits']['hits']
 
-	return results
+	articles = [(h['_score'], h['_source']) for h in hits]
 
-	"""
-	OK   - solid, well-known words
-	EDGE - words "on the edge", about to be forgotten
-	BAD  - newly learned or failed words
-	X    - unmarked words
-
-	T_OK - percentage of OK words needed for easy reading
-
-	Filter factors:
-	- P(OK) > T_OK
-
-	Sorting factors:
-	- P(X) is high
-	- P(EDGE) is high
-	- P(OK|EDGE) / P(BAD) ratio is decent
-
-	possible utility functions:
-
-	f = P(OK|EDGE|BAD) * P(OK|EDGE) / P(BAD)
-	f = percent(rating >= 4) > 0.6 AND 0.1 < percent(1 <= rating <= 2) < 0.3
-
-	"""
+	return articles

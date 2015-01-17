@@ -57,7 +57,7 @@ def add_words(label):
 		raise "Invalid label"
 	tokens = nlp.tokenize(request.form['words'])
 	new_words = core.gen_words_from_tokens(tokens)
-	updated, ignored = core.update_user_words(current_user, new_words, rating)
+	updated, ignored = core.update_user_words(current_user, new_words, rating, force=True)
 	if updated == 0:
 		flash('None of those words were recognized :(')
 	else:

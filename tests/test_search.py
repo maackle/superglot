@@ -29,10 +29,11 @@ class TestSearch(SuperglotTestBase):
 					'should': shoulds
 				}
 			}
-		})
+		}, size=100000)
 
-		for r in results['hits']['hits']:
-			pprint(r)
+		hits = results['hits']['hits']
+
+		print("# hits: ", len(hits))
 
 
 		# results = s.execute()
