@@ -9,7 +9,7 @@ from .base import SuperglotTestBase
 
 from pprint import pprint
 
-class TestAuth(SuperglotTestBase):
+class TestSearch(SuperglotTestBase):
 
 	def test_search(self):
 
@@ -19,15 +19,9 @@ class TestAuth(SuperglotTestBase):
 			self._create_article(user, article_def)
 		es.rebuild_index(self.app.es)
 
-		vocab_string = " ".join(list(map(lambda w: w.word.lemma, user.vocab)))
-
-		lemmata = list(map(lambda w: w.word.lemma, user.vocab))
-		shoulds = list(map(lambda l: {'match': {'plaintext': l}}, lemmata))
-
-		# s = (
-		# 	es.search_query(self.app.es, 'article')
-		# 	.query('match', plaintext=vocab_string)
-		# )
+		vocab_string = " ".join([w.word.lemma for w in user.vocab])
+		lemmata = (w.word.lemma for w in user.vocab)
+		shoulds = [{'match': {'plaintext': l}} for l in lemmata]
 
 		results = self.app.es.search('superglot_test', 'article', {
 			'query': {

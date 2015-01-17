@@ -61,7 +61,6 @@ def _create_mapping_dict(doc_type):
 			doc_type: {}
 		}
 
-
 	return mapping_dict
 
 
@@ -110,19 +109,10 @@ def rebuild_index(es):
 	_populate_index(es)
 
 
-
 def search_query(es, doc_type):
 	"""returns instance of elasticsearch_dsl Search inst."""
 	return Search(
 		using=es,
 		index=settings.ES_INDEX,
 		doc_type=doc_type,
-	)
-
-
-def find_relevant_articles(user):
-
-	query = (
-		search_query('article')
-		.query()
 	)

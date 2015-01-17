@@ -6,6 +6,7 @@ from sqlalchemy import distinct
 from flask import current_app as app
 from bs4 import BeautifulSoup
 
+from config import settings
 from superglot.cache import cache
 from superglot import (
 	nlp,
@@ -18,12 +19,14 @@ from superglot import (
 try:
 	with database.session() as session:
 		english = session.query(models.Language).filter_by(code='en').first()
+		english_id = english.id
 except:
 	print("WARNING: tried to access Language model without schema")
 	english = None
+	english_id = None
 
 def add_word(session, reading, lemma, language=english):
-	word = models.Word(lemma=lemma, language_id=english.id, canonical=False)
+	word = models.Word(lemma=lemma, language_id=english_id, canonical=False)
 	session.add(word)
 	session.add(models.LemmaReading(lemma=lemma, reading=reading))
 	return word
@@ -108,9 +111,9 @@ def gen_words_from_tokens(tokens):
 		words = []
 		for token in chunk:
 			reading, lemma = token.tup()
-			word = app.db.session.query(models.Word).filter_by(lemma=lemma, language_id=english.id).first()
+			word = app.db.session.query(models.Word).filter_by(lemma=lemma, language_id=english_id).first()
 			if not word:
-				word = models.Word(lemma=lemma, language_id=english.id, canonical=False)
+				word = models.Word(lemma=lemma, language_id=english_id, canonical=False)
 			words.append(word)
 		# try:
 		# 	db.session.add_all(words)
@@ -120,10 +123,10 @@ def gen_words_from_tokens(tokens):
 		for word in words:
 			yield word
 
-def gen_words_from_lemmata(lemmata, language_id=english.id):
+def gen_words_from_lemmata(lemmata, language_id=english_id):
 	return models.Word.query().filter(models.Word.lemma.in_(lemmata)).all()
 
-def make_words_from_lemmata(lemmata, language_id=english.id):
+def make_words_from_lemmata(lemmata, language_id=english_id):
 	words = []
 	for lemma in lemmata:
 		word = models.Word(lemma=lemma)
@@ -275,30 +278,15 @@ def compute_article_stats(user, article):
 	pprint(groups)
 
 def find_relevant_articles(user):
+	results = app.es.search(settings.ES_INDEX, 'article', {
+		'query': {
+			'bool': {
+				'should': shoulds
+			}
+		}
+	})
 
-	A = models.Article
-	O = models.WordOccurrence
-	V = models.VocabWord
-
-	articles = list(
-		models.query(A)
-		.join(O)
-		.join(V, V.word_id == O.word_id and V.user_id == user.id)
-		.filter(V.rating == -1)
-	)
-
-	return articles
-
-	"""SELECT
-	( # this subquery seems mostly right
-		SELECT v.rating, v.word_id, o.article_id from word_occurrence as o
-		JOIN vocab_word as v ON (word_id = o.word_id)
-		WHERE v.user_id = {user.id}
-		GROUP BY o.article_id
-	) as a
-	WHERE count(a.rating >= 4) > { T_OK }
-	ORDER BY count(a.rating > 4) / count(a.rating < 2)  # horribly wrong, but for example.
-	"""
+	return results
 
 	"""
 	OK   - solid, well-known words

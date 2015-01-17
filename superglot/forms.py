@@ -37,6 +37,10 @@ class AddArticleForm(Form):
     plaintext = TextAreaField(_('text'))
 
 
+class SearchArticleForm(Form):
+    title = StringField(_('title'))
+
+
 class LanguageForm(ModelForm):
     class Meta:
         model = models.Language
