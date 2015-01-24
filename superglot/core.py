@@ -5,6 +5,7 @@ import datetime
 from sqlalchemy import distinct
 from flask import current_app as app
 from bs4 import BeautifulSoup
+from collections import defaultdict
 
 from config import settings
 from superglot.cache import cache
@@ -123,8 +124,10 @@ def gen_words_from_tokens(tokens):
 		for word in words:
 			yield word
 
+
 def gen_words_from_lemmata(lemmata, language_id=english_id):
 	return models.Word.query().filter(models.Word.lemma.in_(lemmata)).all()
+
 
 def make_words_from_lemmata(lemmata, language_id=english_id):
 	words = []
@@ -133,6 +136,7 @@ def make_words_from_lemmata(lemmata, language_id=english_id):
 		words.append(app.db.session.merge(word))
 	app.db.session.commit()
 	return words
+
 
 def create_article(user, title, plaintext, url=None):
 	all_tokens = list()
@@ -181,10 +185,44 @@ def create_article(user, title, plaintext, url=None):
 	return article, True
 
 
+
+def vocab_stats(vocab):
+	""" Get stats about a particular vocabulary list
+	"""
+	counts = defaultdict(int)
+	percents = defaultdict(int)
+
+	for item in vocab:
+		counts[item.label] += 1
+
+	total = len(vocab)
+	total_significant = total - counts['ignored']
+
+	for label in counts:
+		percents[label] = 100 * counts[label] / (total_significant or 1)
+
+	return {
+		'counts': counts,
+		'percents': percents,
+		'total_significant': total_significant,
+		'total': total,
+	}
+
+
+def user_article_stats(user, article):
+	""" Get stats about the common vocab between a user and an article
+	"""
+
+	common = get_common_vocab(user, article)
+	return vocab_stats(common)
+
+
+
 def authenticate_user(email, password):
 	# with database.session() as session:
 	user = app.db.session.query(models.User).filter_by(email=email, password=password).first()
 	return user
+
 
 def register_user(email, password):
 	session = app.db.session
@@ -288,7 +326,7 @@ def find_all_articles(user):
 		# ],
 	}, size=1000000)
 	hits = results['hits']['hits']
-	articles = [(h['_score'], h['_source']) for h in hits]
+	articles = [(h['_source'], h['_score']) for h in hits]
 	return articles
 
 def find_relevant_articles(user):
@@ -317,6 +355,6 @@ def find_relevant_articles(user):
 	})
 	hits = results['hits']['hits']
 
-	articles = [(h['_score'], h['_source']) for h in hits]
+	articles = [(h['_source'], h['_score']) for h in hits]
 
 	return articles

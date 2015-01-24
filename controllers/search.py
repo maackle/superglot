@@ -24,6 +24,7 @@ def home():
 	results = core.find_all_articles(current_user)
 	return render_template('views/search/home.jade', articles=results)
 
+
 @blueprint.route('/relevant')
 @login_required
 def relevant():

@@ -13,7 +13,7 @@ block main_content
 				th title
 				th score
 		tbody
-			for score, article in articles
+			for article, score in articles
 				tr
 					td: a(href=url_for('frontend.articles.article_read_anon', article_id=article.id))= article.title
 					td= score

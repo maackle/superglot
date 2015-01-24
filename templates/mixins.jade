@@ -91,3 +91,55 @@ mixin annotated_vocab_word(a_word, reading=None)
 		li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
 			= text
 
+mixin article_list(articles)
+	table.table
+		thead
+			tr
+				th= _("title") | capitalize
+				th
+				th
+					//- Action
+		tbody
+			for article, stats in article_pairs
+				tr
+					td
+						a(href=url_for('frontend.articles.article_read', article_id=article.id))= article.title
+						//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
+					td
+						if article.source
+							a(href=article.source, target="_blank")
+								= _("original")
+								|  &rarr;
+					td
+						a(href=url_for('frontend.articles.article_delete', article_id=article.id)) &times;
+
+mixin article_list_w_stats(article_pairs)
+	table.table
+		thead
+			tr
+				th= _("title") | capitalize
+				th= _("comprehension") | capitalize
+				th= _("total") | capitalize
+				th= _("known") | capitalize
+				th= _("learning") | capitalize
+				th
+				th
+					//- Action
+		tbody
+			for article, stats in article_pairs
+				tr
+					td
+						a(href=url_for('frontend.articles.article_read', article_id=article.id))= article.title
+						//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
+					td
+						+vocab_progress_bar(stats)
+					td.align-center= stats.total
+					td.align-center= "%2.0f%%"|format(stats.percents.known)
+					td.align-center= "%2.0f%%"|format(stats.percents.learning)
+					td
+						if article.source
+							a(href=article.source, target="_blank")
+								= _("original")
+								|  &rarr;
+					td
+						a(href=url_for('frontend.articles.article_delete', article_id=article.id)) &times;

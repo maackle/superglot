@@ -21,15 +21,22 @@ from pprint import pprint
 
 blueprint = Blueprint('frontend.articles', __name__, template_folder='templates')
 
+
+def article_stats(article):
+	return core.user_article_stats(current_user, article)
+
+
 @blueprint.route('/user/texts/', methods=['GET', 'POST'])
 @login_required
 def article_list():
-	articles = list(app.db.session.query(models.Article).filter_by(user_id=current_user.id))
-	def stats():
-		for article in articles:
-			common = core.get_common_vocab(current_user, article)
-			yield util.vocab_stats(common)
-	return render_template('views/frontend/article_list.jade', article_pairs=list(zip(articles, stats())))
+	articles = models.Article.query().filter_by(user_id=current_user.id)
+	articles_w_stats = [
+		(article, article_stats(article)) for article in articles
+	]
+	return render_template(
+		'views/frontend/article_list.jade',
+		articles_w_stats=articles_w_stats
+	)
 
 
 @blueprint.route('/user/texts/<article_id>/read', methods=['GET', 'POST'])
@@ -42,7 +49,7 @@ def article_read(article_id):
 	if not article:
 		abort(404)
 	article_vocab = core.get_common_vocab(current_user, article)
-	stats = util.vocab_stats(article_vocab)
+	stats = core.vocab_stats(article_vocab)
 
 	return render_template('views/frontend/article_read.jade',
 		article=article,
@@ -60,7 +67,7 @@ def article_read_anon(article_id):
 	if not article:
 		abort(404)
 	article_vocab = core.get_common_vocab(current_user, article)
-	stats = util.vocab_stats(article_vocab)
+	stats = core.vocab_stats(article_vocab)
 
 	return render_template('views/frontend/article_read.jade',
 		article=article,
