@@ -1,10 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from config.settings import SQLALCHEMY_DATABASE_URI
 from contextlib import contextmanager
+
+from superglot.config.settings import SQLALCHEMY_DATABASE_URI
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 Session = sessionmaker(bind=engine)
+
 
 @contextmanager
 def session(commit=False):
