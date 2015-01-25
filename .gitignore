@@ -6,7 +6,7 @@ bower_components
 .hg
 local/
 log/
-static/bower/
+*/static/bower/
 dump/
 
 sandbox/
