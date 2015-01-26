@@ -12,7 +12,8 @@ from superglot import nlp
 from superglot import util
 from superglot import core
 
-from .base from superglot import coreTestBase
+from .base import SuperglotTestBase
+from superglot import core
 
 
 class TestArticle(SuperglotTestBase):

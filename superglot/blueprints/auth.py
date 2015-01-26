@@ -7,6 +7,7 @@ from superglot import core
 
 blueprint = Blueprint('auth', __name__, template_folder='templates')
 
+
 @blueprint.route('/login/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -29,6 +30,7 @@ def login():
     else:
         return render_template(template, **ctx)
 
+
 @blueprint.route('/logout/')
 @login_required
 def logout():
@@ -36,14 +38,15 @@ def logout():
     flash(_("You are logged out."))
     return redirect(url_for('home'))
 
+
 @blueprint.route('/register/', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     template = "views/auth/register.jade"
-    if request.method=='POST':
+    if request.method == 'POST':
         if form.validate_on_submit():
             data = form.data
-            (user, created) = core.register_user(email=data['email'], password= data['password'])
+            (user, created) = core.register_user(email=data['email'], password=data['password'])
             if created:
                 flash(_("You're all signed up! Now you can log in."))
                 return redirect(url_for('auth.login'))
