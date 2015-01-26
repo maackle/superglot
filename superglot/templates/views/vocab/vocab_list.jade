@@ -14,7 +14,6 @@ block main_content
 		.dropdown
 
 	.vocab-stats
-		p TODO: stats on words by rating
 
 	for item in vocab
 		li= item.word.lemma
@@ -23,17 +22,17 @@ block main_content
 	.row
 		.col-sm-4
 			h3= _("known") | capitalize
-			form(method="POST", action=url_for('frontend.words.add_words', label='known'))
+			form(method="POST", action=url_for('frontend.vocab.add_words', label='known'))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 		.col-sm-4
 			h3= _("learning") | capitalize
-			form(method="POST", action=url_for('frontend.words.add_words', label='learning'))
+			form(method="POST", action=url_for('frontend.vocab.add_words', label='learning'))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 		.col-sm-4
 			h3= _("ignored") | capitalize
-			form(method="POST", action=url_for('frontend.words.add_words', label='ignored'))
+			form(method="POST", action=url_for('frontend.vocab.add_words', label='ignored'))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 

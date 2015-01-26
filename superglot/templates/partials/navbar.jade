@@ -3,7 +3,7 @@ nav.navbar: .container
 	ul.left
 		if current_user.is_authenticated()
 			li: a(href=url_for('frontend.articles.article_list'))= _("texts") | title
-			li: a(href=url_for('frontend.words.word_list_all'))= _("vocabulary") | title
+			li: a(href=url_for('frontend.vocab.word_list_all'))= _("vocabulary") | title
 			li: a(href=url_for('study.home'))= _("study") | title
 			li: a(href=url_for('search.home'))= _("search") | title
 	ul.right

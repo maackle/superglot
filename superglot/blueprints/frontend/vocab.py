@@ -9,25 +9,25 @@ from superglot.config import settings
 from superglot import core
 
 
-blueprint = Blueprint('frontend.words', __name__, template_folder='templates')
+blueprint = Blueprint('frontend.vocab', __name__, template_folder='templates')
 
 
-@blueprint.route('/user/words/', methods=['GET', 'POST'])
+@blueprint.route('/user/vocab/', methods=['GET', 'POST'])
 @login_required
 def word_list_all():
     vocab = list(current_user.vocab)
-    return render_template('views/frontend/vocab_show.jade', vocab=vocab)
+    return render_template('views/vocab/vocab_list.jade', vocab=vocab)
 
 
-@blueprint.route('/user/words/delete/', methods=['GET', 'POST'])
+@blueprint.route('/user/vocab/delete/', methods=['GET', 'POST'])
 @login_required
 def delete_all_words():
     current_user.delete_all_words()
     flash(_('Deleted all words!'))
-    return redirect(url_for('frontend.words.word_list_all'))
+    return redirect(url_for('frontend.vocab.word_list_all'))
 
 
-@blueprint.route('/user/words/<partition>/', methods=['GET', 'POST'])
+@blueprint.route('/user/vocab/<partition>/', methods=['GET', 'POST'])
 @login_required
 def word_list(partition):
     vocab = current_user.vocab_lists()
@@ -36,7 +36,7 @@ def word_list(partition):
     return render_template('views/frontend/word_list.jade', words=words)
 
 
-@blueprint.route('/user/words/add/<label>/', methods=['POST'])
+@blueprint.route('/user/vocab/add/<label>/', methods=['POST'])
 @login_required
 def add_words(label):
     if label == 'ignored':
@@ -54,4 +54,4 @@ def add_words(label):
         flash('None of those words were recognized :(')
     else:
         flash('updated {}, ignored {}'.format(updated, ignored))
-    return redirect(url_for('frontend.words.word_list_all'))
+    return redirect(url_for('frontend.vocab.word_list_all'))

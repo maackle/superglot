@@ -17,7 +17,7 @@ def setup_blueprints(app):
     from superglot.blueprints.auth import blueprint as auth_blueprint
     from superglot.blueprints.frontend import blueprint as frontend_blueprint
     from superglot.blueprints.frontend.articles import blueprint as frontend_articles_blueprint
-    from superglot.blueprints.frontend.words import blueprint as frontend_words_blueprint
+    from superglot.blueprints.frontend.vocab import blueprint as frontend_vocab_blueprint
     from superglot.blueprints.search import blueprint as search_blueprint
     from superglot.blueprints.study import blueprint as study_blueprint
     from superglot.blueprints.user import blueprint as user_blueprint
@@ -29,7 +29,7 @@ def setup_blueprints(app):
     app.register_blueprint(user_blueprint, url_prefix='/user')
     app.register_blueprint(frontend_blueprint, url_prefix='')
     app.register_blueprint(frontend_articles_blueprint, url_prefix='')
-    app.register_blueprint(frontend_words_blueprint, url_prefix='')
+    app.register_blueprint(frontend_vocab_blueprint, url_prefix='')
 
     login_manager = LoginManager()
     login_manager.init_app(app)
