@@ -1,8 +1,11 @@
 doctype 5
 
-- from 'mixins.jade' import form_field, form_select, form_field_raw, form_submit with context
-- from 'mixins.jade' import grouped_columned_vocab_list, simple_vocab_list, vocab_progress_bar
-- from 'mixins.jade' import vocab_list, annotated_vocab_word, article_list, article_list_w_stats with context
+- from 'mixins/common.jade' import form_field, form_select, form_field_raw, form_submit with context
+- from 'mixins/common.jade' import vocab_list, annotated_vocab_word, vocab_progress_bar with context
+
+- from 'mixins/vocab_list.jade' import grouped_columned_vocab_list, simple_vocab_list
+- from 'mixins/article_list.jade' import article_list
+- from 'mixins/article_list_w_stats.jade' import article_list_w_stats with context
 
 html
 	head

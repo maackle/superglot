@@ -1,0 +1,22 @@
+
+mixin article_list(articles)
+	table.table
+		thead
+			tr
+				th= _("title") | capitalize
+				th
+				th
+					//- Action
+		tbody
+			for article, stats in article_pairs
+				tr
+					td
+						a(href=url_for('frontend.articles.article_read', article_id=article.id))= article.title
+						//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
+					td
+						if article.source
+							a(href=article.source, target="_blank")
+								= _("original")
+								|  &rarr;
+					td
+						a(href=url_for('frontend.articles.article_delete', article_id=article.id)) &times;

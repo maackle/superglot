@@ -3,6 +3,16 @@ extends layouts/base.jade
 block main_content
 	h1= _("vocabulary") | title
 
+	.btn-toolbar(role="toolbar")
+		.btn-group(data-toggle="buttons")
+			label.btn.btn-default.active
+				input(type="radio", name="display_type", checked)
+				| Info
+			label.btn.btn-default
+				input(type="radio", name="display_type", checked)
+				| Definitions
+		.dropdown
+
 	.vocab-stats
 		p TODO: stats on words by rating
 
@@ -29,9 +39,9 @@ block main_content
 
 	//- h2= _("known") | capitalize
 	//- +vocab_list(vocab.known)
-			
+
 	//- h2= _("learning") | capitalize
 	//- +vocab_list(vocab.learning)
-					
+
 	//- h2= _("ignored") | capitalize
 	//- +vocab_list(vocab.ignored)
