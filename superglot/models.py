@@ -119,7 +119,7 @@ class VocabWord(Model):
 
     @property
     def label(self):
-        return settings.rating_name(self.rating)
+        return "NAME TO DO"
 
     def __str__(self):
         return "VocabWord<{}>".format(self.word.lemma)

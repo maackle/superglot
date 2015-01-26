@@ -10,7 +10,7 @@ from flask import url_for
 from superglot import models
 from superglot import nlp
 from superglot import util
-from config import settings
+from superglot.config import settings
 from superglot import core
 
 from .base from superglot import coreTestBase
