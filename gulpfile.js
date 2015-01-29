@@ -4,7 +4,7 @@ var sass = require('gulp-sass');
 
 var paths = {
 	'src': './assets/',
-	'dest': './superglot/static/',
+	'dest': './superglot/static/build/',
 	'templates': './superglot/templates/',
 };
 

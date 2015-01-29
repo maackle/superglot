@@ -132,8 +132,8 @@ ul {
 	}
 
 	&.grouped.columned {
-		@include columns(16rem 5);
-		@include column-gap(0);
+		// @include columns(16rem 5);
+		// @include column-gap(0);
 		// @include column-rule(1px, solid, #ddd);
 
 		li.heading {
@@ -160,7 +160,7 @@ ul {
 	&.style-a {
 		.word {
 			$border-width: 3px;
-			@include transition(border-color 150ms, background-color 150ms);
+			transition: border-color 150ms, background-color 150ms;
 			cursor: pointer;
 			line-height: 1em;
 
@@ -213,7 +213,7 @@ ul {
 	&.style-b {
 		.word {
 			$border-width: 3px;
-			@include transition(border-color 150ms, background-color 150ms);
+			transition: border-color 150ms, background-color 150ms;
 			cursor: pointer;
 			line-height: 1em;
 
@@ -293,7 +293,7 @@ ul {
 
 #word-rating-popup {
 	@include border-radius(8px);
-	@include transition(height 200ms);
+	transition: height 200ms;
 
 	// display: none;
 	height: 0;
@@ -323,7 +323,7 @@ ul {
 		display: inline-block;
 
 		.choice {
-			@include transition(color 200ms, border-color 200ms);
+			transition: color 200ms, border-color 200ms;
 			display: inline-block;
 			cursor: pointer;
 			vertical-align: middle;

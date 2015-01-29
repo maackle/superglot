@@ -11,7 +11,7 @@
 	}
 }
 
-@mixin vendor-prefix($name, $argument) {
+@mixin vendor($name, $argument) {
   -webkit-#{$name}: #{$argument};
   -ms-#{$name}: #{$argument};
   -moz-#{$name}: #{$argument};
@@ -19,4 +19,4 @@
   #{$name}: #{$argument};
 }
 
-@mixin border-radius($r) { @include vendor-prefix(border-radius, $r); }
+@mixin border-radius($r) { @include vendor(border-radius, $r); }
