@@ -9,7 +9,7 @@ module.exports = (grunt) ->
 			server:
 				templates: "./templates"
 				src: "./assets"
-				dest: "./static/build"
+				dest: "./superglot/static/build"
 
 		pkg: grunt.file.readJSON("package.json")
 

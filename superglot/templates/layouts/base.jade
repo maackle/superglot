@@ -10,6 +10,7 @@ doctype 5
 html
 	head
 		title superglot
+		link(rel="stylesheet", href="/static/build/twitter-bootstrap.css")
 		link(rel="stylesheet", href="/static/build/main.css")
 		link(rel="stylesheet", href="/static/fonts/fonts.css")
 		link(rel="stylesheet", href="/static/bower/jquery-ui/themes/smoothness/jquery-ui.css")
@@ -24,25 +25,26 @@ html
 		block navbar
 			include partials/navbar.jade
 
-		.container
-			block messages
-				- var messages = (flashes or []) + get_flashed_messages(with_categories=true)
-				.container
-					.messages
-						for category, message in messages
-							div(class="alert alert-dismissable alert-#{category}")
-								button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
-								= message
+		#page-wrapper
+			.container
+				block messages
+					- var messages = (flashes or []) + get_flashed_messages(with_categories=true)
+					.container
+						.messages
+							for category, message in messages
+								div(class="alert alert-dismissable alert-#{category}")
+									button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
+									= message
 
-			block main_content
+				block main_content
 
-			block footer
-				footer#footer
+				block footer
+					footer#footer
 
-			#html-templates
-				include partials/word_rating_popup.jade
+				#html-templates
+					include partials/word_rating_popup.jade
 
-			block scripts
+				block scripts
 
-				script.
-					document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':54739/livereload.js?snipver=1"></' + 'script>');
+					script.
+						document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':54739/livereload.js?snipver=1"></' + 'script>');
