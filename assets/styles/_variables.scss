@@ -2,18 +2,11 @@
 $color-primary: #cd9038;
 $color-primary-light: lighten(#cd9038, 30%);
 
-$color-known: #5dc862;
-$color-learning: #f3b64c;
-$color-other: #f4f4f4;
-
+$color-rating-ignored: #f4f4f4;
 $color-rating-1: #f48d5b;
-$color-rating-2: #f4c75b;
-$color-rating-3: #ecea1a;
-$color-rating-4: #addd19;
+$color-rating-2: #f0c92b;
+$color-rating-3: #addd19;
 
-// $color-rating-4: #000;
-$color-rating-5: #000;
-
-$navbar-width: 10rem;
+$navbar-height: 5rem;
 
 $vocab-progress-bar-height: 2.5rem;

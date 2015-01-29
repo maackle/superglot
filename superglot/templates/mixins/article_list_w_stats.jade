@@ -1,7 +1,10 @@
-- from 'mixins/common.jade' import vocab_progress_bar
+- from 'mixins-collected.jade' import vocab_progress_bar
 
 //- takes a list of (article, stats) tuples
 mixin article_list_w_stats(article_pairs)
+
+	include mixins-collected
+
 	table.table
 		thead
 			tr

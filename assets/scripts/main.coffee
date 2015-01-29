@@ -38,16 +38,9 @@ setupAnnotation = ->
 
 	updateWord = (el, rating) ->
 		lemma = $(el).attr('data-lemma')
-		if rating <= 0
-			label = null
-		else if rating < 3
-			label = 'learning'
-		else
-			label = 'known'
 		markWords [lemma], rating, (data) ->
 			if data
 				$set = $(".word[data-lemma='#{ lemma }']")
-				$set.attr('data-group-label', label)
 				$set.attr('data-rating', rating)
 				deselectWords()
 
@@ -56,7 +49,7 @@ setupAnnotation = ->
 		$popupChoices.filter("[data-rating=#{ rating }]").addClass('selected')
 
 	showWordScorePopup = (el) ->
-		# TODO: link rating to word, must switch over from labels... 
+		# TODO: link rating to word, must switch over from labels...
 		$popup.addClass('visible').focus()
 		$popup.find('.lemma').text($(el).attr('data-lemma'))
 		setPopupScore($(el).attr('data-rating'))
@@ -85,7 +78,7 @@ setupAnnotation = ->
 		$el.click (e) ->
 			selectWord(this)
 
-	attachAnnotationControls( $('.annotated-words .word:not([data-group-label="ignored"])') )
+	attachAnnotationControls( $('.annotated-words .word:not([data-rating="-1"])') )
 
 
 $ ->

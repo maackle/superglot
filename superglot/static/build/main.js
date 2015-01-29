@@ -46,20 +46,12 @@
       return hideWordScorePopup();
     };
     updateWord = function(el, rating) {
-      var label, lemma;
+      var lemma;
       lemma = $(el).attr('data-lemma');
-      if (rating <= 0) {
-        label = null;
-      } else if (rating < 3) {
-        label = 'learning';
-      } else {
-        label = 'known';
-      }
       return markWords([lemma], rating, function(data) {
         var $set;
         if (data) {
           $set = $(".word[data-lemma='" + lemma + "']");
-          $set.attr('data-group-label', label);
           $set.attr('data-rating', rating);
           return deselectWords();
         }
@@ -105,7 +97,7 @@
         return selectWord(this);
       });
     };
-    return attachAnnotationControls($('.annotated-words .word:not([data-group-label="ignored"])'));
+    return attachAnnotationControls($('.annotated-words .word:not([data-rating="-1"])'));
   };
 
   $(function() {

@@ -70,21 +70,38 @@ ul {
 	}
 }
 
-#navbar {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: $navbar-width;
-	height: 100%;
+.navbar {
+	height: $navbar-height;
 	border-bottom: 1px solid #555;
+	// box-shadow: 0 1px 5px rgba(black, 0.3);
+	position: relative;
 
 	a {
 		text-decoration: none;
 	}
 
+	.brand {
+		line-height: $navbar-height;
+		margin: auto 0;
+		padding: 0;
+		float: left;
+		font-size: $navbar-height * 0.75;
+	}
+
 	.container > ul {
+		&.left { float: left; }
+		&.right { float: right; }
+
 		> li {
-			display: block;
+			display: inline-block;
+
+			> a {
+				line-height: $navbar-height;
+			}
+
+			a:hover {
+				background: #ddd;
+			}
 		}
 	}
 
@@ -95,7 +112,7 @@ ul {
 }
 
 #page-wrapper {
-	margin-left: $navbar-width;
+
 }
 
 .form-submit {
@@ -128,27 +145,6 @@ ul {
 			// background: $color-primary-light;
 			border-bottom: 2px solid $color-primary;
 		}
-	}
-}
-
-.vocab-progress-bar {
-	width: 100%;
-	height: $vocab-progress-bar-height;
-	border: 1px solid black;
-	border-radius: 5px;
-	background: $color-other;
-	overflow: hidden;
-
-	.partition {
-		height: $vocab-progress-bar-height;
-		float: left;
-	}
-
-	.known {
-		background: $color-known;
-	}
-	.learning {
-		background: $color-learning;
 	}
 }
 
@@ -190,8 +186,6 @@ ul {
 			&[data-rating="1"] { color: $color-rating-1; border-bottom-color: $color-rating-1; }
 			&[data-rating="2"] { color: $color-rating-2; border-bottom-color: $color-rating-2; }
 			&[data-rating="3"] { color: $color-rating-3; border-bottom-color: $color-rating-3; }
-			&[data-rating="4"] { color: $color-rating-4; border-bottom-color: $color-rating-4; }
-			&[data-rating="5"] { color: $color-rating-5; border-bottom-color: $color-rating-5; }
 
 			&.selected {
 				border-color: black;
@@ -202,8 +196,6 @@ ul {
 				&[data-rating="1"] { background: $color-rating-1; }
 				&[data-rating="2"] { background: $color-rating-2; }
 				&[data-rating="3"] { background: $color-rating-3; }
-				&[data-rating="4"] { background: $color-rating-4; }
-				&[data-rating="5"] { background: $color-rating-5; }
 
 				position: relative;
 				.due-marker {
@@ -247,8 +239,6 @@ ul {
 			&[data-rating="1"] { color: $color-rating-1; border-bottom-color: $color-rating-1; }
 			&[data-rating="2"] { color: $color-rating-2; border-bottom-color: $color-rating-2; }
 			&[data-rating="3"] { color: $color-rating-3; border-bottom-color: $color-rating-3; }
-			&[data-rating="4"] { color: $color-rating-4; border-bottom-color: $color-rating-4; }
-			&[data-rating="5"] { color: $color-rating-5; border-bottom-color: $color-rating-5; }
 
 			&.selected {
 				border-color: black;
@@ -259,8 +249,6 @@ ul {
 				&[data-rating="1"] { border-color: $color-rating-1; }
 				&[data-rating="2"] { border-color: $color-rating-2; }
 				&[data-rating="3"] { border-color: $color-rating-3; }
-				&[data-rating="4"] { border-color: $color-rating-4; }
-				&[data-rating="5"] { border-color: $color-rating-5; }
 
 				position: relative;
 				.due-marker {
@@ -357,8 +345,6 @@ ul {
 				&[data-rating="1"] { background: $color-rating-1; }
 				&[data-rating="2"] { background: $color-rating-2; }
 				&[data-rating="3"] { background: $color-rating-3; }
-				&[data-rating="4"] { background: $color-rating-4; }
-				&[data-rating="5"] { background: $color-rating-5; }
 
 				&:hover {
 					color: black;
@@ -371,8 +357,6 @@ ul {
 					&[data-rating="1"] { background: $color-rating-1; }
 					&[data-rating="2"] { background: $color-rating-2; }
 					&[data-rating="3"] { background: $color-rating-3; }
-					&[data-rating="4"] { background: $color-rating-4; }
-					&[data-rating="5"] { background: $color-rating-5; }
 				}
 			}
 

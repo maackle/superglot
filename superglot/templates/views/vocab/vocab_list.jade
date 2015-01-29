@@ -21,18 +21,23 @@ block main_content
 	h2= _("add words?") | capitalize
 	.row
 		.col-sm-4
-			h3= _("known") | capitalize
-			form(method="POST", action=url_for('frontend.vocab.add_words', label='known'))
+			h3 rating=1
+			form(method="POST", action=url_for('frontend.vocab.add_words', rating=1))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 		.col-sm-4
-			h3= _("learning") | capitalize
-			form(method="POST", action=url_for('frontend.vocab.add_words', label='learning'))
+			h3 rating=2
+			form(method="POST", action=url_for('frontend.vocab.add_words', rating=2))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 		.col-sm-4
-			h3= _("ignored") | capitalize
-			form(method="POST", action=url_for('frontend.vocab.add_words', label='ignored'))
+			h3 rating=3
+			form(method="POST", action=url_for('frontend.vocab.add_words', rating=3))
+				textarea(name="words", rows=7).form-control
+				+form_submit('add/move words')
+		.col-sm-12
+			h3 ignored (-1)
+			form(method="POST", action=url_for('frontend.vocab.add_words', rating=-1))
 				textarea(name="words", rows=7).form-control
 				+form_submit('add/move words')
 

@@ -36,17 +36,11 @@ def word_list(partition):
     return render_template('views/frontend/word_list.jade', words=words)
 
 
-@blueprint.route('/user/vocab/add/<label>/', methods=['POST'])
+@blueprint.route('/user/vocab/add/<rating>/', methods=['POST'])
 @login_required
-def add_words(label):
-    if label == 'ignored':
-        rating = settings.RATING_VALUES['ignored']
-    elif label == 'learning':
-        rating = settings.RATING_VALUES['learning']
-    elif label == 'known':
-        rating = settings.RATING_VALUES['known']
-    else:
-        raise "Invalid label"
+def add_words(rating):
+    if not (-1 <= rating and rating <= 3):
+        raise "Invalid rating"
     tokens = nlp.tokenize(request.form['words'])
     new_words = core.gen_words_from_tokens(tokens)
     updated, ignored = core.update_user_words(current_user, new_words, rating, force=True)

@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 
 from flask.ext.testing import TestCase
 
+
 class SuperglotTestBase(TestCase):
 
     app = None
@@ -94,8 +95,6 @@ class SuperglotTestBase(TestCase):
         cls.app = create_app()
         cls.client = cls.app.test_client()
         cls.db = cls.app.db
-
-            # cls._add_words()
 
     @classmethod
     def teardown_class(cls):

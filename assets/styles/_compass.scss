@@ -1,0 +1,22 @@
+@mixin clearfix {
+	// from http://nicolasgallagher.com/micro-clearfix-hack/
+	&:before,
+	&:after {
+		content: " ";
+		display: table;
+	}
+
+	&:after {
+		clear: both;
+	}
+}
+
+@mixin vendor-prefix($name, $argument) {
+  -webkit-#{$name}: #{$argument};
+  -ms-#{$name}: #{$argument};
+  -moz-#{$name}: #{$argument};
+  -o-#{$name}: #{$argument};
+  #{$name}: #{$argument};
+}
+
+@mixin border-radius($r) { @include vendor-prefix(border-radius, $r); }

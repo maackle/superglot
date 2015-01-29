@@ -47,13 +47,6 @@ mixin form_submit(value="Submit")
 		input.btn.btn-primary(type="submit", value=value)
 
 
-mixin vocab_progress_bar(stats)
-	.vocab-progress-bar
-		.partition.known(style="width: #{ "%2f%%"|format(stats.percents.known) }")
-		.partition.learning(style="width: #{ "%2f%%"|format(stats.percents.learning) }")
-		//- .partition.other(style="width: #{ "%2f%%"|format(100 - stats.percents.known - stats.percents.learning) }")
-
-
 mixin annotated_vocab_word(a_word, reading=None)
 	if reading
 		- var text = reading
@@ -62,10 +55,10 @@ mixin annotated_vocab_word(a_word, reading=None)
 	else
 		- var text = a_word.word.lemma
 	if a_word.rating > 0 and util.now() > a_word.srs_next_repetition
-		li.word.due(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
+		li.word.due(data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
 			//- div.due-marker
 				//- = a_word.srs_next_repetition
 			= text
 	else
-		li.word(data-group-label=a_word.label, data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
+		li.word(data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
 			= text

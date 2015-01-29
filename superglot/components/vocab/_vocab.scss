@@ -1,0 +1,25 @@
+
+$vocab-progress-bar-height: 2.5rem;
+
+.vocab-progress-bar {
+	width: 100%;
+	height: $vocab-progress-bar-height;
+	border: 1px solid black;
+	border-radius: 5px;
+	background: $color-other;
+	overflow: hidden;
+
+	.partition {
+		height: $vocab-progress-bar-height;
+		float: left;
+	}
+	.rating-1 {
+		background: $color-rating-1;
+	}
+	.rating-2 {
+		background: $color-rating-2;
+	}
+	.rating-3 {
+		background: $color-rating-3;
+	}
+}

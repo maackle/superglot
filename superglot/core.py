@@ -185,7 +185,6 @@ def create_article(user, title, plaintext, url=None):
     return article, True
 
 
-
 def vocab_stats(vocab):
     """ Get stats about a particular vocabulary list
     """
@@ -193,13 +192,16 @@ def vocab_stats(vocab):
     percents = defaultdict(int)
 
     for item in vocab:
-        counts[item.label] += 1
+        print(item.rating)
+        counts[item.rating] += 1
 
     total = len(vocab)
     total_significant = total - counts['ignored']
 
-    for label in counts:
-        percents[label] = 100 * counts[label] / (total_significant or 1)
+    for rating in counts:
+        percents[rating] = 100 * counts[rating] / (total_significant or 1)
+
+    print(percents)
 
     return {
         'counts': counts,

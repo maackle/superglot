@@ -23,12 +23,6 @@ LANGUAGE_NAMES = {
     'ja': '日本語',
 }
 
-RATING_VALUES = {
-    'ignored': -1,
-    'learning': 2,
-    'known': 4,
-}
-
 NATIVE_LANGUAGE_CHOICES = tuple(
     (code, LANGUAGE_NAMES[code]) for code in SUPPORTED_NATIVE_LANGUAGES)
 
