@@ -1,8 +1,11 @@
 var coffee = require('gulp-coffee');
 var concat = require('gulp-concat');
 var gulp = require('gulp');
+var livereload = require('gulp-livereload');
 var path = require('path');
 var sass = require('gulp-sass');
+
+var lrPort = 35729;
 
 var paths = {
     'src': './assets/',
@@ -24,14 +27,18 @@ gulp.task('jade-mixins', function() {
         .pipe(gulp.dest(paths.templates))
 });
 
-gulp.task('sass', function () {
-    gulp.src(files.sassComponents)
+gulp.task('sass-collect', function () {
+    return gulp.src(files.sassComponents)
         .pipe(concat('_components.scss'))
         // .pipe(sass())
-        .pipe(gulp.dest(paths.srcStyles));
+        .pipe(gulp.dest(path.join(paths.srcStyles, 'build/')));
+});
+
+gulp.task('sass', ['sass-collect'], function () {
     gulp.src(files.sass)
         .pipe(sass())
-        .pipe(gulp.dest(paths.dest));
+        .pipe(gulp.dest(paths.dest))
+        .pipe(livereload({port: lrPort}));
 });
 
 gulp.task('coffee', function() {
@@ -41,7 +48,9 @@ gulp.task('coffee', function() {
 });
 
 gulp.task('watch', function() {
+    livereload.listen();
     gulp.watch(files.jadeMixins, ['jade-mixins']);
+    gulp.watch(files.sassComponents, ['sass-collect', 'sass']);
     gulp.watch(files.sass, ['sass']);
     gulp.watch(files.coffee, ['coffee']);
     // gulp.watch('**/*.mixin.jade', ['jade-mixins']);
@@ -50,6 +59,9 @@ gulp.task('watch', function() {
 gulp.task('default', [
     'watch',
     'jade-mixins',
+    'sass-collect',
     'sass',
     'coffee'
-]);
+], function() {
+
+});
