@@ -1,7 +1,7 @@
 
 mixin vocab_progress_bar(stats)
 	.vocab-progress-bar
-		.partition.color-rating-3(style="width: #{ "%2f%%"|format(stats.percents[1]) }")
-		.partition.color-rating-2(style="width: #{ "%2f%%"|format(stats.percents[2]) }")
-		.partition.color-rating-1(style="width: #{ "%2f%%"|format(stats.percents[3]) }")
+		.partition.rating-3(style="width: #{ "%2f%%"|format(stats.percents[1]) }")
+		.partition.rating-2(style="width: #{ "%2f%%"|format(stats.percents[2]) }")
+		.partition.rating-1(style="width: #{ "%2f%%"|format(stats.percents[3]) }")
 		//- .partition.other(style="width: #{ "%2f%%"|format(100 - stats.percents.known - stats.percents.learning) }")

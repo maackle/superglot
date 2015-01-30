@@ -116,8 +116,7 @@
       });
     });
     $('.vocab-list li').mouseenter(function(e) {
-      var $el, el, wordId,
-        _this = this;
+      var $el, el, wordId;
       el = this;
       $el = $(el);
       wordId = $el.data('id');
@@ -125,13 +124,15 @@
         $(el).data('translation', '');
         return $.get('/api/words/translate/', {
           word_id: wordId
-        }, function(data) {
-          var meaning;
-          meaning = data.target;
-          addMeaningTooltip(el, meaning);
-          $el.data('translation', meaning);
-          return $el.trigger('mouseenter');
-        });
+        }, (function(_this) {
+          return function(data) {
+            var meaning;
+            meaning = data.target;
+            addMeaningTooltip(el, meaning);
+            $el.data('translation', meaning);
+            return $el.trigger('mouseenter');
+          };
+        })(this));
       }
     });
     return $('.accordion').accordion({
