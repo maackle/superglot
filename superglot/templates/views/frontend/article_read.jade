@@ -1,13 +1,15 @@
 extends layouts/base.jade
 
+- from 'mixins-collected.jade' import annotated_vocab_word with context
+
 block main_content
 	h1= article.title
 	if article.source
-		a(href=article.source, target="_blank") 
+		a(href=article.source, target="_blank")
 			= _("original")
 			|  &rarr;
 	h3 words
-	p 
+	p
 		i #{stats.total} total
 
 	.temp-info

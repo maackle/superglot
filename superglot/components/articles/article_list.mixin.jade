@@ -30,29 +30,3 @@ mixin article_list_w_stats(article_pairs)
 								|  &rarr;
 					td
 						a(href=url_for('frontend.articles.article_delete', article_id=article.id)) &times;
-
-
-
-mixin annotated_vocab_word(a_word, reading=None)
-	if reading
-		- var text = reading
-	elif a_word.reading
-		- var text = a_word.reading
-	else
-		- var text = a_word.word.lemma
-	if a_word.rating > 0 and util.now() > a_word.srs_next_repetition
-		li.word.due(data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
-			//- div.due-marker
-				//- = a_word.srs_next_repetition
-			= text
-	else
-		li.word(data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
-			= text
-
-
-mixin vocab_progress_bar(stats)
-	.vocab-progress-bar
-		.partition.rating-3(style="width: #{ "%2f%%"|format(stats.percents[3]) }")
-		.partition.rating-2(style="width: #{ "%2f%%"|format(stats.percents[2]) }")
-		.partition.rating-1(style="width: #{ "%2f%%"|format(stats.percents[1]) }")
-		//- .partition.other(style="width: #{ "%2f%%"|format(100 - stats.percents.known - stats.percents.learning) }")

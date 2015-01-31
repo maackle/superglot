@@ -25,6 +25,7 @@
     "gulp-coffee": "~2.2.1",
     "gulp-livereload": "~3.6.0",
     "connect-livereload": "~0.5.2",
-    "tiny-lr": "~0.1.5"
+    "tiny-lr": "~0.1.5",
+    "gulp-es6-transpiler": "~1.0.1"
   }
 }

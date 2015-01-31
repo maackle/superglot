@@ -1,5 +1,6 @@
 var coffee = require('gulp-coffee');
 var concat = require('gulp-concat');
+var es6transpiler = require('gulp-es6-transpiler');
 var gulp = require('gulp');
 var livereload = require('gulp-livereload');
 var path = require('path');
@@ -17,6 +18,7 @@ var paths = {
 var files = {
     'coffee': './assets/scripts/*.coffee',
     'jadeMixins': 'superglot/components/**/*.mixin.jade',
+    'js': 'superglot/components/**/*.js',
     'sass': './assets/styles/*.scss',
     'sassComponents': './superglot/components/**/*.scss',
 };
@@ -47,8 +49,14 @@ gulp.task('coffee', function() {
         .pipe(gulp.dest(paths.dest));
 });
 
+gulp.task('js', function() {
+    gulp.src(files.js)
+        .pipe(es6transpiler())
+        .pipe(gulp.dest(paths.dest));
+});
+
 gulp.task('watch', function() {
-    livereload.listen();
+    // livereload.listen();
     gulp.watch(files.jadeMixins, ['jade-mixins']);
     gulp.watch(files.sassComponents, ['sass-collect', 'sass']);
     gulp.watch(files.sass, ['sass']);
