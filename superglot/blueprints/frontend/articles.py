@@ -44,16 +44,19 @@ def article_read(article_id):
     '''
     TODO: words with the same lemma are not marked as known
     '''
-    article = app.db.session.query(models.Article).filter_by(user_id=current_user.id, id=article_id).first()
+    article = app.db.session.query(models.Article).filter_by(
+        user_id=current_user.id,
+        id=article_id).first()
     if not article:
         abort(404)
     article_vocab = core.get_common_vocab(current_user, article)
     stats = core.vocab_stats(article_vocab)
 
-    return render_template('views/frontend/article_read.jade',
+    return render_template(
+        'views/frontend/article_read.jade',
         article=article,
         stats=stats,
-        annotated_words=sorted(article_vocab))
+        article_vocab=sorted(article_vocab))
 
 
 @blueprint.route('/texts/<article_id>/read', methods=['GET', 'POST'])
@@ -68,10 +71,11 @@ def article_read_anon(article_id):
     article_vocab = core.get_common_vocab(current_user, article)
     stats = core.vocab_stats(article_vocab)
 
-    return render_template('views/frontend/article_read.jade',
+    return render_template(
+        'views/frontend/article_read.jade',
         article=article,
         stats=stats,
-        annotated_words=sorted(article_vocab))
+        article_vocab=sorted(article_vocab))
 
 
 

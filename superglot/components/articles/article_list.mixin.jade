@@ -5,10 +5,10 @@ mixin article_list_w_stats(article_pairs)
 		thead
 			tr
 				th= _("title") | capitalize
-				th= _("comprehension") | capitalize
-				th= _("total") | capitalize
+				th.center= _("comprehension") | capitalize
+				th.center= _("total") | capitalize
 				for i in [3,2,1]
-					th= i
+					th.center= i
 				th
 				th
 					//- Action

@@ -1,7 +1,5 @@
 extends layouts/base.jade
 
-- from 'mixins-collected.jade' import annotated_vocab_word with context
-
 block main_content
 	h1= article.title
 	if article.source
@@ -18,12 +16,8 @@ block main_content
 		| From either place, you can interact with all words.
 
 	ul.inline-list.annotated-words.style-a
-		//- .controls
-		//- 	button.mark-all(data-group-label="known") Mark All Known
-		//- 	button.mark-all(data-group-label="learning") Mark All Learning
-		//- 	button.mark-all(data-group-label="") Unmark All
-		for a_word in annotated_words
-			+annotated_vocab_word(a_word)
+		for v in article_vocab
+			+annotated_vocab_word(v)
 
 	.accordion
 		h3.header raw text

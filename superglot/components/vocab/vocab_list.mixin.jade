@@ -1,9 +1,20 @@
 
-
-
 mixin vocab_table(vocab)
-	p TODO
+	table.table
+		thead
+			tr
+				th= _("word") | capitalize
+				th= _("frequency") | capitalize
+		tbody
+			for v in vocab
+				tr
+					td= v.word.lemma
+					td= 40
 
+mixin vocab_list_inline(vocab)
+	ul.inline-list.annotated-words.style-a
+		for v in vocab
+			+annotated_vocab_word(v)
 
 
 mixin grouped_columned_vocab_list(groups)
