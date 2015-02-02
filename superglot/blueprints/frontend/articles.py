@@ -49,14 +49,15 @@ def article_read(article_id):
         id=article_id).first()
     if not article:
         abort(404)
-    article_vocab = core.get_common_vocab(current_user, article)
-    stats = core.vocab_stats(article_vocab)
+    article_vocab_pairs = core.get_common_vocab_pairs(current_user, article)
+
+    stats = core.vocab_stats([vo[0] for vo in article_vocab_pairs])
 
     return render_template(
         'views/frontend/article_read.jade',
         article=article,
         stats=stats,
-        article_vocab=sorted(article_vocab))
+        article_vocab_pairs=sorted(article_vocab_pairs))
 
 
 @blueprint.route('/texts/<article_id>/read', methods=['GET', 'POST'])

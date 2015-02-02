@@ -16,8 +16,8 @@ block main_content
 		| From either place, you can interact with all words.
 
 	ul.inline-list.annotated-words.style-a
-		for v in article_vocab
-			+annotated_vocab_word(v)
+		for vword, occurrence in article_vocab_pairs
+			+annotated_vocab_word(vword, occurrence.reading)
 
 	.accordion
 		h3.header raw text

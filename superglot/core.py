@@ -58,18 +58,6 @@ def gen_due_vocab(user):
         and item.srs_next_repetition < util.now()
     )
 
-# @cache.memoize()
-def _get_common_word_pairs(user, article):
-    '''
-    Get words that show up in user's vocab and the article
-    '''
-
-    V = models.VocabWord
-    O = models.WordOccurrence
-    return app.db.session.query(V, O).\
-            filter(V.word_id == O.word_id and O.article_id == article.id).\
-            filter(V.user_id==user.id).\
-            all()
 
 def _get_common_vocab_query(user, article):
     '''
@@ -85,6 +73,7 @@ def _get_common_vocab_query(user, article):
         filter(V.user_id == user.id)
     )
 
+
 # @cache.memoize()
 def get_common_vocab(user, article):
     '''
@@ -92,6 +81,34 @@ def get_common_vocab(user, article):
     '''
 
     return _get_common_vocab_query(user, article).all()
+
+
+# @cache.memoize()
+def _get_common_vocab_pairs_query(user, article):
+    '''
+    Get vocab that show up in user's vocab and the article, paired with
+    the occurrence of each vocab word
+    '''
+
+    V = models.VocabWord
+    O = models.WordOccurrence
+    return (
+        app.db.session.query(V, O)
+        .filter(O.article_id == article.id)
+        .filter(V.word_id == O.word_id)
+        .filter(V.user_id == user.id)
+    )
+
+
+# @cache.memoize()
+def get_common_vocab_pairs(user, article):
+    '''
+    Get vocab that show up in user's vocab and the article, paired with
+    the occurrence of each vocab word
+    '''
+
+    return _get_common_vocab_pairs_query(user, article).all()
+
 
 # @cache.memoize()
 def get_common_word_ids(user, article):
@@ -101,6 +118,7 @@ def get_common_word_ids(user, article):
 
     V = models.VocabWord
     return (v[0] for v in _get_common_vocab_query(user, article).values(V.word_id))
+
 
 def gen_words_from_tokens(tokens):
     '''
@@ -192,7 +210,6 @@ def vocab_stats(vocab):
     percents = defaultdict(int)
 
     for item in vocab:
-        print(item.rating)
         counts[item.rating] += 1
 
     total = len(vocab)
@@ -200,8 +217,6 @@ def vocab_stats(vocab):
 
     for rating in counts:
         percents[rating] = 100 * counts[rating] / (total_significant or 1)
-
-    print(percents)
 
     return {
         'counts': counts,
@@ -217,7 +232,6 @@ def user_article_stats(user, article):
 
     common = get_common_vocab(user, article)
     return vocab_stats(common)
-
 
 
 def authenticate_user(email, password):

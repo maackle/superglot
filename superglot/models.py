@@ -117,10 +117,6 @@ class VocabWord(Model):
     word = relationship(Word, cascade="all, delete", single_parent=True)
     user = relationship(User, cascade="all, delete", single_parent=True)
 
-    @property
-    def label(self):
-        return "NAME TO DO"
-
     def __str__(self):
         return "VocabWord<{}>".format(self.word.lemma)
 
@@ -135,6 +131,18 @@ class VocabWord(Model):
 
     # def __hash__(self):
     #   return util.string_hash(self.user_id + ' ' + self.word_id)
+
+
+class VocabOccurrence(object):
+    """ Not really a model, just a helper to unify VocabWord and Occurrence
+        into a single object.
+
+        On second thought maybe this isn't such a good
+        idea :)
+    """
+
+    def __init__(self, vocab, occurrence):
+        "todo"
 
 
 class Article(Model):
