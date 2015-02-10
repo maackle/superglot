@@ -157,6 +157,9 @@ def make_words_from_lemmata(lemmata, language_id=english_id):
 
 
 def create_article(user, title, plaintext, url=None):
+    '''
+        TODO: save word position as well.
+    '''
     all_tokens = list()
 
     sentence_positions = {}

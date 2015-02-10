@@ -171,8 +171,9 @@ class WordOccurrence(Model):
     article_id = sa.Column(sa.Integer, sa.ForeignKey('article.id', ondelete='CASCADE'))
     word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id', ondelete='CASCADE'))
     reading = sa.Column(sa.String(256))
-    article_sentence_start = sa.Column(sa.Integer)  # a unique identifier for an article sentence
-    # article_position = sa.Column(sa.Integer)
+    # a unique identifier for an article sentence
+    article_sentence_start = sa.Column(sa.Integer)
+    article_position = sa.Column(sa.Integer)
 
     word = relationship(Word, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)
     article = relationship(Article, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)

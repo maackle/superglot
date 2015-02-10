@@ -1,5 +1,9 @@
 import textblob
 from superglot import util
+from nltk.tokenize import PunktWordTokenizer
+
+
+pw_tokenizer = PunktWordTokenizer()
 
 
 class Token:
@@ -60,6 +64,12 @@ def tokenize(text):
             yield Token(reading, textblob.Word(reading).lemmatize(pos).lower())
 
     return list(gen())
+
+
+def tokenize_with_position(text):
+    tokens = pw_tokenizer.tokenize(text)
+    spans = pw_tokenizer.span_tokenize(text)
+    return zip(tokens, spans)
 
 
 def lemmatize_word(word, pos):
