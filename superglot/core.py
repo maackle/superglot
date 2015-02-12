@@ -1,11 +1,13 @@
 '''
 Complex queries, calculations, etc.
 '''
+
 import datetime
+from collections import defaultdict
+
 from sqlalchemy import distinct
 from flask import current_app as app
 from bs4 import BeautifulSoup
-from collections import defaultdict
 
 from superglot.cache import cache
 from superglot.config import settings
@@ -120,40 +122,43 @@ def get_common_word_ids(user, article):
     return (v[0] for v in _get_common_vocab_query(user, article).values(V.word_id))
 
 
-def gen_words_from_tokens(tokens):
+def gen_words_from_readings(readings):
     '''
     Look up words from token objects. If not in database, create a "non-canonical" word
 
     TODO: actually create the non-canonical word.
     '''
-    for chunk in util.chunks(tokens, 500):
-        words = []
-        for token in chunk:
-            reading, lemma = token.tup()
-            word = app.db.session.query(models.Word).filter_by(lemma=lemma, language_id=english_id).first()
-            if not word:
-                word = models.Word(lemma=lemma, language_id=english_id, canonical=False)
-            words.append(word)
-        # try:
-        #   db.session.add_all(words)
-        #   db.session.commit()
-        # except:
-        #   # raise
-        for word in words:
-            yield word
+    lemma_readings = defaultdict(set)
 
-
-def gen_words_from_lemmata(lemmata, language_id=english_id):
-    return models.Word.query().filter(models.Word.lemma.in_(lemmata)).all()
-
-
-def make_words_from_lemmata(lemmata, language_id=english_id):
-    words = []
-    for lemma in lemmata:
-        word = models.Word(lemma=lemma)
-        words.append(app.db.session.merge(word))
+    for reading in readings:
+        for lemma in nlp.get_reading_lemmata(reading):
+            lemma_readings[lemma].add(reading)
+            app.db.session.add(models.LemmaReading(lemma=lemma, reading=reading))
     app.db.session.commit()
-    return words
+
+    for chunk in util.chunked(lemma_readings.items(), 500):
+        words = []
+        new_words = []
+        for lemma, reading in chunk:
+            word = app.db.session.query(models.Word).filter_by(
+                lemma=lemma,
+                language_id=english_id
+            ).first()
+            if not word:
+                word = models.Word(
+                    lemma=lemma,
+                    language_id=english_id,
+                    canonical=False
+                )
+                new_words.append(word)
+            else:
+                words.append(word)
+
+        app.db.session.add_all(new_words)
+        app.db.session.commit()
+
+        for word in (words + new_words):
+            yield word
 
 
 def create_article(user, title, plaintext, url=None):
@@ -165,6 +170,8 @@ def create_article(user, title, plaintext, url=None):
     sentence_positions = {}
     occurrences = []
     all_word_ids = set()
+    for reading, span in nlp.tokenize_with_spans(plaintext):
+        raise "TODO"
     for i, sentence in enumerate(nlp.get_sentences(plaintext)):
         sentence_positions[sentence.start] = len(sentence)
         sentence_tokens = nlp.tokenize(sentence.string)

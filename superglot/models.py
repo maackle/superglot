@@ -43,8 +43,8 @@ class Word(Model):
 
     language = relationship(Language)
 
-    def __str__(self):
-        return "Word({})".format(self.lemma)
+    def __repr__(self):
+        return "<Word:{} {}>".format(self.id, self.lemma)
 
     def __eq__(self, other):
         return (self.id and self.id == other.id) or self.lemma == other.lemma

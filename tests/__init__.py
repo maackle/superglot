@@ -1,5 +1,5 @@
 import os
-os.environ["SUPERGLOT_SETTINGS"] = 'superglot.config.testing'
+os.environ["SUPERGLOT_SETTINGS"] = 'superglot.config.envs.testing'
 
 import manage
 

@@ -3,7 +3,6 @@ import random
 from superglot import models
 from superglot import core
 from superglot import elasticsearch
-from superglot import database
 from superglot import util
 
 from pprint import pprint
@@ -12,10 +11,12 @@ from superglot import create_app
 
 app = create_app()
 
+
 def make_random_user():
     username = util.random_string(4)
     user, created = core.register_user(username, username)
     return user
+
 
 def make_random_articles(user):
     num_user = 1000
@@ -29,7 +30,7 @@ def make_random_articles(user):
         other_lemmata.append(util.random_string(8))
     core.make_words_from_lemmata(user_lemmata)
     core.make_words_from_lemmata(other_lemmata)
-    user_lemmata_chunks = util.chunks(
+    user_lemmata_chunks = util.chunked(
         user_lemmata,
         int(len(user_lemmata) / 4),
     )

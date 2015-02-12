@@ -130,7 +130,7 @@ def rebuild_db(force=False):
         load_dump()
     else:
         reset_schema()
-        load_fixture_words()
+        # load_fixture_words()
         if settings.DEVELOPMENT:
             load_sample_data()
         database.engine.dispose()

@@ -1,4 +1,5 @@
 import datetime
+import itertools
 import requests
 import time
 
@@ -12,11 +13,13 @@ from superglot.cache import cache
 now = datetime.datetime.now
 
 
-def chunks(l, n):
-    """ Yield successive n-sized chunks from l.
-    """
-    for i in range(0, len(l), n):
-        yield l[i:i+n]
+def chunked(iterable, n):
+    it = iter(iterable)
+    while True:
+        chunk = tuple(itertools.islice(it, n))
+        if not chunk:
+            return
+        yield chunk
 
 
 def dict_from_seq(s, mapper=None):

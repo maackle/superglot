@@ -37,9 +37,7 @@ def get_sentences(text):
 def tokenize(text):
     # TODO: keep track of occurence positions
     blob = textblob.TextBlob(text)
-    sentences = blob.sentences
     tags = blob.tags
-    words = blob.words
 
     def gen():
         for reading, pos_abbr in tags:
@@ -66,11 +64,14 @@ def tokenize(text):
     return list(gen())
 
 
-def tokenize_with_position(text):
+def tokenize_with_spans(text):
     tokens = pw_tokenizer.tokenize(text)
     spans = pw_tokenizer.span_tokenize(text)
     return zip(tokens, spans)
 
 
-def lemmatize_word(word, pos):
-    return textblob.Word(word).lemmatize(pos)
+def get_reading_lemmata(reading):
+    '''
+    Get all possible lemmata for a reading
+    '''
+    return [textblob.Word(reading).lemmatize(pos).lower() for pos in "nva"]
