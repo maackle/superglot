@@ -40,14 +40,14 @@ class TestWords(SuperglotTestBase):
         for words in (words1, words2):
             nt.assert_true(all(w.id for w in words))
 
-        nt.assert_set_equal(
-            set("running watery nose noses".split(' ')),
-            {w.lemma for w in words1},
+        nt.assert_equal(
+            ("running watery nose noses".split(' ')),
+            [w.lemma for w in words1],
         )
 
-        nt.assert_set_equal(
-            set("running faucet faucets are be the cool coolest".split(' ')),
-            {w.lemma for w in words2},
+        nt.assert_equal(
+            ("running faucet faucets are be the cool coolest".split(' ')),
+            [w.lemma for w in words2],
         )
 
     def test_generate_words_readings(self):

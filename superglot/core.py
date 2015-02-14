@@ -151,13 +151,12 @@ def gen_words_from_readings(readings):
                     canonical=False
                 )
                 new_words.append(word)
-            else:
-                words.append(word)
+            words.append(word)
 
         app.db.session.add_all(new_words)
         app.db.session.commit()
 
-        for word in (words + new_words):
+        for word in (words):
             yield word
 
 
