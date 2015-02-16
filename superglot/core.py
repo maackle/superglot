@@ -19,6 +19,8 @@ from superglot import (
     srs,
 )
 
+import pprint
+
 try:
     with database.session() as session:
         english = session.query(models.Language).filter_by(code='en').first()
@@ -129,21 +131,29 @@ def gen_words_from_readings(readings):
     TODO: actually create the non-canonical word.
     '''
     lemma_readings = defaultdict(set)
+    reading_lemmata = defaultdict(set)
+    reading_words = defaultdict(set)
 
     for reading in readings:
         for lemma in nlp.get_reading_lemmata(reading):
             lemma_readings[lemma].add(reading)
+            reading_lemmata[reading].add(lemma)
             app.db.session.add(models.LemmaReading(lemma=lemma, reading=reading))
     app.db.session.commit()
 
+    word_hash = {}
+    words = []
+    created_lemmata = set()
     for chunk in util.chunked(lemma_readings.items(), 500):
-        words = []
         new_words = []
-        for lemma, reading in chunk:
-            word = app.db.session.query(models.Word).filter_by(
-                lemma=lemma,
-                language_id=english_id
-            ).first()
+        for lemma, readings in chunk:
+            word = (
+                word_hash.get(lemma) or
+                app.db.session.query(models.Word).filter_by(
+                    lemma=lemma,
+                    language_id=english_id
+                ).first()
+            )
             if not word:
                 word = models.Word(
                     lemma=lemma,
@@ -152,38 +162,87 @@ def gen_words_from_readings(readings):
                 )
                 new_words.append(word)
             words.append(word)
+            word_hash[word.lemma] = word
+            for reading in readings:
+                reading_words[reading].add(word)
 
         app.db.session.add_all(new_words)
         app.db.session.commit()
 
-        for word in (words):
-            yield word
+    return reading_words
+
+
+def gen_words_from_tokens(tokens):
+    '''
+    Look up words from token objects. If not in database, create a "non-canonical" word
+
+    TODO: actually create the non-canonical word.
+    '''
+
+    word_hash = {}
+    words = []
+    for chunk in util.chunked(tokens, 500):
+        new_words = []
+        for token in chunk:
+            word = (
+                word_hash.get(token.lemma) or
+                app.db.session.query(models.Word).filter_by(
+                    lemma=token.lemma,
+                    language_id=english_id
+                ).first()
+            )
+            if not word:
+                word = models.Word(
+                    lemma=token.lemma,
+                    language_id=english_id,
+                    canonical=False
+                )
+                new_words.append(word)
+            words.append(word)
+            word_hash[word.lemma] = word
+
+        app.db.session.add_all(new_words)
+        app.db.session.commit()
+
+    return words
 
 
 def create_article(user, title, plaintext, url=None):
     '''
-        TODO: save word position as well.
+    TODO: save sentence info?
     '''
-    all_tokens = list()
 
     sentence_positions = {}
     occurrences = []
-    all_word_ids = set()
-    for reading, span in nlp.tokenize_with_spans(plaintext):
-        raise "TODO"
-    for i, sentence in enumerate(nlp.get_sentences(plaintext)):
-        sentence_positions[sentence.start] = len(sentence)
-        sentence_tokens = nlp.tokenize(sentence.string)
-        for token, word in zip(sentence_tokens, gen_words_from_tokens(sentence_tokens)):
-            if word.id:
-                occurrence = models.WordOccurrence(
-                    word_id=word.id,
-                    reading=token.reading,
-                    article_sentence_start=sentence.start
-                )
-                occurrences.append(occurrence)
-                all_word_ids.add(word.id)
-        all_tokens.extend(sentence_tokens)
+
+    tokens = nlp.tokenize(plaintext)
+    spans = nlp.span_tokenize(plaintext)
+    words = gen_words_from_tokens(tokens)
+
+    for word, token, span in zip(words, tokens, spans):
+        occ = models.WordOccurrence(
+            word_id=word.id,
+            reading=token.reading,
+            article_position=span[0],
+            # article_sentence_start=sentence.start
+        )
+        occurrences.append(occ)
+
+    # for i, sentence in enumerate(sentences):
+    #     sentence_positions[sentence.start] = len(sentence)
+    #     sentence_tokens = nlp.tokenize(sentence.string)
+    #     spans = nlp.span_tokenize(sentence.string)
+    #     for reading, span in zip(readings, spans):
+    #         words = reading_words[reading]
+    #         for word in words:  # TODO: select only ONE word...
+    #             if word.id:
+    #                 occurrence = models.WordOccurrence(
+    #                     word_id=word.id,
+    #                     reading=reading,
+    #                     article_position=(sentence.start + span[0]),
+    #                     article_sentence_start=sentence.start
+    #                 )
+    #                 occurrences.append(occurrence)
 
     article = models.Article(
         source=url,
@@ -198,13 +257,18 @@ def create_article(user, title, plaintext, url=None):
 
     for o in occurrences:
         o.article_id = article.id
-        app.db.session.merge(o)
+        app.db.session.add(o)
     app.db.session.commit()
 
-    existing_vocab_word_ids = set(get_common_word_ids(user, article))
+    # existing_vocab_word_ids = set(get_common_word_ids(user, article))
+    # all_word_ids = {word.id for word in words}
 
-    for word_id in all_word_ids - existing_vocab_word_ids:
-        app.db.session.add(models.VocabWord(user_id=user.id, word_id=word_id, rating=0))
+    # TODO: merge?
+    # for word_id in all_word_ids - existing_vocab_word_ids:
+    for word in words:
+        app.db.session.merge(
+            models.VocabWord(user_id=user.id, word_id=word.id, rating=0)
+        )
     app.db.session.commit()
 
     # cache.delete_memoized(get_common_word_pairs, user=user, article=article)
@@ -304,7 +368,7 @@ def update_user_words(user, words, rating, force=False):
             _record_rating(v, rating)
             app.db.session.merge(v)
     app.db.session.commit()
-    return updated, ignored
+    return updated_vocab
 
 
 def update_user_lemmata(user, lemmata, rating):
@@ -337,11 +401,13 @@ def get_article_sentences(article, words):
             sentences.append(sentence_text)
     return sentences
 
+
 def compute_article_stats(user, article):
     vocab = get_common_vocab(user, article)
-    groups = util.multi_dict_from_seq(vocab, lambda v: v.rating)
-    from pprint import pprint
-    pprint(groups)
+    stats = vocab_stats(vocab)
+    return stats
+    # groups = util.multi_dict_from_seq(vocab, lambda v: v.rating)
+
 
 def find_all_articles(user):
 

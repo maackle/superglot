@@ -34,11 +34,14 @@ class TestArticle(SuperglotTestBase):
     def test_article_occurrences(self):
         user = self.get_user()
         article, created = core.create_article(
-            user, "Test 1", "Twelve little toes."
+            user, "Test 1", "Twelve little toes"
         )
         occurrences = article.word_occurrences
-        print([o.article_position for o in occurrences])
         nt.assert_equal(len(occurrences), 3)
+        nt.assert_equal(
+            [o.article_position for o in occurrences],
+            [0, 7, 14],
+        )
 
     def test_article_stats(self):
 
@@ -46,5 +49,6 @@ class TestArticle(SuperglotTestBase):
         article_def = self.test_articles[0]
         article, created = self._create_article(user, article_def)
         words = models.Word.query().all()
-        core.update_user_words(user, words[0:10], 3)
-        core.compute_article_stats(user, article)
+        updated = core.update_user_words(user, words[0:10], 3)
+        stats = core.compute_article_stats(user, article)
+        nt.assert_equal(stats['counts'][3], 10)

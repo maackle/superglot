@@ -179,7 +179,7 @@ class WordOccurrence(Model):
     article = relationship(Article, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)
 
     __table_args__ = (
-        sa.PrimaryKeyConstraint(article_id, word_id),
+        sa.PrimaryKeyConstraint(article_id, word_id, article_position),
     )
 
     def __str__(self):

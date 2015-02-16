@@ -22,40 +22,53 @@ class TestWords(SuperglotTestBase):
 
         tokens = nlp.tokenize(plaintext)
         words = core.gen_words_from_tokens(tokens)
-        updated, ignored = core.update_user_words(user, words, 3)
+        updated = core.update_user_words(user, words, 3)
         common_words = list(core.get_common_vocab(user, article))
-        common_lemmata = list(map(lambda w: w.word.lemma, common_words))
-        common_set = set(common_lemmata)
+        common_lemmata_set = {w.word.lemma for w in common_words}
 
-        nt.eq_(len(common_lemmata), len(common_set))
-        nt.eq_(updated, len(common_words))
+        nt.eq_(len(common_words), len(common_lemmata_set))
+        nt.assert_set_equal(set(common_words), set(updated))
 
     def test_generate_words(self):
-        words1 = list(core.gen_words_from_readings(
-            "Running watery noses".split(' '))
+        words1 = core.gen_words_from_tokens(
+            nlp.tokenize("Running watery noses")
         )
-        words2 = list(core.gen_words_from_readings(
-            "Running faucets are the coolest".split(' '))
+        words2 = core.gen_words_from_tokens(
+            nlp.tokenize("Running faucets are the coolest")
         )
+
         for words in (words1, words2):
             nt.assert_true(all(w.id for w in words))
 
         nt.assert_equal(
-            ("running watery nose noses".split(' ')),
+            ("run watery nose".split(' ')),
             [w.lemma for w in words1],
         )
 
         nt.assert_equal(
-            ("running faucet faucets are be the cool coolest".split(' ')),
+            ("run faucet be the cool".split(' ')),
             [w.lemma for w in words2],
         )
 
+    def test_lengths(self):
+        plaintext = """
+        How do you do? I've got...twenty-five head of cow here, d'ya wanna
+        buy? Whaddya say?
+        """
+        tokens = nlp.tokenize(plaintext)
+        spans = nlp.span_tokenize(plaintext)
+        words = core.gen_words_from_tokens(tokens)
+
+        l = len(words)
+        nt.assert_true(len(tokens), l)
+        nt.assert_true(len(spans), l)
+
     def test_generate_words_readings(self):
-        words1 = list(core.gen_words_from_readings(
-            "Running watery noses".split(' '))
+        core.gen_words_from_tokens(
+            nlp.tokenize("Running watery noses")
         )
-        words2 = list(core.gen_words_from_readings(
-            "Running faucets are the coolest".split(' '))
+        core.gen_words_from_tokens(
+            nlp.tokenize("Running faucets are the coolest")
         )
 
         nt.assert_set_equal(

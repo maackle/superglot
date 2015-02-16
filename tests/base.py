@@ -73,10 +73,12 @@ class SuperglotTestBase(TestCase):
 
     def tearDown(self):
         # delete everything other than Word
+        self.db.session.query(models.Article).delete()
+        self.db.session.query(models.LemmaReading).delete()
         self.db.session.query(models.User).delete()
         self.db.session.query(models.VocabWord).delete()
+        self.db.session.query(models.Word).delete()
         self.db.session.query(models.WordOccurrence).delete()
-        self.db.session.query(models.Article).delete()
         self.db.session.commit()
 
         # qs = get_debug_queries()
