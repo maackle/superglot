@@ -7,6 +7,7 @@ bower_components
 local/
 log/
 */static/bower/
+*/static/build/
 dump/
 
 sandbox/

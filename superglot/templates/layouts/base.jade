@@ -12,12 +12,6 @@ html
 		link(rel="stylesheet", href="/static/fonts/fonts.css")
 		link(rel="stylesheet", href="/static/bower/jquery-ui/themes/smoothness/jquery-ui.css")
 
-		//- link(rel="stylesheet", href="/static/vendor/chosen-1.1.0/chosen.min.css")
-		script(src="/static/bower/jquery/dist/jquery.min.js")
-		script(src="/static/bower/jquery-ui/jquery-ui.min.js")
-		script(src="/static/bower/bootstrap/dist/js/bootstrap.min.js")
-		//- script(src="/static/vendor/chosen-1.1.0/chosen.jquery.min.js")
-		script(src="/static/build/main.js")
 	body
 		block navbar
 			include partials/navbar.jade
@@ -40,6 +34,14 @@ html
 
 				#html-templates
 					include partials/word_rating_popup.jade
+
+				//- link(rel="stylesheet", href="/static/vendor/chosen-1.1.0/chosen.min.css")
+				script(src="/static/bower/jquery/dist/jquery.min.js")
+				script(src="/static/bower/jquery-ui/jquery-ui.min.js")
+				script(src="/static/bower/bootstrap/dist/js/bootstrap.min.js")
+				//- script(src="/static/vendor/chosen-1.1.0/chosen.jquery.min.js")
+				script(src="/static/build/main.js")
+				script(src="/static/build/0.0.0.superglot.min.js")
 
 				block scripts
 

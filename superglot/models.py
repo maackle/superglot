@@ -183,7 +183,10 @@ class WordOccurrence(Model):
     )
 
     def __str__(self):
-        return "WordOccurrence<{}>".format(self.word.lemma)
+        return "WordOccurrence<{} {}>".format(
+            self.word.reading,
+            self.article_position
+        )
 
     def __repr__(self):
         return self.__str__()

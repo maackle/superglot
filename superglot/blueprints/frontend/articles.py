@@ -79,7 +79,6 @@ def article_read_anon(article_id):
         article_vocab=sorted(article_vocab))
 
 
-
 @blueprint.route('/user/texts/<article_id>/delete/', methods=['GET', 'POST'])
 @login_required
 def article_delete(article_id):
@@ -92,6 +91,7 @@ def article_delete(article_id):
     if deleted:
         flash(_('Deleted "%(title)s"', title=article.title))
     return redirect(url_for('.article_list'))
+
 
 @blueprint.route('/user/texts/add/', methods=['GET', 'POST'])
 @login_required

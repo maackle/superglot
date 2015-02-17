@@ -21,12 +21,14 @@ def setup_blueprints(app):
     from superglot.blueprints.search import blueprint as search_blueprint
     from superglot.blueprints.study import blueprint as study_blueprint
     from superglot.blueprints.user import blueprint as user_blueprint
+    from superglot.blueprints.test import blueprint as test_blueprint
 
     app.register_blueprint(api_blueprint, url_prefix='/api')
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(search_blueprint, url_prefix='/search')
     app.register_blueprint(study_blueprint, url_prefix='/study')
     app.register_blueprint(user_blueprint, url_prefix='/user')
+    app.register_blueprint(test_blueprint, url_prefix='/test')
     app.register_blueprint(frontend_blueprint, url_prefix='')
     app.register_blueprint(frontend_articles_blueprint, url_prefix='')
     app.register_blueprint(frontend_vocab_blueprint, url_prefix='')

@@ -78,7 +78,9 @@ gulp.task('jsx', function() {
   };
 
   var bundler = browserify({
-    entries: ['./superglot/components/app.js'],
+    entries: [
+      './superglot/components/app.js',
+    ],
     debug: true
   });
 

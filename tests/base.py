@@ -1,13 +1,5 @@
-from nose.tools import *
-import io
-import os
-from unittest import mock
-import requests
-from flask import url_for
-from flask.ext.sqlalchemy import SQLAlchemy
+import pprint
 
-from superglot import nlp
-from superglot import util
 from superglot import models
 from superglot import core
 
@@ -44,6 +36,10 @@ class SuperglotTestBase(TestCase):
         },
     ]
 
+    def pp(self, *what):
+        for w in what:
+            pprint.pprint(w)
+
     def _create_article(self, user, article_def):
         with open(article_def['file'], 'r') as f:
             plaintext = f.read()
@@ -52,7 +48,7 @@ class SuperglotTestBase(TestCase):
                 title=article_def['title'],
                 plaintext=plaintext[0:]
             )
-        return article, created
+        return article
 
     def make_url(self, uri):
         base = 'http://localhost:31338/'

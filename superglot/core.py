@@ -111,7 +111,11 @@ def get_common_vocab_pairs(user, article):
     the occurrence of each vocab word
     '''
 
-    return _get_common_vocab_pairs_query(user, article).all()
+    return (
+        _get_common_vocab_pairs_query(user, article)
+        .order_by(models.WordOccurrence.article_position)
+        .all()
+    )
 
 
 # @cache.memoize()
@@ -419,6 +423,7 @@ def find_all_articles(user):
     hits = results['hits']['hits']
     articles = [(h['_source'], h['_score']) for h in hits]
     return articles
+
 
 def find_relevant_articles(user):
 
