@@ -1,4 +1,5 @@
-var React = require("react");
+// var React = require("react");
+import * as sg from "assets/scripts/superglot";
 
 var AnnotatedWord = React.createClass({
 	render: function () {
@@ -28,6 +29,23 @@ var AnnotatedWordList = React.createClass({
 		)
 	}
 });
+
+// var Builder = React.createClass({
+// 	render: function () {
+// 		var text = this.props.text;
+// 		var spans = this.props.spans;
+
+// 		return (
+
+// 		)
+// 	}
+// });
+
+window.vocabFromSpans = function (text, vocab) {
+	// for ([start, end] of spans) {
+
+	// }
+};
 
 window.renderVocabList = function(vocab, el) {
 	React.render(

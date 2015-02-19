@@ -141,13 +141,13 @@ def rebuild_db(force=False):
 def translate(task, lang=None):
     potfile = 'translations/messages.pot'
 
-    if task=='extract':
+    if task == 'extract':
         call("pybabel extract -F config/babel.cfg -o {} .".format(potfile), shell=True)
-    if task=='compile':
+    if task == 'compile':
         call("pybabel compile -f -d translations", shell=True)
-    if task=='update':
+    if task == 'update':
         call("pybabel update -i {} -d translations".format(potfile), shell=True)
-    if task=='init':
+    if task == 'init':
         if not lang:
             raise Exception("missing language")
         call("pybabel init -i {} -d translations -l {}".format(potfile, lang), shell=True)
