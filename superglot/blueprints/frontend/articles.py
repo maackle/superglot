@@ -53,11 +53,14 @@ def article_read(article_id):
 
     stats = core.vocab_stats([vo[0] for vo in article_vocab_pairs])
 
+    # import pudb; pu.db
+    # print(article_vocab_pairs)
+
     return render_template(
         'views/frontend/article_read.jade',
         article=article,
         stats=stats,
-        article_vocab_pairs=sorted(article_vocab_pairs))
+        article_vocab_pairs=article_vocab_pairs)
 
 
 @blueprint.route('/texts/<article_id>/read', methods=['GET', 'POST'])

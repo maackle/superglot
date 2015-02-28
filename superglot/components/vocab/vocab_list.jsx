@@ -1,5 +1,4 @@
 // var React = require("react");
-import * as sg from "assets/scripts/superglot";
 
 var AnnotatedWord = React.createClass({
 	render: function () {

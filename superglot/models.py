@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from flask import current_app
 from flask.ext.login import UserMixin
 
-from superglot import util
+from superglot import nlp, util
 from superglot.config import settings
 
 Base = declarative_base()
@@ -168,15 +168,25 @@ class WordOccurrence(Model):
     __tablename__ = 'wordoccurrence'
 
     # id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
-    article_id = sa.Column(sa.Integer, sa.ForeignKey('article.id', ondelete='CASCADE'))
-    word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id', ondelete='CASCADE'))
+    article_id = sa.Column(sa.Integer,
+                           sa.ForeignKey('article.id', ondelete='CASCADE'))
+    word_id = sa.Column(sa.Integer,
+                        sa.ForeignKey('word.id', ondelete='CASCADE'))
     reading = sa.Column(sa.String(256))
-    # a unique identifier for an article sentence
-    article_sentence_start = sa.Column(sa.Integer)
-    article_position = sa.Column(sa.Integer)
+    part_of_speech = sa.Column(sa.String(256), nullable=True)
 
-    word = relationship(Word, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)
-    article = relationship(Article, backref='word_occurrences', cascade="all, delete-orphan", single_parent=True)
+    # a unique identifier for an article sentence
+    article_sentence_start = sa.Column(sa.Integer, nullable=True)
+    article_position = sa.Column(sa.Integer, nullable=True)
+
+    word = relationship(Word,
+                        backref='word_occurrences',
+                        cascade="all, delete-orphan",
+                        single_parent=True)
+    article = relationship(Article,
+                           backref='word_occurrences',
+                           cascade="all, delete-orphan",
+                           single_parent=True)
 
     __table_args__ = (
         sa.PrimaryKeyConstraint(article_id, word_id, article_position),

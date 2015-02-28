@@ -50,6 +50,31 @@ class TestWords(SuperglotTestBase):
             [w.lemma for w in words2],
         )
 
+    def test_generate_words_w_punctuation(self):
+
+        words = core.gen_words_from_tokens(
+            nlp.tokenize('''
+                "He's on his way", said _mushmouth_ the dog. "Oh well!
+                There goes...the day."
+            ''')
+        )
+
+        nt.assert_equal(
+            [w.lemma for w in words if w.id],
+            [
+                'he', "'s", 'on', 'his', 'way', 'say', '_mushmouth_', 'the',
+                'dog.', 'oh', 'well', 'there', 'go', 'the', 'day.'
+            ]
+        )
+
+        nt.assert_equal(
+            [w.lemma for w in words if not w.id],
+            [
+                '"', '"', ',', '"', '!', '...', '"',
+            ]
+        )
+
+
     def test_lengths(self):
         plaintext = """
         How do you do? I've got...twenty-five head of cow here, d'ya wanna

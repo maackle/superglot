@@ -179,22 +179,18 @@ def gen_words_from_readings(readings):
 def gen_words_from_tokens(tokens):
     '''
     Look up words from token objects. If not in database, create a "non-canonical" word
-
-    TODO: actually create the non-canonical word.
     '''
-
+    W = models.Word
     word_hash = {}
     words = []
     for chunk in util.chunked(tokens, 500):
         new_words = []
+        lemmata = [tok.lemma for tok in chunk]
+        known_words = W.query().filter(W.lemma.in_(lemmata)).all()
+        word_hash = {word.lemma: word for word in known_words}
         for token in chunk:
-            word = (
-                word_hash.get(token.lemma) or
-                app.db.session.query(models.Word).filter_by(
-                    lemma=token.lemma,
-                    language_id=english_id
-                ).first()
-            )
+            # try to get a word from the word_hash, fallback to database
+            word = word_hash.get(token.lemma)
             if not word:
                 word = models.Word(
                     lemma=token.lemma,
@@ -202,8 +198,8 @@ def gen_words_from_tokens(tokens):
                     canonical=False
                 )
                 new_words.append(word)
+                word_hash[word.lemma] = word
             words.append(word)
-            word_hash[word.lemma] = word
 
         app.db.session.add_all(new_words)
         app.db.session.commit()
