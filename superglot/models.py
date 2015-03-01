@@ -1,34 +1,33 @@
-import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy.ext.declarative import declarative_base
 
-from flask import current_app
 from flask.ext.login import UserMixin
+from flask.ext.sqlalchemy import SQLAlchemy
 
-from superglot import nlp, util
-from superglot.config import settings
+from superglot import util
 
-Base = declarative_base()
+db = SQLAlchemy()
 
 
 def query(*models):
+    from flask import current_app
     return current_app.db.session.query(*models)
 
 
-class Model(Base):
+class Model(db.Model):
     __abstract__ = True
 
     @classmethod
     def query(cls):
+        from flask import current_app
         return current_app.db.session.query(cls)
 
 
 class Language(Model):
     __tablename__ = 'language'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    code = sa.Column(sa.String(8), info={
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(8), info={
         'choices': [('en', 'English')]
         })
 
@@ -36,10 +35,10 @@ class Language(Model):
 class Word(Model):
     __tablename__ = 'word'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    lemma = sa.Column(sa.String(256), unique=True)
-    language_id = sa.Column(sa.Integer, sa.ForeignKey('language.id'))
-    canonical = sa.Column(sa.Boolean(), default=True)
+    id = db.Column(db.Integer, primary_key=True)
+    lemma = db.Column(db.String(256), unique=True)
+    language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
+    canonical = db.Column(db.Boolean(), default=True)
 
     language = relationship(Language)
 
@@ -56,21 +55,21 @@ class Word(Model):
 class LemmaReading(Model):
     __tablename__ = 'lemma_reading'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    lemma = sa.Column(sa.String(256))
-    reading = sa.Column(sa.String(256))
+    id = db.Column(db.Integer, primary_key=True)
+    lemma = db.Column(db.String(256))
+    reading = db.Column(db.String(256))
 
 
 class User(Model, UserMixin):
     __tablename__ = 'user'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    email = sa.Column(sa.String(256))
-    password = sa.Column(sa.String(256))
-    target_language_id = sa.Column(
-        sa.Integer, sa.ForeignKey('language.id'), nullable=True)
-    native_language_id = sa.Column(
-        sa.Integer, sa.ForeignKey('language.id'), nullable=True)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(256))
+    password = db.Column(db.String(256))
+    target_language_id = db.Column(
+        db.Integer, db.ForeignKey('language.id'), nullable=True)
+    native_language_id = db.Column(
+        db.Integer, db.ForeignKey('language.id'), nullable=True)
 
     target_language = relationship(Language, foreign_keys=[target_language_id])
     native_language = relationship(Language, foreign_keys=[native_language_id])
@@ -87,28 +86,28 @@ class User(Model, UserMixin):
 class VocabWord(Model):
     __tablename__ = 'vocabword'
     __table_args__ = (
-        sa.PrimaryKeyConstraint("user_id", "word_id"),
+        db.PrimaryKeyConstraint("user_id", "word_id"),
     )
 
-    # id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
-    user_id = sa.Column(
-        sa.Integer, sa.ForeignKey(
+    # id = db.Column(db.Integer, primary_key=True)  # TODO: composite key
+    user_id = db.Column(
+        db.Integer, db.ForeignKey(
             'user.id', ondelete='CASCADE'
         ), nullable=False)
-    word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id'), nullable=False)
+    word_id = db.Column(db.Integer, db.ForeignKey('word.id'), nullable=False)
 
-    rating = sa.Column(sa.Integer, default=0)
+    rating = db.Column(db.Integer, default=0)
 
-    srs_rating = sa.Column(sa.Integer, default=0)
-    srs_last_rated = sa.Column(sa.DateTime(), default=util.now, nullable=False)
-    srs_last_repetition = sa.Column(
-        sa.DateTime(), default=util.now, nullable=False)
-    srs_next_repetition = sa.Column(
-        sa.DateTime(), default=util.now, nullable=False)
-    srs_ease_factor = sa.Column(sa.Integer, default=1.4)
-    srs_num_repetitions = sa.Column(sa.Integer, default=0)
+    srs_rating = db.Column(db.Integer, default=0)
+    srs_last_rated = db.Column(db.DateTime(), default=util.now, nullable=False)
+    srs_last_repetition = db.Column(
+        db.DateTime(), default=util.now, nullable=False)
+    srs_next_repetition = db.Column(
+        db.DateTime(), default=util.now, nullable=False)
+    srs_ease_factor = db.Column(db.Integer, default=1.4)
+    srs_num_repetitions = db.Column(db.Integer, default=0)
 
-    srs_data = sa.Column(JSON, default={})
+    srs_data = db.Column(JSON, default={})
 
     # srs_score = IntField(default=0)
     # srs_ease_factor = DecimalField(default=2.5)
@@ -148,14 +147,14 @@ class VocabOccurrence(object):
 class Article(Model):
     __tablename__ = 'article'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    plaintext = sa.Column(sa.Text)
-    sentence_positions = sa.Column(JSON)
-    # total_words = sa.Column(sa.Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    plaintext = db.Column(db.Text)
+    sentence_positions = db.Column(JSON)
+    # total_words = db.Column(db.Integer)
 
-    user_id = sa.Column(sa.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
-    title = sa.Column(sa.String(256))
-    source = sa.Column(sa.String(256), nullable=True)
+    user_id = db.Column(db.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
+    title = db.Column(db.String(256))
+    source = db.Column(db.String(256), nullable=True)
 
     def __str__(self):
         return '<Article "{}" ({}...)>'.format(
@@ -167,17 +166,17 @@ class Article(Model):
 class WordOccurrence(Model):
     __tablename__ = 'wordoccurrence'
 
-    # id = sa.Column(sa.Integer, primary_key=True)  # TODO: composite key
-    article_id = sa.Column(sa.Integer,
-                           sa.ForeignKey('article.id', ondelete='CASCADE'))
-    word_id = sa.Column(sa.Integer,
-                        sa.ForeignKey('word.id', ondelete='CASCADE'))
-    reading = sa.Column(sa.String(256))
-    part_of_speech = sa.Column(sa.String(256), nullable=True)
+    # id = db.Column(db.Integer, primary_key=True)  # TODO: composite key
+    article_id = db.Column(db.Integer,
+                           db.ForeignKey('article.id', ondelete='CASCADE'))
+    word_id = db.Column(db.Integer,
+                        db.ForeignKey('word.id', ondelete='CASCADE'))
+    reading = db.Column(db.String(256))
+    part_of_speech = db.Column(db.String(256), nullable=True)
 
     # a unique identifier for an article sentence
-    article_sentence_start = sa.Column(sa.Integer, nullable=True)
-    article_position = sa.Column(sa.Integer, nullable=True)
+    article_sentence_start = db.Column(db.Integer, nullable=True)
+    article_position = db.Column(db.Integer, nullable=True)
 
     word = relationship(Word,
                         backref='word_occurrences',
@@ -189,7 +188,7 @@ class WordOccurrence(Model):
                            single_parent=True)
 
     __table_args__ = (
-        sa.PrimaryKeyConstraint(article_id, word_id, article_position),
+        db.PrimaryKeyConstraint(article_id, word_id, article_position),
     )
 
     def __str__(self):
@@ -205,11 +204,11 @@ class WordOccurrence(Model):
 class ArticleComputedStats(Model):
     __tablename__ = 'article_stats'
 
-    user_id = sa.Column(sa.ForeignKey('user.id', ondelete='CASCADE'))
-    article_id = sa.Column(sa.ForeignKey('article.id', ondelete='CASCADE'))
+    user_id = db.Column(db.ForeignKey('user.id', ondelete='CASCADE'))
+    article_id = db.Column(db.ForeignKey('article.id', ondelete='CASCADE'))
 
-    stats = sa.Column(JSON)
+    stats = db.Column(JSON)
 
     __table_args__ = (
-        sa.PrimaryKeyConstraint(user_id, article_id),
+        db.PrimaryKeyConstraint(user_id, article_id),
     )

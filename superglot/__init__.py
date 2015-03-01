@@ -4,11 +4,11 @@ from flask.ext.assets import Environment
 from flask.ext.babel import Babel
 from flask.ext.login import current_user
 from flask.ext.login import LoginManager
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 
 from superglot.elasticsearch import get_es_client
 from superglot.cache import cache
+from superglot.models import db
 
 
 def setup_blueprints(app):
@@ -49,7 +49,7 @@ def create_app(**extra_config):
 
     app = Flask(__name__)
     app.config.from_object('superglot.config.settings')
-    db = SQLAlchemy(app)
+    db.init_app(app)
     es = get_es_client()
     app.db = db
     app.es = es

@@ -79,14 +79,12 @@ def reset_schema():
     print('resetting schema for database {0}'.format(dbname))
     db_drop_create()
     print('building schema')
-    models.Base.metadata.create_all(database.engine)
+    models.db.create_all()
     load_schema_fixtures()
 
 
 @manager.command
 def load_fixture_words(filename='data/en-2000.txt'):
-    from collections import defaultdict
-    import textblob
     from superglot import database
 
     english_id = 1
