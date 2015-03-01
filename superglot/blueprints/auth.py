@@ -46,16 +46,24 @@ def register():
     if request.method == 'POST':
         if form.validate_on_submit():
             data = form.data
-            (user, created) = core.register_user(email=data['email'], password=data['password'])
+            (user, created) = core.register_user(
+                email=data['email'],
+                password=data['password']
+            )
             if created:
                 flash(_("You're all signed up! Now you can log in."))
                 return redirect(url_for('auth.login'))
             else:
-                flash(_("An account with this email address already exists."), 'danger')
+                flash(_("An account with this email address already exists."),
+                      'danger')
                 return render_template(template, form=form)
         else:
             app.logger.error(form.errors)
-            flash(_('Uh oh, there was a problem with your registration. Please email %(email)s', email=app.config['EMAIL_SUPPORT']), 'danger')
+            flash(
+                _('Uh oh, there was a problem with your registration. ' +
+                  'Please email %(email)s',
+                  email=app.config['EMAIL_SUPPORT']),
+                'danger')
             return render_template(template, form=form)
     else:
         return render_template(template, form=form)
