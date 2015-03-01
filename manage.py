@@ -42,7 +42,7 @@ def load_schema_fixtures():
 
 
 def load_sample_data():
-    user = models.User(email='michael@lv11.co', password='1234')
+    user, _ = core.register_user(email='michael@lv11.co', password='1234')
     app.db.session.add(user)
     app.db.session.commit()
     article, created = core.create_article(

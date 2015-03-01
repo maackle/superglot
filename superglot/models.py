@@ -1,7 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSON
 
-from flask.ext.login import UserMixin
+from flask.ext.security import UserMixin, RoleMixin, SQLAlchemyUserDatastore
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from superglot import util
@@ -60,12 +60,33 @@ class LemmaReading(Model):
     reading = db.Column(db.String(256))
 
 
-class User(Model, UserMixin):
+# USER & AUTH -----------------------------------------------------------------
+
+
+roles_users = db.Table(
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256))
     password = db.Column(db.String(256))
+
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
+
     target_language_id = db.Column(
         db.Integer, db.ForeignKey('language.id'), nullable=True)
     native_language_id = db.Column(
@@ -81,6 +102,12 @@ class User(Model, UserMixin):
 
     def __str__(self):
         return "<User: {}>".format(str(self.email))
+
+
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+
+
+# ARTICLE & VOCAB -------------------------------------------------------------
 
 
 class VocabWord(Model):

@@ -5,11 +5,11 @@ Complex queries, calculations, etc.
 import datetime
 from collections import defaultdict
 
-from sqlalchemy import distinct
-from flask import current_app as app
 from bs4 import BeautifulSoup
 
-from superglot.cache import cache
+from flask import current_app as app
+from flask.ext import security
+
 from superglot.config import settings
 from superglot import (
     nlp,
@@ -309,8 +309,11 @@ def user_article_stats(user, article):
 
 def authenticate_user(email, password):
     # with database.session() as session:
-    user = app.db.session.query(models.User).filter_by(email=email, password=password).first()
-    return user
+    user = app.db.session.query(models.User).filter_by(email=email).first()
+    if user and security.utils.verify_password(password, user.password):
+        return user
+    else:
+        return None
 
 
 def register_user(email, password):
@@ -319,7 +322,8 @@ def register_user(email, password):
     if user:
         created = False
     else:
-        user = models.User(email=email, password=password)
+        pw_hash = security.utils.encrypt_password(password)
+        user = models.user_datastore.create_user(email=email, password=pw_hash)
         session.add(user)
         session.commit()
         created = True

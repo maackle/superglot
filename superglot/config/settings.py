@@ -31,6 +31,9 @@ TARGET_LANGUAGE_CHOICES = tuple(
 
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 
+SECURITY_PASSWORD_HASH = 'bcrypt'
+SECURITY_PASSWORD_SALT = 'saltycookie'
+
 pwd = "v(4K9HUg9!sAba~"
 
 import importlib

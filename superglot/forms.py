@@ -47,10 +47,11 @@ class LanguageForm(ModelForm):
         model = models.Language
         include = ['code']
 
+
 class LoginForm(ModelForm):
     class Meta:
         model = models.User
-        include = ['email', 'password']
+        only = ['email', 'password']
 
 
 class RegisterForm(ModelForm):

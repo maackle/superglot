@@ -2,13 +2,13 @@
 from flask import Flask, request, redirect, url_for
 from flask.ext.assets import Environment
 from flask.ext.babel import Babel
-from flask.ext.login import current_user
-from flask.ext.login import LoginManager
+from flask.ext.login import current_user, LoginManager
+from flask.ext.security import Security
 from flask_debugtoolbar import DebugToolbarExtension
 
 from superglot.elasticsearch import get_es_client
 from superglot.cache import cache
-from superglot.models import db
+from superglot import models
 
 
 def setup_blueprints(app):
@@ -24,7 +24,7 @@ def setup_blueprints(app):
     from superglot.blueprints.test import blueprint as test_blueprint
 
     app.register_blueprint(api_blueprint, url_prefix='/api')
-    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(auth_blueprint, url_prefix='')
     app.register_blueprint(search_blueprint, url_prefix='/search')
     app.register_blueprint(study_blueprint, url_prefix='/study')
     app.register_blueprint(user_blueprint, url_prefix='/user')
@@ -38,7 +38,6 @@ def setup_blueprints(app):
 
     @login_manager.user_loader
     def load_user(userid):
-        from superglot import models
         user = app.db.session.query(models.User).get(userid)
         return user
 
@@ -49,9 +48,9 @@ def create_app(**extra_config):
 
     app = Flask(__name__)
     app.config.from_object('superglot.config.settings')
-    db.init_app(app)
+    models.db.init_app(app)
     es = get_es_client()
-    app.db = db
+    app.db = models.db
     app.es = es
 
     # try:
@@ -77,7 +76,9 @@ def create_app(**extra_config):
         'CACHE_DEFAULT_TIMEOUT': 60*60*60*24,  # one day
         })
 
-    toolbar = DebugToolbarExtension(app)
+    Security(app, models.user_datastore)
+
+    DebugToolbarExtension(app)
 
     @app.context_processor
     def add_modules():
