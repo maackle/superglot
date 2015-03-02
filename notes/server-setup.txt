@@ -1,0 +1,19 @@
+ubuntu 14.04
+
+sudo apt-get install
+git
+python-pip
+
+sudo pip install
+virtualenvwrapper
+
+
+# setup virtualenv
+echo <<END .profile
+
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+
+END
+
+mkvirtualenv -p `which python3` superglot
