@@ -1,19 +1,49 @@
-ubuntu 14.04
+GIT_URL="git@github.com:maackle/superglot.git"
+SERVER_ROOT="/home/superglot/server"
 
-sudo apt-get install
-git
-python-pip
+# ubuntu 14.04
 
-sudo pip install
+add-apt-repository ppa:webupd8team/java \
+&& apt-get update \
+&& apt-get upgrade \
+apt-get install oracle-java7-installer
+
+# system requirements
+apt-get install \
+elasticsearch \
+git \
+python-pip \
+python3-dev \
+postgresql-9.3 \
+postgresql-server-dev-9.3 \
+libffi-dev \
+unzip \
+
+# python requirements
+pip install \
 virtualenvwrapper
 
 
-# setup virtualenv
-echo <<END .profile
+cd
 
+
+# setup .profile
+echo <<END >> .profile
 export WORKON_HOME=$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
-
 END
 
+
+mkdir ~/tmp
+cd ~/tmp \
+&& curl -L -O https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.4.zip
+&& unzip elasticsearch-1.4.4.zip
+cd elasticsearch-1.4.4
+
+
+echo <<END >> .ssh/authorized_keys
+[ public key]
+
+
+git clone $GIT_URL $SERVER_ROOT
 mkvirtualenv -p `which python3` superglot
