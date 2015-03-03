@@ -12,6 +12,7 @@ apt-get install oracle-java7-installer
 apt-get install \
 elasticsearch \
 git \
+nginx \
 python-pip \
 python3-dev \
 postgresql-9.3 \
