@@ -47,3 +47,11 @@ try:
             ldict[k] = mod.__dict__[k]
 except KeyError:
     from superglot.config.envs.development import *
+
+import logging
+logger = logging.getLogger(__name__)
+
+try:
+    from superglot.config.envs.local import *
+except:
+    logger.warn("no local settings to import")

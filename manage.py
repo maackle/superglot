@@ -18,9 +18,7 @@ from superglot import core
 from superglot import elasticsearch as es
 from superglot.config import settings
 
-
 dbname = settings.DATABASE_NAME
-
 
 def psql(cmd):
     call("psql -c \"{}\"".format(cmd), shell=True)

@@ -5,6 +5,7 @@ bower_components
 .sass-cache
 .hg
 local/
+local.py
 log/
 */static/bower/
 */static/build/
