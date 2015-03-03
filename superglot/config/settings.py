@@ -38,6 +38,8 @@ pwd = "v(4K9HUg9!sAba~"
 
 import importlib
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 try:
     mod = importlib.import_module(os.environ['SUPERGLOT_SETTINGS'])
@@ -46,12 +48,9 @@ try:
         if not k.startswith('__') or not k.endswith('__'):
             ldict[k] = mod.__dict__[k]
 except KeyError:
-    from superglot.config.envs.development import *
-
-import logging
-logger = logging.getLogger(__name__)
+    logger.warn("SUPERGLOT_SETTINGS not defined, not loading env settings")
 
 try:
-    from superglot.config.envs.local import *
+    from superglot.config.local import *
 except:
     logger.warn("no local settings to import")
