@@ -5,12 +5,10 @@ SECRET_KEY = '8ahsd7&&Gg9g7(*U![{S'
 CSRF_ENABLED = True
 WTF_CSRF_ENABLED = True
 
+DEBUG = False
+LOAD_SAMPLE_DATA = False
+
 EMAIL_SUPPORT = 'support@superglot.com'
-
-DEBUG = True
-DEVELOPMENT = False
-
-SERVER_PORT = 31337
 
 SUPPORTED_NATIVE_LANGUAGES = ('en', 'es', 'it', 'ja')
 
@@ -33,8 +31,6 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 SECURITY_PASSWORD_HASH = 'bcrypt'
 SECURITY_PASSWORD_SALT = 'saltycookie'
-
-pwd = "v(4K9HUg9!sAba~"
 
 import importlib
 import os

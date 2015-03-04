@@ -1,6 +1,7 @@
-DEVELOPMENT = True
+DEBUG = True
+LOAD_SAMPLE_DATA = True
 
-SERVER_PORT = 31337
+SERVER_PORT = 6107
 BASE_URL = 'http://localhost:{}/'.format(SERVER_PORT)
 
 DATABASE_NAME = 'superglot_dev'
