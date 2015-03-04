@@ -58,6 +58,7 @@ ul {
 	list-style: none;
 	text-align: justify;
 	margin: 0;
+	padding: 0;
 
 	&.inline-list {
 		li {
@@ -89,6 +90,7 @@ ul {
 	}
 
 	.container > ul {
+		padding-left: 3rem;
 		&.left { float: left; }
 		&.right { float: right; }
 

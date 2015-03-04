@@ -1,4 +1,4 @@
-SRS_RATING_CHOICES = [1,2,3,4]  # the ratings that can be selected by pressing the keypad
+SRS_RATING_CHOICES = [0,1,2,3]  # the ratings that can be selected by pressing the keypad
 
 markWords = (lemmata, rating, after) ->
 	if rating == 'known'
@@ -62,9 +62,12 @@ setupAnnotation = ->
 				deselectWords()
 		$(document).on 'keypress', (e) ->
 			char = String.fromCharCode(e.keyCode)
-			rating = parseInt(char, 10)
-			if rating in SRS_RATING_CHOICES
-				$popup.find(".choice[data-rating=\"#{ rating }\"]").trigger('click')
+			if char == 'i'
+				$popup.find(".choice[data-rating=\"-1\"]").trigger('click')
+			else
+				rating = parseInt(char, 10)
+				if rating in SRS_RATING_CHOICES
+					$popup.find(".choice[data-rating=\"#{ rating }\"]").trigger('click')
 
 
 	hideWordScorePopup = (el) ->
