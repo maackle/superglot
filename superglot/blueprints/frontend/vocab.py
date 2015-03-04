@@ -15,7 +15,7 @@ blueprint = Blueprint('frontend.vocab', __name__, template_folder='templates')
 @blueprint.route('/user/vocab/', methods=['GET', 'POST'])
 @login_required
 def word_list_all():
-    vocab = list(current_user.vocab)
+    vocab = list(current_user.vocab[0:1000])
     return render_template('views/vocab/vocab_list.jade', vocab=vocab)
 
 
