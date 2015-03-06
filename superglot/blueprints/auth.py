@@ -18,8 +18,7 @@ def login():
             data = form.data
             user = core.authenticate_user(**data)
             if user:
-                result = login_user(user, remember=False)
-                flash(_("Logged in successfully.").capitalize())
+                login_user(user, remember=False)
                 return redirect(request.args.get("next") or url_for("home"))
             else:
                 flash(_("Invalid username or password.").capitalize(), 'danger')
@@ -35,7 +34,6 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash(_("You are logged out."))
     return redirect(url_for('home'))
 
 

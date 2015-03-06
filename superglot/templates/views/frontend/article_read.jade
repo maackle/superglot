@@ -2,7 +2,7 @@ extends layouts/base.jade
 
 block main_content
 	a(href=url_for('frontend.articles.article_list')) &larr; Back to list
-	h1= article.title
+	h1.title= article.title
 	if article.source
 		a(href=article.source, target="_blank")
 			= _("original")

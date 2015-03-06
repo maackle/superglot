@@ -1,6 +1,8 @@
 
-$color-primary: #cd9038;
-$color-primary-light: lighten(#cd9038, 30%);
+$color-title: #222;
+$color-text: #444;
+$color-primary: #3478b5;
+$color-primary-light: lighten($color-primary, 15%);
 
 $color-rating-ignored: #f4f4f4;
 $color-rating-1: #f48d5b;

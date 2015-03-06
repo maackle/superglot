@@ -1,7 +1,7 @@
 extends layouts/base.jade
 
 block main_content
-	h1 login
+	h1.title login
 	form(method="post")
 		!= form.csrf_token
 		+form_field(form.email)

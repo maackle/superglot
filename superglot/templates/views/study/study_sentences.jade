@@ -1,7 +1,7 @@
 extends layouts/base.jade
 
 block main_content
-	h1= _('study sentences') | title
+	h1.title= _('study sentences') | title
 
 	for sentence, vocab_pairs in sentences
 		.annotated-sentence.annotated-words.style-a

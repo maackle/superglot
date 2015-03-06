@@ -1,11 +1,11 @@
 nav.navbar: .container
-	a(href="/"): h1.brand superglot
+	a(href="/").title: h1.brand superglot
 	ul.left
 		if current_user.is_authenticated()
 			li: a(href=url_for('frontend.articles.article_list'))= _("texts") | title
 			li: a(href=url_for('frontend.vocab.word_list_all'))= _("vocabulary") | title
 			li: a(href=url_for('study.home'))= _("study") | title
-			li: a(href=url_for('search.home'))= _("search") | title
+			//- li: a(href=url_for('search.home'))= _("search") | title
 	ul.right
 		if current_user.is_authenticated()
 			li.dropdown
@@ -18,4 +18,4 @@ nav.navbar: .container
 					li: a(href=url_for('auth.logout'))= _("log out") | title
 		else
 			li: a(href=url_for('auth.login'))= _("sign in") | title
-			li: a(href=url_for('auth.register'))= _("sign up") | title
+			//- li: a(href=url_for('auth.register'))= _("sign up") | title

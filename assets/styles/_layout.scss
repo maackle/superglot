@@ -4,11 +4,25 @@ body {
 	font-family: 'Myriad Pro', 'Helvetica', 'Arial', sans-serif;
 	font-size: 62.5%;
 	font-size: 2rem;
+	color: $color-text;
 }
 
-h1, h2, h3, h4 {
-	// font-family: ChunkFive;
+.title {
+	color: $color-title;
+	font-family: ChunkFive;
 	// text-transform: uppercase;
+}
+
+a:link, a:visited {
+	color: $color-primary;
+
+	&:hover {
+		color: $color-primary-light;
+	}
+
+	&.btn-primary {
+		color: white;
+	}
 }
 
 h1 {
@@ -73,8 +87,8 @@ ul {
 
 .navbar {
 	height: $navbar-height;
-	border-bottom: 1px solid #555;
-	// box-shadow: 0 1px 5px rgba(black, 0.3);
+	// border-bottom: 1px solid #aaa;
+	box-shadow: 0 0px 12px rgba(black, 0.2);
 	position: relative;
 
 	a {
@@ -89,7 +103,7 @@ ul {
 		font-size: $navbar-height * 0.75;
 	}
 
-	.container > ul {
+	.container ul {
 		padding-left: 3rem;
 		&.left { float: left; }
 		&.right { float: right; }
@@ -101,15 +115,23 @@ ul {
 				line-height: $navbar-height;
 			}
 
-			a:hover {
-				background: #ddd;
-			}
+
 		}
 	}
 
 	a {
 		padding: 5px;
 		margin-right: 10px;
+	}
+
+	.nav-links {
+		display: inline;
+	}
+
+	@media only screen and (min-width : 420px) {
+		.nav-links {
+			display: inline;
+		}
 	}
 }
 

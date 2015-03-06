@@ -1,7 +1,7 @@
 extends 'layouts/base.jade'
 
 block main_content
-	h1= _('study words') | title
+	h1.title= _('study words') | title
 
 	ul.annotated-word-list.annotated-words.style-a
 		for item in due_vocab

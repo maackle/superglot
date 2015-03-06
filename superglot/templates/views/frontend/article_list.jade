@@ -7,7 +7,7 @@ block main_content
 	form.article-search
 		input.big-search-input(placeholder=(_("search")|capitalize + " (TODO)"))
 
-	h1= _("texts") | title
+	h1.title= _("texts") | title
 		a(href=url_for('frontend.articles.article_create')).btn.btn-primary.add-text-button +
 			= _("upload new") | title
 
