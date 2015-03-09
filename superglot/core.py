@@ -3,6 +3,7 @@ Complex queries, calculations, etc.
 '''
 
 import datetime
+import re
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
@@ -19,8 +20,6 @@ from superglot import (
     srs,
 )
 
-import pprint
-
 try:
     with database.session() as session:
         english = session.query(models.Language).filter_by(code='en').first()
@@ -30,17 +29,19 @@ except:
     english = None
     english_id = None
 
+
 def add_word(session, reading, lemma, language=english):
     word = models.Word(lemma=lemma, language_id=english_id, canonical=False)
     session.add(word)
     session.add(models.LemmaReading(lemma=lemma, reading=reading))
     return word
 
-def fetch_remote_article(url):
-    ignored_tags = ['script', 'style', 'code', 'head', 'iframe']
-    req = util.get_page(url)
-    soup = BeautifulSoup(req.text)
 
+def fetch_remote_article(url):
+    ignored_tags = ['script', 'style', 'head', 'code', 'iframe']
+    req = util.get_url(url)
+    soup = BeautifulSoup(req.text)
+    title = soup.title.text
     # remove noisy content-empty tags
     for tag in ignored_tags:
         for t in soup(tag):
@@ -49,14 +50,16 @@ def fetch_remote_article(url):
     strings = (soup.stripped_strings)
     strings = (map(lambda x: re.sub(r"\s+", ' ', x), strings))
     plaintext = "\n".join(strings)
-    return (plaintext, soup.title)
+    return (plaintext, title)
+
 
 def gen_due_vocab(user):
     '''
     Get VocabWords that are due for study for this user
     '''
 
-    return (item for item in user.vocab.all()
+    return (
+        item for item in user.vocab.all()
         if item.rating >= srs.RATING_MIN
         and item.srs_next_repetition
         and item.srs_next_repetition < util.now()
@@ -186,7 +189,7 @@ def gen_words_from_tokens(tokens):
     for chunk in util.chunked(tokens, 500):
         new_words = []
         lemmata = [tok.lemma for tok in chunk]
-        known_words = W.query().filter(W.lemma.in_(lemmata)).all()
+        known_words = W.query.filter(W.lemma.in_(lemmata)).all()
         word_hash = {word.lemma: word for word in known_words}
         for token in chunk:
             # try to get a word from the word_hash, fallback to database
@@ -274,6 +277,24 @@ def create_article(user, title, plaintext, url=None):
     # cache.delete_memoized(get_common_word_pairs, user=user, article=article)
 
     return article, True
+
+
+def _create_article_from_def(user, article_def):
+    with open(article_def['file'], 'r') as f:
+        plaintext = f.read()
+        with util.Timer() as t:
+            article, created = create_article(
+                user=user,
+                title=article_def['title'],
+                plaintext=plaintext[0:]
+            )
+        print("created '{}' (length: {}) in {} ms".format(
+            article.title,
+            len(article.plaintext),
+            t.msecs
+        ))
+    return article
+
 
 
 def vocab_stats(vocab):
@@ -392,7 +413,7 @@ def get_article_sentences(article, words):
 
     O = models.WordOccurrence
     word_ids = list(w.id for w in words)
-    sentence_starts = set(map(lambda r: r[0], (O.query()
+    sentence_starts = set(map(lambda r: r[0], (O.query
         .filter(O.word_id.in_(word_ids))
         .values(O.article_sentence_start)
     )))

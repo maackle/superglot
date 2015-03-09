@@ -47,7 +47,7 @@ def sentences():
     due_words = set(map(lambda item: item.word, due_vocab))
 
     sentences = list()
-    for article in models.Article.query().filter_by(user_id=current_user.id):
+    for article in models.Article.query.filter_by(user_id=current_user.id):
         for sentence in core.get_article_sentences(article, due_words):
             tokens = nlp.tokenize(sentence)
             lemmata = (tok.lemma for tok in tokens)

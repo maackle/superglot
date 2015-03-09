@@ -187,27 +187,14 @@ def create_test_data():
     ]
 
     test_users = []
-    for i in range(1,4):
+    for i in range(1, 4):
         u, created = core.register_user('{}@test.com'.format(i), str(i))
         test_users.append(u)
 
-    def _create_article(user, article_def):
-        with open(article_def['file'], 'r') as f:
-            plaintext = f.read()
-            with util.Timer() as t:
-                article, created = core.create_article(
-                    user=user,
-                    title=article_def['title'],
-                    plaintext=plaintext[0:]
-                )
-            print("created '{}' (length: {}) in {} ms".format(
-                article.title,
-                len(article.plaintext),
-                t.msecs
-            ))
-        return article, created
-
     for i, article_def in enumerate(test_articles):
         user_index = i % len(test_users)
-        article, created = _create_article(test_users[user_index], article_def)
+        article, created = core._create_article_from_def(
+            test_users[user_index],
+            article_def
+        )
     sync_es()

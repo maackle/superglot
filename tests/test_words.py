@@ -110,5 +110,5 @@ class TestWords(SuperglotTestBase):
                 ('watery', 'watery'),
                 ('be', 'are'),
             ]),
-            {(x.lemma, x.reading) for x in models.LemmaReading.query()}
+            {(x.lemma, x.reading) for x in models.LemmaReading.query}
         )

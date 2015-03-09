@@ -1,9 +1,9 @@
 import pprint
 
+from flask import url_for
+
 from superglot import models
 from superglot import core
-
-from datetime import datetime, timedelta
 
 from flask.ext.testing import TestCase
 
@@ -13,7 +13,10 @@ class SuperglotTestBase(TestCase):
     app = None
     client = None
 
-    account_fixtures = [{'email': "%04i@test.com" % i, 'password': "test%04i" % i} for i in range(1, 4)]
+    account_creds = [
+        {'email': "%04i@test.com" % i, 'password': "test%04i" % i}
+        for i in range(1, 4)
+    ]
 
     test_articles = [
         {
@@ -41,18 +44,18 @@ class SuperglotTestBase(TestCase):
             pprint.pprint(w)
 
     def _create_article(self, user, article_def):
-        with open(article_def['file'], 'r') as f:
-            plaintext = f.read()
-            article, created = core.create_article(
-                user=user,
-                title=article_def['title'],
-                plaintext=plaintext[0:]
-            )
-        return article
+        return core._create_article_from_def(user, article_def)
 
     def make_url(self, uri):
         base = 'http://localhost:31338/'
         return base + uri
+
+    def login(self, **creds):
+        return self.client.post(
+            url_for('auth.login'),
+            data=creds,
+            follow_redirects=True
+        )
 
     def post(self, uri, data={}, follow_redirects=True):
         return self.client.post(self.make_url(uri), data=data, follow_redirects=follow_redirects)
@@ -62,7 +65,7 @@ class SuperglotTestBase(TestCase):
         return superglot.create_app()
 
     def get_user(self):
-        return models.User.query().first()
+        return models.User.query.first()
 
     def setUp(self):
         self._add_accounts()
@@ -82,7 +85,7 @@ class SuperglotTestBase(TestCase):
 
     @classmethod
     def _add_accounts(cls):
-        for account in cls.account_fixtures:
+        for account in cls.account_creds:
             user, created = core.register_user(email=account['email'], password=account['password'])
             assert user
             assert created
@@ -94,6 +97,6 @@ class SuperglotTestBase(TestCase):
         cls.client = cls.app.test_client()
         cls.db = cls.app.db
 
-    @classmethod
-    def teardown_class(cls):
-        cls.db.session.close()
+    # @classmethod
+    # def teardown_class(cls):
+    #     cls.db.session.close()

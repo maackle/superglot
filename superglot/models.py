@@ -17,11 +17,6 @@ def query(*models):
 class Model(db.Model):
     __abstract__ = True
 
-    @classmethod
-    def query(cls):
-        from flask import current_app
-        return current_app.db.session.query(cls)
-
 
 class Language(Model):
     __tablename__ = 'language'
@@ -220,7 +215,7 @@ class WordOccurrence(Model):
 
     def __str__(self):
         return "WordOccurrence<{} {}>".format(
-            self.word.reading,
+            self.reading,
             self.article_position
         )
 

@@ -28,7 +28,7 @@ def article_stats(article):
 @blueprint.route('/user/texts/', methods=['GET', 'POST'])
 @login_required
 def article_list():
-    articles = models.Article.query().filter_by(user_id=current_user.id)
+    articles = models.Article.query.filter_by(user_id=current_user.id)
     articles_w_stats = [
         (article, article_stats(article)) for article in articles
     ]
@@ -96,24 +96,9 @@ def article_delete(article_id):
     return redirect(url_for('.article_list'))
 
 
-@blueprint.route('/user/texts/add/', methods=['GET', 'POST'])
+@blueprint.route('/user/texts/add/', methods=['POST'])
 @login_required
 def article_create():
-
-    def read_page(url):
-        ignored_tags = ['script', 'style', 'code', 'head', 'iframe']
-        req = util.get_page(url)
-        soup = BeautifulSoup(req.text)
-
-        # remove noisy content-empty tags
-        for tag in ignored_tags:
-            for t in soup(tag):
-                t.decompose()
-
-        strings = (soup.stripped_strings)
-        strings = (map(lambda x: re.sub(r"\s+", ' ', x), strings))
-        plaintext = "\n".join(strings)
-        return (plaintext, soup.title)
 
     form = AddArticleForm()
     if form.validate_on_submit():
@@ -125,7 +110,7 @@ def article_create():
             plaintext = form.plaintext.data
 
         if url:
-            (page_text, page_title) = read_page(url)
+            (page_text, page_title) = core.fetch_remote_article(url)
             if not plaintext:
                 plaintext = page_text
             if not title:

@@ -42,7 +42,7 @@ def multi_dict_from_seq(s, mapper=None):
 
 
 @cache.memoize()
-def get_page(url):
+def get_url(url):
     req = requests.get(url)
     return req
 
@@ -56,27 +56,6 @@ def string_hash(s):
 
 def sorted_words(words):
     return sorted(words, key=lambda word: word.reading.lower())
-
-
-def get_remote_article(url):
-    """ TODO: fetch_remote_article duplicate? """
-
-    forbidden_tags = ['script', 'code', 'head']
-
-    req = get_page(url)
-    soup = BeautifulSoup(req.text)
-
-    title = soup.title.string if soup.title else url
-
-    for tag in forbidden_tags:
-        for t in soup(tag):
-            t.decompose()
-
-    text = "\n".join(soup.stripped_strings)
-
-    # for tag in soup.find_all(allowed_tags):
-    #   text += ' ' + tag.text
-    return (text, title)
 
 
 def get_site_links(app):

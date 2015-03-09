@@ -92,9 +92,9 @@ def _populate_index(es):
             doc_type=doc_type,
         ))
 
-    add_stuff('user', map(serialize_user, models.User.query().all()))
-    add_stuff('article', map(serialize_model, models.Article.query().all()))
-    # add_stuff('word', map(serialize_model, models.Word.query().all()))
+    add_stuff('user', map(serialize_user, models.User.query.all()))
+    add_stuff('article', map(serialize_model, models.Article.query.all()))
+    # add_stuff('word', map(serialize_model, models.Word.query.all()))
 
 
 def get_es_client():

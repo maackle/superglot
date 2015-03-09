@@ -1,9 +1,18 @@
+import mock
+
+from flask import url_for
 from nose import tools as nt
 
 from superglot import models
 from superglot import core
 
 from .base import SuperglotTestBase
+
+
+def _url_mock(text):
+    m = mock.MagicMock
+    m.text = text
+    return m
 
 
 class TestArticles(SuperglotTestBase):
@@ -21,9 +30,34 @@ class TestArticles(SuperglotTestBase):
                 article_def['num_sentences']
             )
 
+    @mock.patch('superglot.util.get_url')
+    def test_create_article_from_url(self, mocked):
+        mocked.side_effect = _url_mock(
+            '''
+                <head>
+                    <title>mythical creatures</title>
+                    cute panda
+                </head>
+                <body>
+                    stinky baboon
+                </body>
+            '''
+        )
+        self.login(**self.account_creds[0])
+        self.client.post(
+            url_for('frontend.articles.article_create'),
+            data={
+                'url': 'http://example.com',
+                'plaintext': None,
+            }, follow_redirects=True
+        )
+        article = models.Article.query.first()
+        nt.assert_equal(article.title, 'mythical creatures')
+        nt.assert_equal(article.plaintext, 'stinky baboon')
+
     def test_article_occurrences(self):
         user = self.get_user()
-        article = core.create_article(
+        article, created = core.create_article(
             user, "Test 1", "Twelve little toes"
         )
         occurrences = article.word_occurrences
@@ -38,8 +72,8 @@ class TestArticles(SuperglotTestBase):
         user = self.get_user()
         article_def = self.test_articles[0]
         article = self._create_article(user, article_def)
-        words = models.Word.query().all()
-        updated = core.update_user_words(user, words[0:10], 3)
+        words = models.Word.query.all()
+        core.update_user_words(user, words[0:10], 3)
         stats = core.compute_article_stats(user, article)
         nt.assert_equal(stats['counts'][3], 10)
 

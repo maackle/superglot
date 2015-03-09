@@ -30,8 +30,8 @@ class TestAuth(SuperglotTestBase):
 
     def test_login(self):
         r = self.post(url_for('auth.login'), data={
-            'email': self.account_fixtures[0]['email'],
-            'password': self.account_fixtures[0]['password'],
+            'email': self.account_creds[0]['email'],
+            'password': self.account_creds[0]['password'],
         })
         eq_(r.status_code, 200)
 

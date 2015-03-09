@@ -43,6 +43,7 @@ try:
     for k in mod.__dict__:
         if not k.startswith('__') or not k.endswith('__'):
             ldict[k] = mod.__dict__[k]
+    logger.info("loaded settings from %s" % os.environ['SUPERGLOT_SETTINGS'])
 except KeyError:
     logger.warn("SUPERGLOT_SETTINGS not defined, not loading env settings")
 
