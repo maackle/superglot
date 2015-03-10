@@ -86,12 +86,14 @@ class TestArticles(SuperglotTestBase):
         self.pp(article_vocab_pairs)
         assert(False)
 
-    # def test_create_article_twice(self):
 
-    #     user = self.db.session.query(models.User).first()
+class FutureCases(object):
+    def test_create_article_twice(self):
 
-    #     article_def = self.test_articles[0]
-    #     article = self._create_article(user, article_def)
-    #     nt.assert_true(created)
-    #     article = self._create_article(user, article_def)
-    #     nt.assert_false(created)
+        user = self.db.session.query(models.User).first()
+
+        article_def = self.test_articles[0]
+        article, created = self._create_article(user, article_def)
+        nt.assert_true(created)
+        article, created = self._create_article(user, article_def)
+        nt.assert_false(created)

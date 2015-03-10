@@ -3,6 +3,7 @@ extends 'layouts/base.jade'
 block main_content
 	h1.title= _('study words') | title
 
+	include partials/study_flashcard.jade
 	ul.annotated-words.style-a
 		for item in due_vocab
 			+annotated_vocab_word(item)

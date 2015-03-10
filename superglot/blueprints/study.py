@@ -1,7 +1,3 @@
-import re
-import datetime
-from bs4 import BeautifulSoup
-import requests
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app as app
 from flask.ext.login import current_user, login_required
@@ -12,7 +8,6 @@ from superglot import util
 from superglot import srs
 from superglot import nlp
 from superglot import core
-from pprint import pprint
 
 blueprint = Blueprint('study', __name__, template_folder='templates')
 
@@ -20,14 +15,17 @@ blueprint = Blueprint('study', __name__, template_folder='templates')
 @blueprint.route('/')
 @login_required
 def home():
-    return render_template('views/study/home.jade')
+    due_vocab = list(core.gen_due_vocab(current_user))
+    return render_template('views/study/home.jade', **{
+        'due_vocab': due_vocab,
+    })
 
 
 @blueprint.route('/words/')
 @login_required
 def words():
 
-    due_vocab = core.gen_due_vocab(current_user)
+    due_vocab = list(core.gen_due_vocab(current_user))
 
     return render_template('views/study/study_words.jade', **{
         'due_vocab': due_vocab,
@@ -43,7 +41,7 @@ def sentences():
     # all_vocab = set(filter(lambda item: item.rating is not 0, current_user.vocab))
     all_vocab = set(current_user.vocab)
 
-    due_vocab = list(superglot.gen_due_vocab(current_user))
+    due_vocab = list(core.gen_due_vocab(current_user))
     due_words = set(map(lambda item: item.word, due_vocab))
 
     sentences = list()
@@ -67,7 +65,7 @@ def sentences():
                 vocab_pair = vocabmap.get(tok.lemma)
                 if vocab_pair:
                     vocab.append(vocab_pair)
-            sentences.append( (sentence, vocab) )
+            sentences.append((sentence, vocab))
 
     return render_template('views/study/study_sentences.jade', **{
         "due_vocab": due_vocab,
