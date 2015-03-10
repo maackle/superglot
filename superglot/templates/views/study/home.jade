@@ -5,7 +5,7 @@ block main_content
 
 	p #{ due_vocab | length } words need review
 
-	a(href=url_for('study.words')).btn.btn-primary Study now
+	a(href=url_for('study.words')).btn.btn-primary= _('Study now')
 
 	//- p: a(href=url_for('study.sentences')) study sentences
 	//- p: a(href=url_for('study.all')) study everything at once

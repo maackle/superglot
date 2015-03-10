@@ -3,6 +3,23 @@
 .study-panel {
 	text-align: center;
 
+	.flashcard {
+
+		width: 50%;
+		min-height: 30rem;
+		margin: 3rem auto;
+		padding: 3rem;
+		box-shadow: 1px 1px 4px rgba(black, 0.3);
+		border-radius: 5px;
+
+		.flashcard-front { display: block; }
+		.flashcard-back { display: none; }
+		&.flipped {
+			.flashcard-front { display: none; }
+			.flashcard-back { display: block; }
+		}
+	}
+
 	.flashcard-answer-selector {
 
 	}
