@@ -1,5 +1,6 @@
 var browserify = require('browserify');
 var coffee = require('gulp-coffee');
+var coffeeify = require('coffeeify');
 var concat = require('gulp-concat');
 var es6transpiler = require('gulp-es6-transpiler');
 var gulp = require('gulp');
@@ -24,7 +25,11 @@ var paths = {
 var files = {
     'coffee': './assets/scripts/*.coffee',
     'jadeMixins': 'superglot/components/**/*.mixin.jade',
-    'jsx': ['superglot/components/**/*.js', 'superglot/components/**/*.jsx'],
+    'jsx': [
+      'superglot/components/**/*.js',
+      'superglot/components/**/*.jsx',
+      'superglot/components/**/*.react.coffee',
+    ],
     'sass': './assets/styles/*.scss',
     'sassComponents': './superglot/components/**/*.scss',
 };
@@ -87,6 +92,7 @@ gulp.task('jsx', function() {
   var bundle = function() {
     return bundler
       .transform(reactify)
+      .transform(coffeeify)
       .bundle()
       .pipe(source(getBundleName() + '.js'))
       .pipe(buffer())
