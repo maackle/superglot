@@ -5,6 +5,7 @@ var concat = require('gulp-concat');
 var es6transpiler = require('gulp-es6-transpiler');
 var gulp = require('gulp');
 var livereload = require('gulp-livereload');
+var notify = require('gulp-notify');
 var reactify = require('reactify');
 var path = require('path');
 var sass = require('gulp-sass');
@@ -34,6 +35,11 @@ var files = {
     'sassComponents': './superglot/components/**/*.scss',
 };
 
+var swallow = notify.onError(function(err) {
+  console.error('\nERROR:\n\n', err);
+  return err;
+});
+
 gulp.task('jade-mixins', function() {
     gulp.src([files.jadeMixins])
         .pipe(concat('mixins-collected.jade'))
@@ -50,6 +56,7 @@ gulp.task('sass-collect', function () {
 gulp.task('sass', ['sass-collect'], function () {
     gulp.src(files.sass)
         .pipe(sass())
+        .on('error', swallow)
         .pipe(gulp.dest(paths.dest))
         .pipe(livereload({port: lrPort}));
 });
@@ -94,6 +101,7 @@ gulp.task('jsx', function() {
       .transform(reactify)
       .transform(coffeeify)
       .bundle()
+      .on('error', swallow)
       .pipe(source(getBundleName() + '.js'))
       .pipe(buffer())
       .pipe(sourcemaps.init({loadMaps: true}))
