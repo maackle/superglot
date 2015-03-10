@@ -21,7 +21,7 @@ addMeaningTooltip = (el, meaning) ->
 
 setupAnnotation = ->
 	$popup = $('#word-rating-popup')
-	$popupChoices = $popup.find('.ratings .choice')
+	$popupChoices = $popup.find('.ratings .review-choice')
 
 	selectWord = (el) ->
 		$word = $(el)
@@ -63,11 +63,11 @@ setupAnnotation = ->
 		$(document).on 'keypress', (e) ->
 			char = String.fromCharCode(e.keyCode)
 			if char == 'i'
-				$popup.find(".choice[data-rating=\"-1\"]").trigger('click')
+				$popup.find(".review-choice[data-rating=\"-1\"]").trigger('click')
 			else
 				rating = parseInt(char, 10)
 				if rating in SRS_RATING_CHOICES
-					$popup.find(".choice[data-rating=\"#{ rating }\"]").trigger('click')
+					$popup.find(".review-choice[data-rating=\"#{ rating }\"]").trigger('click')
 
 
 	hideWordScorePopup = (el) ->
