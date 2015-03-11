@@ -93,6 +93,7 @@ ul {
 
 	a {
 		text-decoration: none;
+		padding: 10px;
 	}
 
 	.brand {
@@ -103,7 +104,7 @@ ul {
 		font-size: $navbar-height * 0.75;
 	}
 
-	.container ul {
+	.container > ul {
 		padding-left: 3rem;
 		&.left { float: left; }
 		&.right { float: right; }
@@ -117,11 +118,6 @@ ul {
 
 
 		}
-	}
-
-	a {
-		padding: 5px;
-		margin-right: 10px;
 	}
 
 	.nav-links {

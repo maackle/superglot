@@ -8,15 +8,23 @@ block main_content
 	#study-panel
 
 	script.
-		var due_vocab = [{
-			word: {
-				lemma: 'ricecakes'
-			}
-		}];
+		var due_vocab = [
+			{
+				word: {
+					lemma: 'ricecakes'
+				}
+			},
+			{
+				word: {
+					lemma: 'hotcakes'
+				}
+			},
+			{
+				word: {
+					lemma: 'flapjacks'
+				}
+			},
+		];
 		document.onready = function() {
-			renderFlashcardStudyPane(due_vocab, document.getElementById('study-panel'));
+			Superglot.renderFlashcardStudySession(due_vocab, document.getElementById('study-panel'));
 		};
-
-	ul.annotated-words.style-a
-		for item in due_vocab
-			+annotated_vocab_word(item)

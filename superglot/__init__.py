@@ -5,6 +5,7 @@ from flask.ext.babel import Babel
 from flask.ext.login import current_user, LoginManager
 from flask.ext.security import Security
 from flask_debugtoolbar import DebugToolbarExtension
+from flask_jsglue import JSGlue
 
 from superglot.elasticsearch import get_es_client
 from superglot.cache import cache
@@ -75,6 +76,8 @@ def create_app(**extra_config):
         'CACHE_THRESHOLD': 1000000,
         'CACHE_DEFAULT_TIMEOUT': 60*60*60*24,  # one day
         })
+
+    JSGlue(app)  # adds url_for to frontend
 
     Security(app, models.user_datastore)
 

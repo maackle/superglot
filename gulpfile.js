@@ -98,7 +98,7 @@ gulp.task('jsx', function() {
 
   var bundle = function() {
     return bundler
-      .transform(reactify)
+      // .transform(reactify)
       .transform(coffeeify)
       .bundle()
       .on('error', swallow)
