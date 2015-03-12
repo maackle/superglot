@@ -1,8 +1,10 @@
+html {
+	font-size: 62.5%;
+}
 
 body {
 	background: white;
-	font-family: 'Myriad Pro', 'Helvetica', 'Arial', sans-serif;
-	font-size: 62.5%;
+	font-family: 'Source Sans Pro', 'Myriad Pro', 'Helvetica', 'Arial', sans-serif;
 	font-size: 2rem;
 	color: $color-text;
 }
@@ -95,6 +97,7 @@ ul {
 	// border-bottom: 1px solid #aaa;
 	box-shadow: 0 0px 12px rgba(black, 0.2);
 	position: relative;
+	margin: 0;
 
 	a {
 		text-decoration: none;
@@ -137,7 +140,7 @@ ul {
 }
 
 #page-wrapper {
-
+	padding-top: 1rem;
 }
 
 .form-submit {
@@ -346,6 +349,17 @@ ul {
 
 	.ratings {
 		display: inline-block;
+	}
+
+	.review-choice {
+		font-size: 4rem;
+		margin-left: 1rem;
+		&.number {
+
+		}
+		&.other {
+			margin-right: 2rem;
+		}
 	}
 }
 

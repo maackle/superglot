@@ -1,12 +1,13 @@
 extends layouts/default.jade
 
+body_class = 'study-flashcards'
+
 block main_content
-	.container
-		h1.title= _('study words') | title
+	.study-words-container
 
-	#study-panel
+		#study-panel
 
-	script.
-		$(function() {
-			Superglot.renderFlashcardStudySession(document.getElementById('study-panel'));
-		});
+		script.
+			$(function() {
+				Superglot.renderFlashcardStudySession(document.getElementById('study-panel'));
+			});

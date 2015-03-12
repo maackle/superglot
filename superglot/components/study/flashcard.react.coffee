@@ -11,8 +11,11 @@ FlashcardStudySession = React.createClass
     getRatingCounts: ->
         _.countBy @props.vocab, (v) => v.rating
 
+    getCurrentVocabWord: ->
+        @props.vocab[@state.currentCard]
+
     answerCard: (answer) ->
-        vword = @props.vocab[@state.currentCard]
+        vword = @getCurrentVocabWord()
         if answer > 0  # a rating
             $.post Flask.url_for('api.update_word'),
                 lemmata: vword.word.lemma
@@ -48,26 +51,34 @@ FlashcardStudySession = React.createClass
 
         return \
         div className: 'study-panel',
-            StudyStatusTabs {ratingCounts: @getRatingCounts()}
+            StudyStatusTabs
+                ratingCounts: @getRatingCounts()
+                vword: @getCurrentVocabWord()
             div className: 'flashcard-stack',
                 cards
+
+
 
 StudyStatusTabs = React.createClass
 
     render: ->
-        {ul, li, span} = React.DOM
+        {ul, li, div} = React.DOM
+        numbers =
+            1: 'one'
+            2: 'two'
+            3: 'three'
+        countTabs = [1, 2, 3].map (n) =>
+            iconColor = if @props.vword.rating == n then "background-rating-#{n}" else ''
+            countColor = ''  # "color-rating-#{n}"
+            li {className: 'flashcard-status-tab'},
+                div {className: "count #{countColor}"}, @props.ratingCounts[n] or 0
+                div {className: "icon icon-die-#{numbers[n]} #{iconColor}"}
 
         return \
         ul {className: 'flashcard-status'},
-            li {className: 'flashcard-status-tab'},
-                span {className: 'background-rating-1 icon icon-die-one'}
-                span {className: 'count'}, @props.ratingCounts[1]
-            li {className: 'flashcard-status-tab'},
-                span {className: 'background-rating-2 icon icon-die-two'}
-                span {className: 'count'}, @props.ratingCounts[2]
-            li {className: 'flashcard-status-tab'},
-                span {className: 'background-rating-3 icon icon-die-three'}
-                span {className: 'count'}, @props.ratingCounts[3]
+            countTabs
+
+
 
 Flashcard = React.createClass
     getInitialState: ->
@@ -110,7 +121,7 @@ AnswerSelector = React.createClass
             ul className:"flashcard-answer-set flashcard-answer-other",
                 li {className:"review-choice other", onClick:() => @props.selectAction(0)}, '×'
                 li {className:"review-choice other", onClick:() => @props.selectAction(-1)}, '⃠'
-                li {className:"review-choice other", onClick:() => @props.selectAction('bury')}, 'bury'
+                # li {className:"review-choice other", onClick:() => @props.selectAction('bury')}, 'bury'
 
 window.Superglot.renderFlashcardStudySession = (el) ->
     $.get Flask.url_for('api.due_vocab'),
