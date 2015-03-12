@@ -56,14 +56,17 @@ def fetch_remote_article(url):
 def gen_due_vocab(user):
     '''
     Get VocabWords that are due for study for this user
+
+    TODO: use actual query for filtering
     '''
 
-    return (
+    vwords = (
         item for item in user.vocab.all()
         if item.rating >= srs.RATING_MIN
         and item.srs_next_repetition
         and item.srs_next_repetition < util.now()
     )
+    return sorted(vwords, key=lambda v: v.srs_next_repetition)
 
 
 def _get_common_vocab_query(user, article):

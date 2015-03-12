@@ -3,28 +3,9 @@ extends 'layouts/base.jade'
 block main_content
 	h1.title= _('study words') | title
 
-	include partials/study_flashcard.jade
-
 	#study-panel
 
 	script.
-		var due_vocab = [
-			{
-				word: {
-					lemma: 'ricecakes'
-				}
-			},
-			{
-				word: {
-					lemma: 'hotcakes'
-				}
-			},
-			{
-				word: {
-					lemma: 'flapjacks'
-				}
-			},
-		];
-		document.onready = function() {
-			Superglot.renderFlashcardStudySession(due_vocab, document.getElementById('study-panel'));
-		};
+		$(function() {
+			Superglot.renderFlashcardStudySession(document.getElementById('study-panel'));
+		});

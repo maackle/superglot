@@ -37,6 +37,12 @@ class Word(Model):
 
     language = relationship(Language)
 
+    def to_json(self):
+        return {
+            'id': self.id,
+            'lemma': self.lemma,
+        }
+
     def __repr__(self):
         return "<Word:{} {}>".format(self.id, self.lemma)
 
@@ -137,6 +143,15 @@ class VocabWord(Model):
 
     word = relationship(Word, cascade="all, delete", single_parent=True)
     user = relationship(User, cascade="all, delete", single_parent=True)
+
+    def to_json(self):
+        word = self.word
+        return {
+            'word': word.to_json(),
+            'rating': self.rating,
+            'srs_last_repetition': self.srs_last_repetition.isoformat(),
+            'srs_next_repetition': self.srs_next_repetition.isoformat(),
+        }
 
     def __str__(self):
         return "VocabWord<{}>".format(self.word.lemma)
