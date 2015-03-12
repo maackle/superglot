@@ -3,11 +3,16 @@ from subprocess import call
 from collections import defaultdict
 import textblob
 
+from flask_failsafe import failsafe
 from flask.ext.script import Manager, Command
 
-from superglot import create_app
 
-app = create_app()
+@failsafe
+def get_app():
+    from superglot import create_app
+    return create_app()
+
+app = get_app()
 manager = Manager(app)
 
 from superglot import nlp
