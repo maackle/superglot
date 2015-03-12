@@ -12,6 +12,7 @@ html
 		link(rel="stylesheet", href="/static/fonts/fonts.css")
 		link(rel="stylesheet", href="/static/fontastic/styles.css")
 		link(rel="stylesheet", href="/static/bower/jquery-ui/themes/smoothness/jquery-ui.css")
+		block styles
 
 		script(src="/static/bower/react/react.min.js")
 		script(src="/static/bower/jquery/dist/jquery.min.js")
@@ -22,31 +23,9 @@ html
 		!= JSGlue.include()
 
 	body
-		block navbar
-			include partials/navbar.jade
+		block html_body
 
-		#page-wrapper
-			block messages
-				- var messages = (flashes or []) + get_flashed_messages(with_categories=true)
-				.container
-					.messages
-						for category, message in messages
-							div(class="alert alert-dismissable alert-#{category}")
-								button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
-								= message
-
-			block main_content
-
-			block footer
-				footer#footer
-
-			#html-templates
-				include partials/word_rating_popup.jade
-
-			//- link(rel="stylesheet", href="/static/vendor/chosen-1.1.0/chosen.min.css")
-			//- script(src="/static/vendor/chosen-1.1.0/chosen.jquery.min.js")
-			script(src="/static/build/main.js")
-			script(src="/static/build/0.0.0.superglot.min.js")
-
-			block scripts
+		script(src="/static/build/main.js")
+		script(src="/static/build/0.0.0.superglot.min.js")
+		block scripts
 

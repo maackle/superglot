@@ -1,29 +1,30 @@
-extends layouts/base.jade
+extends layouts/default.jade
 
 block main_content
-	a(href=url_for('frontend.articles.article_list')) &larr; Back to list
-	h1.title= article.title
-	if article.source
-		a(href=article.source, target="_blank")
-			= _("original")
-			|  &rarr;
-	p
-		i #{stats.total} total words
+	.container
+		a(href=url_for('frontend.articles.article_list')) &larr; Back to list
+		h1.title= article.title
+		if article.source
+			a(href=article.source, target="_blank")
+				= _("original")
+				|  &rarr;
+		p
+			i #{stats.total} total words
 
-	ul.inline-list.annotated-words.style-a
-		for vword, occurrence in article_vocab_pairs
-			+annotated_vocab_word(vword, occurrence.reading)
+		ul.inline-list.annotated-words.style-a
+			for vword, occurrence in article_vocab_pairs
+				+annotated_vocab_word(vword, occurrence.reading)
 
-	div(style="display: none")
-		.accordion
-			h3.header raw text
-			pre= article.plaintext
+		div(style="display: none")
+			.accordion
+				h3.header raw text
+				pre= article.plaintext
 
-		.accordion
-			h3.header Sample Sentences
-			div
-				for o in article.occurrences
-					h4= o.word.reading
-					ul
-						for s in o.sentences
-							li= article.sentence(s)
+			.accordion
+				h3.header Sample Sentences
+				div
+					for o in article.occurrences
+						h4= o.word.reading
+						ul
+							for s in o.sentences
+								li= article.sentence(s)

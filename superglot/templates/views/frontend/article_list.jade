@@ -1,26 +1,26 @@
-extends layouts/base.jade
+extends layouts/default.jade
 
 - from 'mixins-collected.jade' import article_list_w_stats
 
 block main_content
+	.container
+		form.article-search
+			input.big-search-input(placeholder=(_("search")|capitalize + " (TODO)"))
 
-	form.article-search
-		input.big-search-input(placeholder=(_("search")|capitalize + " (TODO)"))
+		h1.title= _("texts") | title
+			a(href=url_for('frontend.articles.article_create')).btn.btn-primary.add-text-button +
+				= _("upload new") | title
 
-	h1.title= _("texts") | title
-		a(href=url_for('frontend.articles.article_create')).btn.btn-primary.add-text-button +
-			= _("upload new") | title
+		ul.nav.nav-pills
+			li.active: a All
+			li: a My Texts
+			li: a Saved Texts
 
-	ul.nav.nav-pills
-		li.active: a All
-		li: a My Texts
-		li: a Saved Texts
-
-	if articles_w_stats|length > 0
-		+article_list_w_stats(articles_w_stats)
-	else
-		.callout-notice
-			h3= _("you have nothing to read!") | capitalize
-			p
-				a(href="#{ url_for('frontend.articles.article_create') }")= _("go add some texts") | capitalize
-				= _(", and they will show up here.")
+		if articles_w_stats|length > 0
+			+article_list_w_stats(articles_w_stats)
+		else
+			.callout-notice
+				h3= _("you have nothing to read!") | capitalize
+				p
+					a(href="#{ url_for('frontend.articles.article_create') }")= _("go add some texts") | capitalize
+					= _(", and they will show up here.")

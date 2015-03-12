@@ -1,19 +1,20 @@
 extends 'layouts/base.jade'
 
 block main_content
-	h1.title= _('search') | title
+	.container
+		h1.title= _('search') | title
 
-	ul.nav.nav-pills
-		li: a(href=url_for('search.home')) All
-		li: a(href=url_for('search.relevant')) Relevant
+		ul.nav.nav-pills
+			li: a(href=url_for('search.home')) All
+			li: a(href=url_for('search.relevant')) Relevant
 
-	table.table
-		thead
-			tr
-				th title
-				th score
-		tbody
-			for article, score in articles
+		table.table
+			thead
 				tr
-					td: a(href=url_for('frontend.articles.article_read_anon', article_id=article.id))= article.title
-					td= score
+					th title
+					th score
+			tbody
+				for article, score in articles
+					tr
+						td: a(href=url_for('frontend.articles.article_read_anon', article_id=article.id))= article.title
+						td= score

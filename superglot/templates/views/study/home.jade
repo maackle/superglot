@@ -1,11 +1,12 @@
-extends 'layouts/base.jade'
+extends layouts/default.jade
 
 block main_content
-	h1.title= _('study') | title
+	.container
+		h1.title= _('study') | title
 
-	p #{ due_vocab | length } words need review
+		p #{ due_vocab | length } words need review
 
-	a(href=url_for('study.words')).btn.btn-primary= _('Study now')
+		a(href=url_for('study.words')).btn.btn-primary= _('Study now')
 
-	//- p: a(href=url_for('study.sentences')) study sentences
-	//- p: a(href=url_for('study.all')) study everything at once
+		//- p: a(href=url_for('study.sentences')) study sentences
+		//- p: a(href=url_for('study.all')) study everything at once

@@ -1,9 +1,10 @@
-extends layouts/base.jade
+extends layouts/default.jade
 
 block main_content
-	h1.title= _('study sentences') | title
+	.container
+		h1.title= _('study sentences') | title
 
-	for sentence, vocab_pairs in sentences
-		.annotated-sentence.annotated-words.style-a
-			for vocab_word, occurrence in vocab_pairs
-				+annotated_vocab_word(vocab_word, reading=occurrence.reading)
+		for sentence, vocab_pairs in sentences
+			.annotated-sentence.annotated-words.style-a
+				for vocab_word, occurrence in vocab_pairs
+					+annotated_vocab_word(vocab_word, reading=occurrence.reading)
