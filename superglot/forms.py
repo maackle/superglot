@@ -44,8 +44,9 @@ class SearchArticleForm(Form):
 
 class LanguageForm(ModelForm):
     class Meta:
+        csrf = False
         model = models.Language
-        include = ['code']
+        only = ['code']
 
 
 class LoginForm(ModelForm):

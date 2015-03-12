@@ -1,10 +1,12 @@
 extends layouts/default.jade
 
 block main_content
-	h1.title Sign Up
-	form(method="post")
-		!= form.csrf_token
-		+form_field(form.email)
-		+form_field(form.password, type="password")
-		+form_field(form.target_language)
-		input(type="submit")
+	.container
+		h1.title Sign Up
+		form(method="post")
+			!= form.csrf_token
+			!= form.target_language.csrf_token
+			+form_field(form.email)
+			+form_field(form.password, type="password")
+			+form_field(form.target_language.code, label="Target Language")
+			input(type="submit")
