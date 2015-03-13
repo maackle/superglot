@@ -1,0 +1,173 @@
+# Arabic translations for PROJECT.
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-03-12 18:01-0700\n"
+"PO-Revision-Date: 2015-03-12 18:18-0800\n"
+"Last-Translator: Michael Dougherty <michael@lv11.co>\n"
+"Language-Team: ar <LL@li.org>\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n>=3 && "
+"n<=10 ? 3 : n>=11 && n<=99 ? 4 : 5);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.0-dev\n"
+"Language: ar\n"
+"X-Generator: Poedit 1.6.7\n"
+
+#: superglot/forms.py:44 superglot/forms.py:53
+#: superglot/templates/mixins-collected.jade:0
+#: superglot/templates/mixins/article_list.jade:0
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "title"
+msgstr ""
+
+#: superglot/forms.py:45
+msgid "URL"
+msgstr ""
+
+#: superglot/forms.py:49
+msgid "text"
+msgstr ""
+
+#: superglot/blueprints/auth.py:24
+msgid "Invalid username or password."
+msgstr ""
+
+#: superglot/blueprints/auth.py:27
+#, python-format
+msgid "There was a problem logging in. Please contact support at %(email)s."
+msgstr ""
+
+#: superglot/blueprints/auth.py:52
+msgid "You're all signed up! Now you can log in."
+msgstr ""
+
+#: superglot/blueprints/auth.py:55
+msgid "An account with this email address already exists."
+msgstr ""
+
+#: superglot/blueprints/auth.py:61
+#, python-format
+msgid ""
+"Uh oh, there was a problem with your registration. Please email %(email)s"
+msgstr ""
+
+#: superglot/blueprints/user.py:35
+msgid "settings updated"
+msgstr ""
+
+#: superglot/blueprints/frontend/articles.py:95
+#, python-format
+msgid "Deleted \"%(title)s\""
+msgstr ""
+
+#: superglot/blueprints/frontend/vocab.py:26
+msgid "Deleted all words!"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "comprehension"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "total"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+#: superglot/templates/mixins/article_list.jade:0
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+#: superglot/templates/views/frontend/article_read.jade:0
+msgid "original"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+msgid "word"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+msgid "frequency"
+msgstr ""
+
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "known"
+msgstr ""
+
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "learning"
+msgstr ""
+
+#: superglot/templates/partials/navbar.jade:0
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid "texts"
+msgstr "مقالات"
+
+#: superglot/templates/partials/navbar.jade:0
+#: superglot/templates/views/vocab/vocab_list.jade:0
+msgid "vocabulary"
+msgstr "مفردات اللغة"
+
+#: superglot/templates/partials/navbar.jade:0
+#: superglot/templates/views/study/home.jade:0
+msgid "study"
+msgstr "دراسة"
+
+#: superglot/templates/partials/navbar.jade:0
+msgid "settings"
+msgstr "الإعدادات"
+
+#: superglot/templates/partials/navbar.jade:0
+msgid "log out"
+msgstr "تسجيل الخروج"
+
+#: superglot/templates/partials/navbar.jade:0
+msgid "sign in"
+msgstr "تسجيل الدخول"
+
+#: superglot/templates/views/frontend/article_create.jade:0
+msgid "Add a Text"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+#: superglot/templates/views/search/home.jade:0
+msgid "search"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid "upload new"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid "you have nothing to read!"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid "go add some texts"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid ", and they will show up here."
+msgstr ""
+
+#: superglot/templates/views/study/home.jade:0
+msgid "Study now"
+msgstr ""
+
+#: superglot/templates/views/study/study_all.jade:0
+msgid "study words"
+msgstr ""
+
+#: superglot/templates/views/study/study_sentences.jade:0
+msgid "study sentences"
+msgstr ""
+
+#: superglot/templates/views/vocab/vocab_list.jade:0
+msgid "add words?"
+msgstr ""

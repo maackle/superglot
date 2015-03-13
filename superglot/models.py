@@ -6,7 +6,10 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 from superglot import util
 
+
 db = SQLAlchemy()
+id_field = lambda: db.Column(db.Integer, primary_key=True)
+language_field = lambda: db.Column(db.String(8))
 
 
 def query(*models):
@@ -18,24 +21,24 @@ class Model(db.Model):
     __abstract__ = True
 
 
-class Language(Model):
-    __tablename__ = 'language'
+# class Language(Model):
+#     __tablename__ = 'language'
 
-    id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(8), info={
-        'choices': [('en', 'English')]
-        })
+#     id = id_field()
+#     code = db.Column(db.String(8))
+
+#     @staticmethod
+#     def by_code(code):
+#         return Language.query.filter(Language.code == code).first()
 
 
 class Word(Model):
     __tablename__ = 'word'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = id_field()
     lemma = db.Column(db.String(256), unique=True)
-    language_id = db.Column(db.Integer, db.ForeignKey('language.id'))
+    language = language_field()
     canonical = db.Column(db.Boolean(), default=True)
-
-    language = relationship(Language)
 
     def to_json(self):
         return {
@@ -53,10 +56,20 @@ class Word(Model):
         return util.string_hash(self.lemma)
 
 
+class WordTranslation(Model):
+    __tablename__ = 'wordmeaning'
+
+    id = id_field()
+    word_id = db.Column(db.Integer, db.ForeignKey('word.id'), nullable=False)
+    source = db.Column(db.Integer, nullable=True)
+    meaning = db.Column(db.String(1024))
+    language = language_field()
+
+
 class LemmaReading(Model):
     __tablename__ = 'lemma_reading'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = id_field()
     lemma = db.Column(db.String(256))
     reading = db.Column(db.String(256))
 
@@ -71,7 +84,7 @@ roles_users = db.Table(
 
 
 class Role(db.Model, RoleMixin):
-    id = db.Column(db.Integer(), primary_key=True)
+    id = id_field()
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
@@ -79,7 +92,7 @@ class Role(db.Model, RoleMixin):
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = id_field()
     email = db.Column(db.String(256))
     password = db.Column(db.String(256))
 
@@ -88,13 +101,8 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
-    target_language_id = db.Column(
-        db.Integer, db.ForeignKey('language.id'), nullable=True)
-    native_language_id = db.Column(
-        db.Integer, db.ForeignKey('language.id'), nullable=True)
-
-    target_language = relationship(Language, foreign_keys=[target_language_id])
-    native_language = relationship(Language, foreign_keys=[native_language_id])
+    target_language = language_field()
+    native_language = language_field()
 
     vocab = relationship('VocabWord', lazy='dynamic')
 
@@ -117,7 +125,7 @@ class VocabWord(Model):
         db.PrimaryKeyConstraint("user_id", "word_id"),
     )
 
-    # id = db.Column(db.Integer, primary_key=True)  # TODO: composite key
+    # id = id_field()  # TODO: composite key
     user_id = db.Column(
         db.Integer, db.ForeignKey(
             'user.id', ondelete='CASCADE'
@@ -184,7 +192,7 @@ class VocabOccurrence(object):
 class Article(Model):
     __tablename__ = 'article'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = id_field()
     plaintext = db.Column(db.Text)
     sentence_positions = db.Column(JSON)
     # total_words = db.Column(db.Integer)
@@ -203,7 +211,7 @@ class Article(Model):
 class WordOccurrence(Model):
     __tablename__ = 'wordoccurrence'
 
-    # id = db.Column(db.Integer, primary_key=True)  # TODO: composite key
+    # id = id_field()  # TODO: composite key
     article_id = db.Column(db.Integer,
                            db.ForeignKey('article.id', ondelete='CASCADE'))
     word_id = db.Column(db.Integer,

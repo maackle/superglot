@@ -1,0 +1,276 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-03-12 18:01-0700\n"
+"PO-Revision-Date: 2014-07-26 11:32-0700\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.0-dev\n"
+
+#: superglot/forms.py:44 superglot/forms.py:53
+#: superglot/templates/mixins-collected.jade:0
+#: superglot/templates/mixins/article_list.jade:0
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "title"
+msgstr ""
+
+#: superglot/forms.py:45
+msgid "URL"
+msgstr ""
+
+#: superglot/forms.py:49
+msgid "text"
+msgstr ""
+
+#: superglot/blueprints/auth.py:24
+msgid "Invalid username or password."
+msgstr ""
+
+#: superglot/blueprints/auth.py:27
+#, python-format
+msgid "There was a problem logging in. Please contact support at %(email)s."
+msgstr ""
+
+#: superglot/blueprints/auth.py:52
+msgid "You're all signed up! Now you can log in."
+msgstr ""
+
+#: superglot/blueprints/auth.py:55
+msgid "An account with this email address already exists."
+msgstr ""
+
+#: superglot/blueprints/auth.py:61
+#, python-format
+msgid "Uh oh, there was a problem with your registration. Please email %(email)s"
+msgstr ""
+
+#: superglot/blueprints/user.py:35
+msgid "settings updated"
+msgstr ""
+
+#: superglot/blueprints/frontend/articles.py:95
+#, python-format
+msgid "Deleted \"%(title)s\""
+msgstr ""
+
+#: superglot/blueprints/frontend/vocab.py:26
+msgid "Deleted all words!"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "comprehension"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "total"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+#: superglot/templates/mixins/article_list.jade:0
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+#: superglot/templates/views/frontend/article_read.jade:0
+msgid "original"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+msgid "word"
+msgstr ""
+
+#: superglot/templates/mixins-collected.jade:0
+msgid "frequency"
+msgstr ""
+
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "known"
+msgstr ""
+
+#: superglot/templates/mixins/article_list_w_stats.jade:0
+msgid "learning"
+msgstr ""
+
+#: superglot/templates/partials/navbar.jade:0
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid "texts"
+msgstr ""
+
+#: superglot/templates/partials/navbar.jade:0
+#: superglot/templates/views/vocab/vocab_list.jade:0
+msgid "vocabulary"
+msgstr ""
+
+#: superglot/templates/partials/navbar.jade:0
+#: superglot/templates/views/study/home.jade:0
+msgid "study"
+msgstr ""
+
+#: superglot/templates/partials/navbar.jade:0
+msgid "settings"
+msgstr ""
+
+#: superglot/templates/partials/navbar.jade:0
+msgid "log out"
+msgstr ""
+
+#: superglot/templates/partials/navbar.jade:0
+msgid "sign in"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_create.jade:0
+msgid "Add a Text"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+#: superglot/templates/views/search/home.jade:0
+msgid "search"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid "upload new"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid "you have nothing to read!"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid "go add some texts"
+msgstr ""
+
+#: superglot/templates/views/frontend/article_list.jade:0
+msgid ", and they will show up here."
+msgstr ""
+
+#: superglot/templates/views/study/home.jade:0
+msgid "Study now"
+msgstr ""
+
+#: superglot/templates/views/study/study_all.jade:0
+msgid "study words"
+msgstr ""
+
+#: superglot/templates/views/study/study_sentences.jade:0
+msgid "study sentences"
+msgstr ""
+
+#: superglot/templates/views/vocab/vocab_list.jade:0
+msgid "add words?"
+msgstr ""
+
+#~ msgid "You know %(num)d words"
+#~ msgstr ""
+
+#~ msgid "You are learning %(num)d words"
+#~ msgstr ""
+
+#~ msgid "You know %d words"
+#~ msgstr ""
+
+#~ msgid "You are learning %d words"
+#~ msgstr ""
+
+#~ msgid "Search by Name"
+#~ msgstr ""
+
+#~ msgid "Texts"
+#~ msgstr ""
+
+#~ msgid "Upload New"
+#~ msgstr ""
+
+#~ msgid "Title"
+#~ msgstr ""
+
+#~ msgid "Comprehension"
+#~ msgstr ""
+
+#~ msgid "Total"
+#~ msgstr ""
+
+#~ msgid "Known"
+#~ msgstr ""
+
+#~ msgid "Learning"
+#~ msgstr ""
+
+#~ msgid "You have nothing to read!"
+#~ msgstr ""
+
+#~ msgid "Vocabulary"
+#~ msgstr ""
+
+#~ msgid "Settings"
+#~ msgstr ""
+
+#~ msgid "Log out"
+#~ msgstr ""
+
+#~ msgid "Sign In"
+#~ msgstr ""
+
+#~ msgid "Sign Up"
+#~ msgstr ""
+
+#~ msgid "email"
+#~ msgstr ""
+
+#~ msgid "password"
+#~ msgstr ""
+
+#~ msgid "reading"
+#~ msgstr ""
+
+#~ msgid "lemma"
+#~ msgstr ""
+
+#~ msgid "native language"
+#~ msgstr ""
+
+#~ msgid "target language"
+#~ msgstr ""
+
+#~ msgid "plaintext"
+#~ msgstr ""
+
+#~ msgid "source"
+#~ msgstr ""
+
+#~ msgid "added %(doc)s"
+#~ msgstr ""
+
+#~ msgid "updated %(doc)s"
+#~ msgstr ""
+
+#~ msgid "Logged in successfully."
+#~ msgstr ""
+
+#~ msgid "You are logged out."
+#~ msgstr ""
+
+#~ msgid "sign up"
+#~ msgstr ""
+
+#~ msgid "search by name"
+#~ msgstr ""
+
+#~ msgid "you know %(num)d words"
+#~ msgstr ""
+
+#~ msgid "you are learning %(num)d words"
+#~ msgstr ""
+
+#~ msgid "ignored"
+#~ msgstr ""
+

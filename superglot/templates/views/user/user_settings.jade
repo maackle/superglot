@@ -1,12 +1,12 @@
-extends 'layouts/base.jade'
+extends layouts/default.jade
 
 block main_content
 	.container
 		h1.title Settings
 
-	form(method='post')
-		=form.csrf_token
-		+form_field(form.email)
-		+form_select(form.native_language, settings.NATIVE_LANGUAGE_CHOICES)
-		+form_select(form.target_language, settings.TARGET_LANGUAGE_CHOICES)
-		+form_submit("Update")
+		form(method='post')
+			=form.csrf_token
+			+form_field(form.email)
+			+form_select(form.native_language, settings.NATIVE_LANGUAGE_CHOICES)
+			+form_select(form.target_language, settings.TARGET_LANGUAGE_CHOICES)
+			+form_submit("Update")

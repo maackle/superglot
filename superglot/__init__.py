@@ -1,5 +1,5 @@
 
-from flask import Flask, request, redirect, url_for
+from flask import Flask, jsonify, request, redirect, url_for
 from flask.ext.assets import Environment
 from flask.ext.babel import Babel
 from flask.ext.login import current_user, LoginManager
@@ -9,7 +9,7 @@ from flask_jsglue import JSGlue
 
 from superglot.elasticsearch import get_es_client
 from superglot.cache import cache
-from superglot import models
+from superglot import models, util
 
 
 def setup_blueprints(app):
@@ -124,8 +124,19 @@ def create_app(**extra_config):
         if current_user.is_authenticated():
             locale = current_user.native_language
         else:
-            locale = request.accept_languages.best_match(app.config['SUPPORTED_TARGET_LANGUAGES'])
+            locale = request.accept_languages.best_match(
+                app.config['SUPPORTED_TARGET_LANGUAGES']
+            )
         if not locale:
             locale = 'en'
-        return locale.split('-')[0]
+
+        locale = locale.split('-')[0]
+        return locale
+
+    @app.errorhandler(util.InvalidUsage)
+    def handle_invalid_usage(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+
     return app

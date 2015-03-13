@@ -4,35 +4,49 @@ el = (dom, className, children) ->
 FlashcardStudySession = React.createClass
     getInitialState: ->
         currentCard: 0
+        vocab: @props.initialVocab.map (v) =>
+            v.isFlipped = false
+            v
 
     finishStudying: ->
         console.log('TODO: no more cards!')
 
     getRatingCounts: ->
-        _.countBy @props.vocab, (v) => v.rating
+        _.countBy @state.vocab, (v) => v.rating
 
     getCurrentVocabWord: ->
-        @props.vocab[@state.currentCard]
+        @state.vocab[@state.currentCard]
+
+    getMeaningByLemma: (lemma) ->
+        console.log 'git it', lemma
+        @props.meanings[lemma]
 
     answerCard: (answer) ->
         vword = @getCurrentVocabWord()
-        if answer > 0  # a rating
-            $.post Flask.url_for('api.update_word'),
-                lemmata: vword.word.lemma
-                rating: answer
-                =>
-                    @setState({cardFlipped: true})
+        rating = answer
+        $.post Flask.url_for('api.update_word'),
+            lemmata: vword.word.lemma
+            rating: rating
+            =>
+                vword.isFlipped = true
+                @setState vocab: @state.vocab
+
+            # =>
+            #     # TODO: no need to make a whole roundtrip for this
+            #     $.get Flask.url_for('api.due_vocab'),
+            #         (data) =>
+            #             @setState vocab: data.due_vocab
 
     advanceCard: ->
         nextCard = @state.currentCard + 1
         @setState
             currentCard: nextCard
 
-        if nextCard >= @props.vocab.length
+        if nextCard >= @state.vocab.length
             @finishStudying()
 
     render: ->
-        vocab = @props.vocab;
+        vocab = @state.vocab;
         {div} = React.DOM
 
         cards = vocab.map (v, i) =>
@@ -45,6 +59,7 @@ FlashcardStudySession = React.createClass
 
             Flashcard
                 vword: v
+                meaning: @getMeaningByLemma(v.word.lemma)
                 status: status
                 answerCard: @answerCard
                 advanceCard: @advanceCard
@@ -81,32 +96,28 @@ StudyStatusTabs = React.createClass
 
 
 Flashcard = React.createClass
-    getInitialState: ->
-        isFlipped: false
-    answerCard: (answer) ->
-        console.log('card answer', answer)
-        @setState isFlipped: true
-        @props.answerCard(answer)
     render: ->
         {div, h1, h2, a} = React.DOM
         vword = @props.vword
         contents = null
         assemblyClass = ' ' + @props.status
-        cardClass = if @state.isFlipped then ' flipped' else ''
+        cardClass = if vword.isFlipped then ' flipped' else ''
 
         return \
-        div {className: 'flashcard-assembly' + assemblyClass},
-            div {className: 'flashcard ' + cardClass},
+        div {className: 'flashcard-assembly' + assemblyClass + cardClass},
+            div {className: 'flashcard '},
                 div {className:'flashcard-side flashcard-front'},
                     h1 {className: 'prompt'}, vword.word.lemma
                 div className:"flashcard-side flashcard-back",
                     h1 {className:"prompt"}, vword.word.lemma
-                    h2 {className:"answer"}, '[answer]'
-                    a {onClick: @props.advanceCard}, 'next'
+                    h2 {className:"answer"}, @props.meaning
             div {className: 'flashcard-controls'},
-                AnswerSelector
-                    selectRating: @answerCard
-                    selectAction: @answerCard
+                div {className:'pre-answer'},
+                    AnswerSelector
+                        selectRating: @props.answerCard
+                        selectAction: @props.answerCard
+                div {className:'post-answer'},
+                    a {className:"next", onClick: @props.advanceCard}, '›'
 
 AnswerSelector = React.createClass
     render: ->
@@ -124,10 +135,11 @@ AnswerSelector = React.createClass
                 # li {className:"review-choice other", onClick:() => @props.selectAction('bury')}, 'bury'
 
 window.Superglot.renderFlashcardStudySession = (el) ->
-    $.get Flask.url_for('api.due_vocab'),
-        (data) =>
-            console.log data
-            component = FlashcardStudySession
-                vocab: data.due_vocab
-            React.withContext {}, =>
-                React.render component, el
+    $.get Flask.url_for('api.due_vocab'), (data) =>
+        $.post Flask.url_for('api.translate_word'),
+            word_ids: data.due_vocab.map (v) => v.word.id
+            (translations) =>
+                component = FlashcardStudySession
+                    initialVocab: data.due_vocab
+                    meanings: translations.meanings
+                React.withContext {}, => React.render component, el

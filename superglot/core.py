@@ -20,18 +20,9 @@ from superglot import (
     srs,
 )
 
-try:
-    with database.session() as session:
-        english = session.query(models.Language).filter_by(code='en').first()
-        english_id = english.id
-except:
-    print("WARNING: tried to access Language model without schema")
-    english = None
-    english_id = None
 
-
-def add_word(session, reading, lemma, language=english):
-    word = models.Word(lemma=lemma, language_id=english_id, canonical=False)
+def add_word(session, reading, lemma, language='en'):
+    word = models.Word(lemma=lemma, language=language, canonical=False)
     session.add(word)
     session.add(models.LemmaReading(lemma=lemma, reading=reading))
     return word
@@ -161,13 +152,13 @@ def gen_words_from_readings(readings):
                 word_hash.get(lemma) or
                 app.db.session.query(models.Word).filter_by(
                     lemma=lemma,
-                    language_id=english_id
+                    language='en'
                 ).first()
             )
             if not word:
                 word = models.Word(
                     lemma=lemma,
-                    language_id=english_id,
+                    language='en',
                     canonical=False
                 )
                 new_words.append(word)
@@ -200,7 +191,7 @@ def gen_words_from_tokens(tokens):
             if not word:
                 word = models.Word(
                     lemma=token.lemma,
-                    language_id=english_id,
+                    language='en',
                     canonical=False
                 )
                 new_words.append(word)
@@ -297,7 +288,6 @@ def _create_article_from_def(user, article_def):
             t.msecs
         ))
     return article
-
 
 
 def vocab_stats(vocab):

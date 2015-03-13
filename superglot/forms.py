@@ -1,12 +1,23 @@
-from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, TextAreaField, HiddenField, FieldList, IntegerField
+from wtforms import (
+    StringField,
+    PasswordField,
+    BooleanField,
+    TextAreaField,
+    HiddenField,
+    FieldList,
+    IntegerField,
+    SelectField
+)
 from wtforms import validators
 from wtforms_alchemy import model_form_factory, ModelFormField
 # from wtforms.validators import Length, EqualTo, InputRequired, Optional, ValidationError, URL
 from flask.ext.babel import lazy_gettext as _
+from flask.ext.wtf import Form
+
 
 from superglot import database as db
 from superglot import models
+from superglot.config import settings
 
 BaseModelForm = model_form_factory(Form)
 
@@ -42,13 +53,6 @@ class SearchArticleForm(Form):
     title = StringField(_('title'))
 
 
-class LanguageForm(ModelForm):
-    class Meta:
-        csrf = False
-        model = models.Language
-        only = ['code']
-
-
 class LoginForm(ModelForm):
     class Meta:
         model = models.User
@@ -58,15 +62,13 @@ class LoginForm(ModelForm):
 class RegisterForm(ModelForm):
     class Meta:
         model = models.User
-        include = ['email', 'password']
-
-    target_language = ModelFormField(LanguageForm)
+        include = ['email', 'password', 'target_language']
 
 
 class UserSettingsForm(ModelForm):
     class Meta:
         model = models.User
-        include = ['email']
+        include = ['email', 'target_language', 'native_language']
 
-    target_language = ModelFormField(LanguageForm)
-    native_language = ModelFormField(LanguageForm)
+    # target_language = SelectField(choices=settings.NATIVE_LANGUAGE_CHOICES)
+    # native_language = SelectField(choices=settings.TARGET_LANGUAGE_CHOICES)

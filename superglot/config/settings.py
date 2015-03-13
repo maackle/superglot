@@ -10,15 +10,16 @@ LOAD_SAMPLE_DATA = False
 
 EMAIL_SUPPORT = 'support@superglot.com'
 
-SUPPORTED_NATIVE_LANGUAGES = ('en', 'es', 'it', 'ja')
+SUPPORTED_NATIVE_LANGUAGES = ('ar', 'en', 'es', 'it', 'ja')
 
 SUPPORTED_TARGET_LANGUAGES = ('en',)
 
 LANGUAGE_NAMES = {
+    'ar': 'العربية',    # Arabic
     'en': 'English',
-    'es': 'Español',
-    'it': 'Italiano',
-    'ja': '日本語',
+    'es': 'Español',    # Spanish
+    'it': 'Italiano',   # Italian
+    'ja': '日本語',      # Japanese
 }
 
 NATIVE_LANGUAGE_CHOICES = tuple(

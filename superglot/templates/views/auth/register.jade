@@ -8,5 +8,5 @@ block main_content
 			!= form.target_language.csrf_token
 			+form_field(form.email)
 			+form_field(form.password, type="password")
-			+form_field(form.target_language.code, label="Target Language")
+			+form_field(form.target_language)
 			input(type="submit")

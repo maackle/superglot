@@ -15,8 +15,6 @@ def get_app():
 app = get_app()
 manager = Manager(app)
 
-from superglot import nlp
-from superglot import util
 from superglot import models
 from superglot import database
 from superglot import core
@@ -37,14 +35,8 @@ def dumpfile(dbname):
 
 
 def load_schema_fixtures():
-    languages = {}
-    with database.session() as session:
-        for i, code in enumerate(settings.SUPPORTED_NATIVE_LANGUAGES):
-            language_id = i + 1
-            languages[code] = models.Language(id=language_id, code=code)
-            session.add(languages[code])
-        session.commit()
-    app.logger.info("schema fixtures created")
+    pass
+    # app.logger.info("schema fixtures created")
 
 
 def load_sample_data():
@@ -148,15 +140,15 @@ def translate(task, lang=None):
     potfile = 'translations/messages.pot'
 
     if task == 'extract':
-        call("pybabel extract -F config/babel.cfg -o {} .".format(potfile), shell=True)
+        call("pybabel extract -F local/conf/babel.cfg -o {} superglot".format(potfile), shell=True)
     if task == 'compile':
-        call("pybabel compile -f -d translations", shell=True)
+        call("pybabel compile -f -d superglot/translations", shell=True)
     if task == 'update':
-        call("pybabel update -i {} -d translations".format(potfile), shell=True)
+        call("pybabel update -i {} -d superglot/translations".format(potfile), shell=True)
     if task == 'init':
         if not lang:
             raise Exception("missing language")
-        call("pybabel init -i {} -d translations -l {}".format(potfile, lang), shell=True)
+        call("pybabel init -i {} -d superglot/translations -l {}".format(potfile, lang), shell=True)
 
 
 @manager.command
