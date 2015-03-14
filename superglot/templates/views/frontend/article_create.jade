@@ -4,6 +4,10 @@ block main_content
 	.container
 		h1.title= _("Add a Text")
 
+		.temp-info
+			img.icon(src="/static/images/info-circled-alt.png")
+			p Either enter a URL or copy and paste your entire text in the "text" box below. Title is optional.
+
 		form(method="post").pure-form
 			!= form.csrf_token
 			+form_field(form.url)
