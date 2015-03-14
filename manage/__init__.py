@@ -74,10 +74,7 @@ def load_dump():
 
 
 @manager.command
-def reset_schema():
-    dbname = settings.DATABASE_NAME
-    print('resetting schema for database {0}'.format(dbname))
-    db_drop_create()
+def build_schema():
     print('building schema')
     models.db.create_all()
     load_schema_fixtures()
@@ -127,8 +124,10 @@ def rebuild_db(force=False, sample=False):
         db_drop_create()
         load_dump()
     else:
-        reset_schema()
-        # load_fixture_words()
+        dbname = settings.DATABASE_NAME
+        print('resetting schema for database {0}'.format(dbname))
+        db_drop_create()
+        build_schema()
         if sample or settings.LOAD_SAMPLE_DATA:
             load_sample_data()
         database.engine.dispose()

@@ -5,13 +5,14 @@ extends layouts/default.jade
 block main_content
 	.container
 		form.article-search
-			input.big-search-input(placeholder=(_("search")|capitalize + " (TODO)"))
+			input.big-search-input(placeholder=(_("search") | capitalize))
 
 		h1.title= _("texts") | title
-			a(href=url_for('frontend.articles.article_create')).btn.btn-primary.add-text-button +
-				= _("upload new") | title
 
-		ul.nav.nav-pills
+		a(href=url_for('frontend.articles.article_create')).btn.btn-primary.btn-lg.add-text-button +
+			= _("upload new") | title
+
+		ul.nav.nav-pills.future(style="margin: 1rem auto;")
 			li.active: a All
 			li: a My Texts
 			li: a Saved Texts

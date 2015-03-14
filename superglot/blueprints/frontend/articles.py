@@ -1,7 +1,3 @@
-import re
-from bs4 import BeautifulSoup
-import requests
-
 from flask import Blueprint, abort, render_template, request, flash, redirect, url_for, current_app as app
 from flask.ext.login import current_user, login_required
 from flask.ext.babel import gettext as _
@@ -9,11 +5,6 @@ from flask.ext.babel import gettext as _
 from superglot.cache import cache
 from superglot.forms import AddArticleForm
 from superglot import models
-from superglot import nlp
-from superglot import util
-from superglot.util import sorted_words
-from superglot import formatting
-from superglot.config import settings
 from superglot import core
 from pprint import pprint
 
@@ -96,7 +87,7 @@ def article_delete(article_id):
     return redirect(url_for('.article_list'))
 
 
-@blueprint.route('/user/texts/add/', methods=['POST'])
+@blueprint.route('/user/texts/add/', methods=['GET', 'POST'])
 @login_required
 def article_create():
 

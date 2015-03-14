@@ -11,8 +11,12 @@ body {
 
 .title {
 	color: $color-title;
-	font-family: ChunkFive;
+	font-family: 'ChunkFive';
 	// text-transform: uppercase;
+}
+
+.future {
+	opacity: 0.2;
 }
 
 a:link, a:visited {
@@ -300,7 +304,8 @@ ul {
 }
 
 .add-text-button {
-	margin-left: 30px;
+	float: right;
+	vertical-align: middle;
 }
 
 .big-search-input {
