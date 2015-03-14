@@ -62,7 +62,9 @@ class LoginForm(ModelForm):
 class RegisterForm(ModelForm):
     class Meta:
         model = models.User
-        include = ['email', 'password', 'target_language']
+        only = ['email', 'password', 'target_language']
+
+    target_language = SelectField(choices=settings.TARGET_LANGUAGE_CHOICES)
 
 
 class UserSettingsForm(ModelForm):

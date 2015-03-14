@@ -3,13 +3,34 @@ from sqlalchemy.dialects.postgresql import JSON
 
 from flask.ext.security import UserMixin, RoleMixin, SQLAlchemyUserDatastore
 from flask.ext.sqlalchemy import SQLAlchemy
+from wtforms import validators
 
+from superglot.config import settings
 from superglot import util
 
 
 db = SQLAlchemy()
 id_field = lambda: db.Column(db.Integer, primary_key=True)
-language_field = lambda: db.Column(db.String(8))
+email_field = lambda: db.Column(
+    db.String(256),
+    nullable=False,
+    info={
+        'validators': validators.Email()
+    })
+password_field = lambda: db.Column(
+    db.String(256),
+    nullable=False,
+    info={
+        'validators': validators.Length(
+            *settings.PASSWORD_LENGTH_RANGE,
+            message=('Password must be between %(min)d ' +
+                     'and %(max)d characters long')
+        )
+    })
+
+
+def language_field(**kwargs):
+    return db.Column(db.String(8), nullable=False, **kwargs)
 
 
 def query(*models):
@@ -36,7 +57,7 @@ class Word(Model):
     __tablename__ = 'word'
 
     id = id_field()
-    lemma = db.Column(db.String(256), unique=True)
+    lemma = db.Column(db.String(256), unique=True, nullable=False)
     language = language_field()
     canonical = db.Column(db.Boolean(), default=True)
 
@@ -93,8 +114,8 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     id = id_field()
-    email = db.Column(db.String(256))
-    password = db.Column(db.String(256))
+    email = email_field()
+    password = password_field()
 
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())

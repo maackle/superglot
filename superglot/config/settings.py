@@ -33,6 +33,8 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 SECURITY_PASSWORD_HASH = 'bcrypt'
 SECURITY_PASSWORD_SALT = 'saltycookie'
 
+PASSWORD_LENGTH_RANGE = (6, 12)
+
 import importlib
 import os
 import logging

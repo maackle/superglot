@@ -24,7 +24,7 @@ def login():
                 flash(_("Invalid username or password.").capitalize(), 'danger')
                 return render_template(template, **ctx)
         else:
-            flash(_('There was a problem logging in. Please contact support at %(email)s.', email=app.config['EMAIL_SUPPORT']), 'danger')
+            flash(_("Something's not right, please try again."), 'danger')
             return render_template(template, **ctx)
     else:
         return render_template(template, **ctx)
@@ -52,15 +52,14 @@ def register():
                 flash(_("You're all signed up! Now you can log in."))
                 return redirect(url_for('auth.login'))
             else:
+                # TODO: would be nice to put the error on the email field
                 flash(_("An account with this email address already exists."),
                       'danger')
                 return render_template(template, form=form)
         else:
             app.logger.error(form.errors)
             flash(
-                _('Uh oh, there was a problem with your registration. ' +
-                  'Please email %(email)s',
-                  email=app.config['EMAIL_SUPPORT']),
+                _("Something's not right, please try again."),
                 'danger')
             return render_template(template, form=form)
     else:
