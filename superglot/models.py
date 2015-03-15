@@ -30,7 +30,11 @@ password_field = lambda: db.Column(
 
 
 def language_field(**kwargs):
-    return db.Column(db.String(8), nullable=False, **kwargs)
+    return db.Column(
+        db.String(8),
+        nullable=False,
+        **kwargs
+    )
 
 
 def query(*models):

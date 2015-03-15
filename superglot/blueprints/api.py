@@ -9,6 +9,17 @@ from superglot import core, models, nlp, util
 blueprint = Blueprint('api', __name__, template_folder='templates')
 
 
+def make_response(data, error_msg=None):
+    if error_msg:
+        data.update({
+            'status': 'error',
+            'message': error_msg
+        })
+    else:
+        data.update({'status': 'success'})
+    return jsonify(data)
+
+
 @blueprint.route('/')
 def index():
     return 'API v1.0'
@@ -28,6 +39,15 @@ def due_vocab():
         'due_vocab': vocab_json,
         'counts': counts,
     })
+
+
+@blueprint.route('/user/vocab/', methods=['GET'])
+@login_required
+def vocab_search():
+    q = request.args.get('query')
+    vocab = list(current_user.vocab[0:10])
+    vocab_json = [v.to_json() for v in vocab]
+    return make_response({'vocab': vocab_json})
 
 
 @blueprint.route('/user/words/update/', methods=['POST',])

@@ -10,7 +10,7 @@ LOAD_SAMPLE_DATA = False
 
 EMAIL_SUPPORT = 'support@superglot.com'
 
-SUPPORTED_NATIVE_LANGUAGES = ('ar', 'en', 'es', 'it', 'ja')
+SUPPORTED_NATIVE_LANGUAGES = ('ar', 'en', 'es', 'it', 'ja', 'zh')
 
 SUPPORTED_TARGET_LANGUAGES = ('en',)
 
@@ -20,6 +20,7 @@ LANGUAGE_NAMES = {
     'es': 'Español',    # Spanish
     'it': 'Italiano',   # Italian
     'ja': '日本語',      # Japanese
+    'zh': '中文',        # Chinese
 }
 
 NATIVE_LANGUAGE_CHOICES = tuple(
@@ -33,7 +34,7 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 SECURITY_PASSWORD_HASH = 'bcrypt'
 SECURITY_PASSWORD_SALT = 'saltycookie'
 
-PASSWORD_LENGTH_RANGE = (6, 12)
+PASSWORD_LENGTH_RANGE = (4, 12)
 
 import importlib
 import os

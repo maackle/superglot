@@ -74,7 +74,6 @@ class TestWords(SuperglotTestBase):
             ]
         )
 
-
     def test_lengths(self):
         plaintext = """
         How do you do? I've got...twenty-five head of cow here, d'ya wanna

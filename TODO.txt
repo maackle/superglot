@@ -5,6 +5,14 @@ Ability to check out sample sentences from documents user doesn't own.
 Upvote/Downvote sample sentences for your own benefit and benefit of others.
 
 
+TESTS
+=====
+
+Do everything with actual HTTP requests, as well as testing functionality of units in-depth
+
+- Change settings, verify translations
+- Various login tests
+
 STUDY
 =====
 

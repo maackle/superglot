@@ -73,28 +73,6 @@ FlashcardStudySession = React.createClass
                 cards
 
 
-
-StudyStatusTabs = React.createClass
-
-    render: ->
-        {ul, li, div} = React.DOM
-        numbers =
-            1: 'one'
-            2: 'two'
-            3: 'three'
-        countTabs = [1, 2, 3].map (n) =>
-            iconColor = if @props.vword.rating == n then "background-rating-#{n}" else ''
-            countColor = ''  # "color-rating-#{n}"
-            li {className: 'flashcard-status-tab'},
-                div {className: "count #{countColor}"}, @props.ratingCounts[n] or 0
-                div {className: "icon icon-die-#{numbers[n]} #{iconColor}"}
-
-        return \
-        ul {className: 'flashcard-status'},
-            countTabs
-
-
-
 Flashcard = React.createClass
     render: ->
         {div, h1, h2, a} = React.DOM
@@ -118,6 +96,27 @@ Flashcard = React.createClass
                         selectAction: @props.answerCard
                 div {className:'post-answer'},
                     a {className:"next", onClick: @props.advanceCard}, '›'
+
+
+StudyStatusTabs = React.createClass
+
+    render: ->
+        {ul, li, div} = React.DOM
+        numbers =
+            1: 'one'
+            2: 'two'
+            3: 'three'
+        countTabs = [1, 2, 3].map (n) =>
+            iconColor = if @props.vword.rating == n then "background-rating-#{n}" else ''
+            countColor = ''  # "color-rating-#{n}"
+            li {className: 'flashcard-status-tab'},
+                div {className: "count #{countColor}"}, @props.ratingCounts[n] or 0
+                div {className: "icon icon-die-#{numbers[n]} #{iconColor}"}
+
+        return \
+        ul {className: 'flashcard-status'},
+            countTabs
+
 
 AnswerSelector = React.createClass
     render: ->

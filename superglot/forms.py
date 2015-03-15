@@ -70,7 +70,7 @@ class RegisterForm(ModelForm):
 class UserSettingsForm(ModelForm):
     class Meta:
         model = models.User
-        include = ['email', 'target_language', 'native_language']
+        only = ['email', 'target_language', 'native_language']
 
-    # target_language = SelectField(choices=settings.NATIVE_LANGUAGE_CHOICES)
-    # native_language = SelectField(choices=settings.TARGET_LANGUAGE_CHOICES)
+    native_language = SelectField(choices=settings.NATIVE_LANGUAGE_CHOICES)
+    target_language = SelectField(choices=settings.TARGET_LANGUAGE_CHOICES)

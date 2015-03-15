@@ -14,12 +14,16 @@ block main_content
 					| Definitions
 			.dropdown
 
+		#vocab-table
+
+		script.
+			$(function() {
+				var component = React.createElement(Superglot.VocabSearch, {});
+				var el = document.getElementById('vocab-table');
+				React.render(component, el);
+			})
+
 		.vocab-stats
-
-		+vocab_list_inline(vocab)
-
-		for item in vocab
-			li= item.word.lemma
 
 		h2= _("add words?") | capitalize
 		.row
