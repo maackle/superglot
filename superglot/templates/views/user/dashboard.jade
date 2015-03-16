@@ -3,4 +3,8 @@ extends layouts/default.jade
 block main_content
 	.container
 		.home-intro
-			h1.title Welcome
+			h1.title Dashboard
+
+			if due_vocab_count
+				p #{ due_vocab_count } words need review
+				a(href=url_for('study.words')).btn.btn-primary= _('Study now')
