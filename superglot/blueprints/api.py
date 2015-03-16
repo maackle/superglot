@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from flask import Blueprint, request, jsonify, current_app as app
 from flask.ext.login import current_user, login_required
+from flask.ext.restful import reqparse
 
 from superglot import core, models, nlp, util
 
@@ -41,13 +42,37 @@ def due_vocab():
     })
 
 
+def nullint(v):
+    return int(v or 0)
+
+
 @blueprint.route('/user/vocab/', methods=['GET'])
 @login_required
 def vocab_search():
-    q = request.args.get('query')
-    vocab = list(current_user.vocab[0:10])
+    parser = reqparse.RequestParser()
+    parser.add_argument('prefix', type=str)
+    parser.add_argument('size', type=int)
+    parser.add_argument('page', type=int)
+    parser.add_argument('rating', type=nullint)  # None or 1,2,3
+    args = parser.parse_args()
+
+    start = args['page'] * args['size']
+    end = start + args['size']
+
+    vocab = core.user_vocab_search(
+        user=current_user,
+        prefix=args['prefix'],
+        rating=args['rating'],
+    )
+
+    total = vocab.count()
+
+    vocab = vocab[start:end]
     vocab_json = [v.to_json() for v in vocab]
-    return make_response({'vocab': vocab_json})
+    return make_response({
+        'vocab': vocab_json,
+        'total': total
+    })
 
 
 @blueprint.route('/user/words/update/', methods=['POST',])
@@ -76,7 +101,7 @@ def update_word():
 
 @blueprint.route('/words/translate/', methods=['POST'])
 @login_required
-def translate_word():
+def translate_words():
     word_ids = request.form.getlist("word_ids[]")
     lemmata = []
     meanings = {}

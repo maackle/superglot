@@ -135,7 +135,7 @@ AnswerSelector = React.createClass
 
 window.Superglot.renderFlashcardStudySession = (el) ->
     $.get Flask.url_for('api.due_vocab'), (data) =>
-        $.post Flask.url_for('api.translate_word'),
+        $.post Flask.url_for('api.translate_words'),
             word_ids: data.due_vocab.map (v) => v.word.id
             (translations) =>
                 component = FlashcardStudySession

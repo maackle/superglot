@@ -86,7 +86,10 @@ class SuperglotTestBase(TestCase):
     @classmethod
     def _add_accounts(cls):
         for account in cls.account_creds:
-            user, created = core.register_user(email=account['email'], password=account['password'])
+            user, created = core.register_user(
+                email=account['email'],
+                password=account['password']
+            )
             assert user
             assert created
 

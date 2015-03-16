@@ -44,7 +44,9 @@ h4 {
 	font-size: 2rem;
 }
 
+.align-left { text-align: left; }
 .align-center { text-align: center; }
+.align-right { text-align: right; }
 
 .container {
 
@@ -73,9 +75,20 @@ h4 {
 	}
 }
 
+.dropdown-toggle .caret {
+	margin-left: 5px;
+	vertical-align: middle;
+}
+
 .table {
 	th.center {
 		text-align: center;
+	}
+
+	&.table-compact {
+		td {
+			padding: 2px inherit;
+		}
 	}
 }
 

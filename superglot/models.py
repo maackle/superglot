@@ -126,8 +126,8 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
-    target_language = language_field()
-    native_language = language_field()
+    target_language = language_field(default='en')
+    native_language = language_field(default='en')
 
     vocab = relationship('VocabWord', lazy='dynamic')
 
@@ -200,18 +200,6 @@ class VocabWord(Model):
 
     # def __hash__(self):
     #   return util.string_hash(self.user_id + ' ' + self.word_id)
-
-
-class VocabOccurrence(object):
-    """ Not really a model, just a helper to unify VocabWord and Occurrence
-        into a single object.
-
-        On second thought maybe this isn't such a good
-        idea :)
-    """
-
-    def __init__(self, vocab, occurrence):
-        "todo"
 
 
 class Article(Model):

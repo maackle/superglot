@@ -125,11 +125,20 @@ def get_common_word_ids(user, article):
     return (v[0] for v in _get_common_vocab_query(user, article).values(V.word_id))
 
 
-def gen_words_from_readings(readings):
-    '''
-    Look up words from token objects. If not in database, create a "non-canonical" word
+def user_vocab_search(user, prefix, rating=None):
+    vocab = user.vocab.join(models.Word).order_by(models.Word.lemma)
+    if prefix:
+        vocab = vocab.filter(models.Word.lemma.ilike(prefix + '%'))
+    if rating:
+        vocab = vocab.filter(models.VocabWord.rating == rating)
+    return vocab
 
-    TODO: actually create the non-canonical word.
+
+def _gen_words_from_readings(readings):
+    '''
+    DEPRECATED
+
+    Look up words from token objects. If not in database, create a "non-canonical" word
     '''
     lemma_readings = defaultdict(set)
     reading_lemmata = defaultdict(set)
@@ -144,7 +153,7 @@ def gen_words_from_readings(readings):
 
     word_hash = {}
     words = []
-    created_lemmata = set()
+
     for chunk in util.chunked(lemma_readings.items(), 500):
         new_words = []
         for lemma, readings in chunk:
@@ -387,11 +396,6 @@ def update_user_words(user, words, rating, force=False):
             app.db.session.merge(v)
     app.db.session.commit()
     return updated_vocab
-
-
-def update_user_lemmata(user, lemmata, rating):
-    words = gen_words_from_lemmata(lemmata)
-    return update_user_words(user, words, rating)
 
 
 #############################################################
