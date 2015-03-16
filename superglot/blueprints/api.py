@@ -71,7 +71,7 @@ def vocab_search():
     vocab_json = [v.to_json() for v in vocab]
     return make_response({
         'vocab': vocab_json,
-        'total': total
+        'total': total,
     })
 
 

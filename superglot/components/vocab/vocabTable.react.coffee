@@ -11,7 +11,7 @@ ratingInfo = [
     {name: '3', rating: 3, colorClass: 'background-rating-3'}
 ]
 
-console.log ratingInfo
+DOM = React.DOM
 
 ratingColorClass = (rating, prefix) ->
     if 1 <= rating and rating <= 3
@@ -24,25 +24,40 @@ VocabSearch = React.createClass
     getInitialState: ->
         vocab: []
         filterArgs: defaultFilter
+        doneScrolling: false
         stats:
             total: 0
+            hits: 0
 
     updateFilter: (args) ->
-        @refreshVocab _.assign @state.filterArgs, args
+        @refreshVocab _.assign @state.filterArgs, args, {
+            page: 0
+        }
 
-    refreshVocab: (args) ->
+    refreshVocab: (args, append=false) ->
         payload = args
         $.get Flask.url_for('api.vocab_search'), payload,
             (data) =>
-                console.log 'got vocab', data
-                @setState
-                    filterArgs: args
-                    vocab: data.vocab
-                    stats:
-                        total: data.total
+                newState = @state
+                newState.filterArgs = args
+                newState.stats =
+                    total: data.total
+                    hits: data.hits
+                if not append
+                    newState.vocab = []
+                    newState.doneScrolling = false
+                newState.vocab = newState.vocab.concat data.vocab
+                if data.vocab.length == 0
+                    newState.doneScrolling = true
+                @setState newState
+
+    getMoreVocab: ->
+        if not @state.doneScrolling
+            args = @state.filterArgs
+            args.page += 1
+            @refreshVocab args, true
 
     componentDidMount: ->
-        console.debug 'mounted'
         @refreshVocab defaultFilter
 
     render: ->
@@ -57,6 +72,7 @@ VocabSearch = React.createClass
             }
             VocabTable {
                 vocab: @state.vocab
+                handleInfiniteLoad: @getMoreVocab
             }
 
 
@@ -67,7 +83,6 @@ Toolbar = React.createClass
         frequency: 'Frequency'
 
     setRating: (rating) ->
-        console.debug 'sat rating', rating
         @props.updateFilter
             rating: rating
 
@@ -97,7 +112,6 @@ Toolbar = React.createClass
                         {name, rating, colorClass} = r
                         activeClass = if rating == (@props.filterArgs.rating) then ' active ' else ''
                         colorClass = ratingColorClass(rating, 'background')
-                        console.log colorClass, r
                         label {className:'btn btn-default ' + activeClass + colorClass, onClick: => @setRating(rating)},
                             input {type:'radio'}
                             name
@@ -133,8 +147,32 @@ VocabFilter = React.createClass
                 onChange: @handleInput
 
 
-
 VocabTable = React.createClass
+
+    scrollConfig:
+        longDelay: 1000
+        shortDelay: 250
+        margin: 1200
+
+    updateInfScroll: ->
+        $(window).off 'scroll'
+        el = @getDOMNode()
+        rect = el.getBoundingClientRect()
+        bottom = rect.bottom # el.scrollHeight
+        if bottom < @scrollConfig.margin
+            @props.handleInfiniteLoad()
+        $(window).one 'scroll', (e) =>
+            _.delay @updateInfScroll, if bottom < @scrollConfig.margin then @scrollConfig.longDelay else @scrollConfig.shortDelay
+
+    componentDidMount: ->
+        @updateInfScroll()
+
+    componentDidUpdate: ->
+        $(window).off 'scroll'
+        _.delay @updateInfScroll, @scrollConfig.shortDelay
+
+    componentWillUnmount: ->
+        $(window).off 'scroll'
 
     render: ->
         {table, thead, tbody, tr, th, td} = React.DOM
