@@ -5,7 +5,6 @@ from flask.ext.babel import gettext as _
 
 from superglot import models
 from superglot import nlp
-from superglot.config import settings
 from superglot import core, util
 
 
@@ -21,21 +20,27 @@ def word_list_all():
 @blueprint.route('/user/vocab/<lemma>', methods=['GET'], endpoint='word')
 @login_required
 def vocab_word(lemma):
-    VW = models.VocabWord
     W = models.Word
+    A = models.Article
+    VW = models.VocabWord
     WO = models.WordOccurrence
-    pairs = (
-        app.db.session.query(VW, WO)
-        .join(W)
-        .filter(VW.user_id == current_user.id)
+    occurrences = (
+        app.db.session.query(WO)
+        .join(W, A)
+        .filter(A.user_id == current_user.id)  # TODO: allow public articles
         .filter(W.lemma == lemma)
-        .filter(VW.word_id == WO.word_id)
     )
-    one = pairs.first()
-    if not one:
+    vword = (
+        VW.query
+        .join(W)
+        .filter(W.lemma == lemma)
+        .filter(VW.user_id == WO.word_id)
+        .first()
+    )
+
+    if not vword:
         raise util.InvalidUsage('Word not found')
-    vword = one[0]
-    occurrences = (p[1] for p in pairs)
+
     return render_template(
         'views/vocab/vocab_word.jade',
         vword=vword,

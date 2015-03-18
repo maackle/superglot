@@ -42,8 +42,8 @@ def article_read(article_id, article_position=None):
     if not article:
         abort(404)
     article_vocab_pairs = core.get_common_vocab_pairs(current_user, article)
-
-    stats = core.vocab_stats([vo[0] for vo in article_vocab_pairs])
+    vocab_words = set(vo[0] for vo in article_vocab_pairs)
+    stats = core.vocab_stats(vocab_words)
 
     # import pudb; pu.db
     # print(article_vocab_pairs)

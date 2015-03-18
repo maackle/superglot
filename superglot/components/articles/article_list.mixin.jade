@@ -8,9 +8,9 @@ mixin article_list_w_stats(article_pairs)
 				th.center= _("comprehension") | capitalize
 				th.center
 					= _("total") | capitalize
-				th.center: .title.color-rating-3(style="font-size: 1.4em; line-height: 1em;")!= '\u2778'
-				th.center: .title.color-rating-2(style="font-size: 1.4em; line-height: 1em;")!= '\u2777'
-				th.center: .title.color-rating-1(style="font-size: 1.4em; line-height: 1em;")!= '\u2776'
+				th.center: h3.title.color-rating-3(style="font-size: 1.4em; line-height: 1em; margin: 0")!= '\u2778'
+				th.center: h3.title.color-rating-2(style="font-size: 1.4em; line-height: 1em; margin: 0")!= '\u2777'
+				th.center: h3.title.color-rating-1(style="font-size: 1.4em; line-height: 1em; margin: 0")!= '\u2776'
 				th
 				th
 					//- Action
@@ -25,7 +25,7 @@ mixin article_list_w_stats(article_pairs)
 					td.align-center
 						= stats.total_significant
 						| &nbsp;
-						span.small / #{ stats.total }
+						span.small(style="color: #999") / #{ stats.total }
 
 					for i in [3,2,1]
 						td.align-center= "%2.0f%%"|format(stats.percents[i])

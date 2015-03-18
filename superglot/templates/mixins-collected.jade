@@ -52,48 +52,6 @@ mixin form_submit(value="Submit")
 	.form-group.form-submit
 		input.btn.btn-primary(type="submit", value=value)
 
-//- takes a list of (article, stats) tuples
-mixin article_list_w_stats(article_pairs)
-
-	table.table
-		thead
-			tr
-				th= _("title") | capitalize
-				th.center= _("comprehension") | capitalize
-				th.center
-					= _("total") | capitalize
-				th.center: .title.color-rating-3(style="font-size: 1.4em; line-height: 1em;")!= '\u2778'
-				th.center: .title.color-rating-2(style="font-size: 1.4em; line-height: 1em;")!= '\u2777'
-				th.center: .title.color-rating-1(style="font-size: 1.4em; line-height: 1em;")!= '\u2776'
-				th
-				th
-					//- Action
-		tbody
-			for article, stats in article_pairs
-				tr
-					td
-						a(href=url_for('frontend.articles.article_read', article_id=article.id))= article.title
-						//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
-					td
-						+vocab_progress_bar(stats)
-					td.align-center
-						= stats.total_significant
-						| &nbsp;
-						span.small / #{ stats.total }
-
-					for i in [3,2,1]
-						td.align-center= "%2.0f%%"|format(stats.percents[i])
-					td
-						if article.source
-							a(href=article.source, target="_blank")
-								= _("original")
-								|  &rarr;
-					td
-						a(href=url_for('frontend.articles.article_delete', article_id=article.id)) &times;
-
-
-mixin article_read_annotated()
-	h1.title tODO
 
 
 mixin annotated_vocab_word(a_word, reading=None, occurrence=None)
@@ -157,3 +115,46 @@ mixin vocab_progress_bar(stats)
 		.partition.rating-2(style="width: #{ "%2f%%"|format(stats.percents[2]) }")
 		.partition.rating-1(style="width: #{ "%2f%%"|format(stats.percents[1]) }")
 		//- .partition.other(style="width: #{ "%2f%%"|format(100 - stats.percents.known - stats.percents.learning) }")
+
+//- takes a list of (article, stats) tuples
+mixin article_list_w_stats(article_pairs)
+
+	table.table
+		thead
+			tr
+				th= _("title") | capitalize
+				th.center= _("comprehension") | capitalize
+				th.center
+					= _("total") | capitalize
+				th.center: h3.title.color-rating-3(style="font-size: 1.4em; line-height: 1em; margin: 0")!= '\u2778'
+				th.center: h3.title.color-rating-2(style="font-size: 1.4em; line-height: 1em; margin: 0")!= '\u2777'
+				th.center: h3.title.color-rating-1(style="font-size: 1.4em; line-height: 1em; margin: 0")!= '\u2776'
+				th
+				th
+					//- Action
+		tbody
+			for article, stats in article_pairs
+				tr
+					td
+						a(href=url_for('frontend.articles.article_read', article_id=article.id))= article.title
+						//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
+					td
+						+vocab_progress_bar(stats)
+					td.align-center
+						= stats.total_significant
+						| &nbsp;
+						span.small(style="color: #999") / #{ stats.total }
+
+					for i in [3,2,1]
+						td.align-center= "%2.0f%%"|format(stats.percents[i])
+					td
+						if article.source
+							a(href=article.source, target="_blank")
+								= _("original")
+								|  &rarr;
+					td
+						a(href=url_for('frontend.articles.article_delete', article_id=article.id)) &times;
+
+
+mixin article_read_annotated()
+	h1.title tODO

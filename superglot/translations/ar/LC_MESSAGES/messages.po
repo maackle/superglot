@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-03-12 18:01-0700\n"
-"PO-Revision-Date: 2015-03-12 18:18-0800\n"
+"PO-Revision-Date: 2015-03-17 20:10-0800\n"
 "Last-Translator: Michael Dougherty <michael@lv11.co>\n"
 "Language-Team: ar <LL@li.org>\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n>=3 && "
@@ -25,7 +25,7 @@ msgstr ""
 #: superglot/templates/mixins/article_list.jade:0
 #: superglot/templates/mixins/article_list_w_stats.jade:0
 msgid "title"
-msgstr ""
+msgstr "لقب"
 
 #: superglot/forms.py:45
 msgid "URL"
@@ -33,7 +33,7 @@ msgstr ""
 
 #: superglot/forms.py:49
 msgid "text"
-msgstr ""
+msgstr "نص"
 
 #: superglot/blueprints/auth.py:24
 msgid "Invalid username or password."
@@ -79,7 +79,7 @@ msgstr ""
 #: superglot/templates/mixins-collected.jade:0
 #: superglot/templates/mixins/article_list_w_stats.jade:0
 msgid "total"
-msgstr ""
+msgstr "مجموع"
 
 #: superglot/templates/mixins-collected.jade:0
 #: superglot/templates/mixins/article_list.jade:0
@@ -90,11 +90,11 @@ msgstr ""
 
 #: superglot/templates/mixins-collected.jade:0
 msgid "word"
-msgstr ""
+msgstr "كلمة"
 
 #: superglot/templates/mixins-collected.jade:0
 msgid "frequency"
-msgstr ""
+msgstr "تردد"
 
 #: superglot/templates/mixins/article_list_w_stats.jade:0
 msgid "known"
@@ -133,16 +133,16 @@ msgstr "تسجيل الدخول"
 
 #: superglot/templates/views/frontend/article_create.jade:0
 msgid "Add a Text"
-msgstr ""
+msgstr "إضافة النص"
 
 #: superglot/templates/views/frontend/article_list.jade:0
 #: superglot/templates/views/search/home.jade:0
 msgid "search"
-msgstr ""
+msgstr "بحث"
 
 #: superglot/templates/views/frontend/article_list.jade:0
 msgid "upload new"
-msgstr ""
+msgstr "تحميل جديدة"
 
 #: superglot/templates/views/frontend/article_list.jade:0
 msgid "you have nothing to read!"
@@ -158,7 +158,7 @@ msgstr ""
 
 #: superglot/templates/views/study/home.jade:0
 msgid "Study now"
-msgstr ""
+msgstr "الدراسة الآن"
 
 #: superglot/templates/views/study/study_all.jade:0
 msgid "study words"

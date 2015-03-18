@@ -77,6 +77,7 @@ Flashcard = React.createClass
     render: ->
         {div, h1, h2, a} = React.DOM
         vword = @props.vword
+        lemma = vword.word.lemma
         contents = null
         assemblyClass = ' ' + @props.status
         cardClass = if vword.isFlipped then ' flipped' else ''
@@ -85,9 +86,10 @@ Flashcard = React.createClass
         div {className: 'flashcard-assembly' + assemblyClass + cardClass},
             div {className: 'flashcard '},
                 div {className:'flashcard-side flashcard-front'},
-                    h1 {className: 'prompt'}, vword.word.lemma
+                    h1 {className: 'prompt'}, lemma
                 div className:"flashcard-side flashcard-back",
-                    h1 {className:"prompt"}, vword.word.lemma
+                    h1 {className:"prompt"},
+                        a {href: Flask.url_for('frontend.vocab.word', lemma: lemma)}, lemma
                     h2 {className:"answer"}, @props.meaning
             div {className: 'flashcard-controls'},
                 div {className:'pre-answer'},

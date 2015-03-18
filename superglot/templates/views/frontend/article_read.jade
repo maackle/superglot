@@ -8,7 +8,10 @@ block main_content
 			em
 				!= _("from %(link)s", link='<a href="'+article.source+'", target="_blank">'+article.source+' &rarr;</a>')
 		p
-			i #{stats.total} total words
+			i
+				span.hovertip(title="\"Important\" = distinct, not-ignored words")
+					| #{stats.total_significant} important
+				|  words out of #{article_vocab_pairs | length} total
 
 		ul.inline-list.annotated-words.style-a
 			for vword, occurrence in article_vocab_pairs
@@ -31,3 +34,6 @@ block main_content
 		if article_position
 			script.
 				var article_position = !{ article_position };
+		else
+			script.
+				var article_position = null;
