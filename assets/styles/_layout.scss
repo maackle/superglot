@@ -19,6 +19,14 @@ body {
 	opacity: 0.2;
 }
 
+.small {
+	font-size: 0.8em;
+}
+
+.big {
+	font-size: 1.33em;
+}
+
 a:link, a:visited {
 	color: $color-primary;
 

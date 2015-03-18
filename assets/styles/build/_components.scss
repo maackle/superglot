@@ -1,6 +1,17 @@
 
 $vocab-progress-bar-height: 2.5rem;
 
+.vocab-table {
+	td {
+		&.rating {
+			width: 3rem;
+		}
+		&.word {
+
+		}
+	}
+}
+
 .vocab-progress-bar {
 	width: 100%;
 	height: $vocab-progress-bar-height;

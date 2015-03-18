@@ -5,15 +5,14 @@ block main_content
 		a(href=url_for('frontend.articles.article_list')) &larr; Back to list
 		h1.title= article.title
 		if article.source
-			a(href=article.source, target="_blank")
-				= _("original")
-				|  &rarr;
+			em
+				!= _("from %(link)s", link='<a href="'+article.source+'", target="_blank">'+article.source+' &rarr;</a>')
 		p
 			i #{stats.total} total words
 
 		ul.inline-list.annotated-words.style-a
 			for vword, occurrence in article_vocab_pairs
-				+annotated_vocab_word(vword, occurrence.reading)
+				+annotated_vocab_word(vword, occurrence.reading, occurrence)
 
 		div(style="display: none")
 			.accordion
@@ -28,3 +27,7 @@ block main_content
 						ul
 							for s in o.sentences
 								li= article.sentence(s)
+
+		if article_position
+			script.
+				var article_position = !{ article_position };

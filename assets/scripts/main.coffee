@@ -49,9 +49,11 @@ setupAnnotation = ->
 		$popupChoices.filter("[data-rating=#{ rating }]").addClass('selected')
 
 	showWordScorePopup = (el) ->
-		# TODO: link rating to word, must switch over from labels...
+		lemma = $(el).attr('data-lemma')
 		$popup.addClass('visible').focus()
-		$popup.find('.lemma').text($(el).attr('data-lemma'))
+		$popup.find('.lemma').html(
+			"<a href=\"/user/vocab/#{ lemma }\">#{ lemma }</a>"
+		)
 		setPopupScore($(el).attr('data-rating'))
 		$popupChoices.click (e) ->
 			rating = parseInt($(this).attr('data-rating'), 10);
@@ -82,6 +84,17 @@ setupAnnotation = ->
 			selectWord(this)
 
 	attachAnnotationControls( $('.annotated-words .word:not([data-rating="-1"])') )
+
+	if article_position  # this hack brought to you by article_read.jade
+		console.warn('article_position hack GO')
+		_.delay =>
+			top = $('[data-article-position='+article_position+']').css({'font-weight': 'bold'}).offset().top
+			winh = $(window).height()
+			spot = top - winh / 2
+			console.log spot
+			$('html, body').animate
+				'scrollTop': spot
+			, 10
 
 
 $ ->

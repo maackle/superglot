@@ -1,0 +1,38 @@
+extends layouts/default.jade
+
+lemma = vword.word.lemma
+
+block main_content
+	.container
+		h1.title= lemma
+
+		br
+		h3.title Sightings
+
+		table.table
+			thead
+				tr
+					th Reading
+					th Article
+					th Location
+			tbody
+				for wo in occurrences
+					article_url = url_for('frontend.articles.article_read', article_id=wo.article.id)
+					tr
+						td= wo.reading
+						td: a(href=article_url)= wo.article.title
+						td
+							a(href="#{ article_url }/location/#{ wo.article_position | string }")= wo.article_position
+							//- | &nbsp;
+							//- a(href="#{ article_url }/location/#{ wo.article_position | string }") (go)
+
+
+		//- .btn-toolbar(role="toolbar")
+		//- 	.btn-group(data-toggle="buttons")
+		//- 		label.btn.btn-default.active
+		//- 			input(type="radio", name="display_type", checked)
+		//- 			| Info
+		//- 		label.btn.btn-default
+		//- 			input(type="radio", name="display_type", checked)
+		//- 			| Definitions
+		//- 	.dropdown

@@ -30,8 +30,9 @@ def article_list():
 
 
 @blueprint.route('/user/texts/<article_id>/read', methods=['GET', 'POST'])
+@blueprint.route('/user/texts/<article_id>/read/location/<article_position>', methods=['GET', 'POST'])
 @login_required
-def article_read(article_id):
+def article_read(article_id, article_position=None):
     '''
     TODO: words with the same lemma are not marked as known
     '''
@@ -50,8 +51,10 @@ def article_read(article_id):
     return render_template(
         'views/frontend/article_read.jade',
         article=article,
+        article_vocab_pairs=article_vocab_pairs,
+        article_position=article_position,
         stats=stats,
-        article_vocab_pairs=article_vocab_pairs)
+    )
 
 
 @blueprint.route('/texts/<article_id>/read', methods=['GET', 'POST'])

@@ -2,14 +2,19 @@ defaultFilter =
     prefix: ''
     size: 100
     page: 0
-    rating: null
+    rating: '1,2,3'
 
 ratingInfo = [
-    {name: 'Any', rating: null, colorClass: ''}
-    {name: '1', rating: 1, colorClass: 'background-rating-1'}
-    {name: '2', rating: 2, colorClass: 'background-rating-2'}
-    {name: '3', rating: 3, colorClass: 'background-rating-3'}
+    {name: 'Any', rating: '1,2,3', colorClass: ''}
+    {name: '1', rating: '1', colorClass: 'background-rating-1'}
+    {name: '2', rating: '2', colorClass: 'background-rating-2'}
+    {name: '3', rating: '3', colorClass: 'background-rating-3'}
 ]
+
+unicodeDigit =
+    1: "\u2776"
+    2: "\u2777"
+    3: "\u2778"
 
 DOM = React.DOM
 
@@ -164,28 +169,31 @@ VocabTable = React.createClass
         $(window).one 'scroll', (e) =>
             _.delay @updateInfScroll, if bottom < @scrollConfig.margin then @scrollConfig.longDelay else @scrollConfig.shortDelay
 
-    componentDidMount: ->
-        @updateInfScroll()
-
     componentDidUpdate: ->
-        $(window).off 'scroll'
         _.delay @updateInfScroll, @scrollConfig.shortDelay
 
     componentWillUnmount: ->
         $(window).off 'scroll'
 
     render: ->
-        {table, thead, tbody, tr, th, td} = React.DOM
+        {table, thead, tbody, tr, th, td, a} = React.DOM
 
         return \
-        table {className:'table table-compact'},
-            # thead {},
-            #     tr {},
-            #         th {}, 'Word'
+        table {className:'table table-compact vocab-table'},
+            thead {},
+                tr {},
+                    th {}
+                    th {}, 'Word'
             tbody {},
                 @props.vocab.map (vword) =>
                     tr {key:vword.id},
-                        td {className: ratingColorClass(vword.rating, 'color')}, vword.word.lemma
+                        td {className: 'rating ' + ratingColorClass(vword.rating, 'color')}, unicodeDigit[vword.rating]
+                        td {className: 'word'},
+                            a {
+                                href: Flask.url_for('frontend.vocab.word', lemma: vword.word.lemma),
+                                className: ''
+                            },
+                                vword.word.lemma
 
 module.exports =
     VocabTable: VocabTable

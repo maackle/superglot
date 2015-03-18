@@ -6,9 +6,11 @@ mixin article_list_w_stats(article_pairs)
 			tr
 				th= _("title") | capitalize
 				th.center= _("comprehension") | capitalize
-				th.center= _("total") | capitalize
-				for i in [3,2,1]
-					th.center= i
+				th.center
+					= _("total") | capitalize
+				th.center: .title.color-rating-3(style="font-size: 1.4em; line-height: 1em;")!= '\u2778'
+				th.center: .title.color-rating-2(style="font-size: 1.4em; line-height: 1em;")!= '\u2777'
+				th.center: .title.color-rating-1(style="font-size: 1.4em; line-height: 1em;")!= '\u2776'
 				th
 				th
 					//- Action
@@ -20,7 +22,11 @@ mixin article_list_w_stats(article_pairs)
 						//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
 					td
 						+vocab_progress_bar(stats)
-					td.align-center= stats.total
+					td.align-center
+						= stats.total_significant
+						| &nbsp;
+						span.small / #{ stats.total }
+
 					for i in [3,2,1]
 						td.align-center= "%2.0f%%"|format(stats.percents[i])
 					td

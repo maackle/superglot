@@ -125,12 +125,12 @@ def get_common_word_ids(user, article):
     return (v[0] for v in _get_common_vocab_query(user, article).values(V.word_id))
 
 
-def user_vocab_search(user, prefix, rating=None):
+def user_vocab_search(user, prefix, ratings=None):
     vocab = user.vocab.join(models.Word).order_by(models.Word.lemma)
     if prefix:
         vocab = vocab.filter(models.Word.lemma.ilike(prefix + '%'))
-    if rating:
-        vocab = vocab.filter(models.VocabWord.rating == rating)
+    if ratings:
+        vocab = vocab.filter(models.VocabWord.rating.in_(ratings))
     return vocab
 
 
@@ -273,7 +273,7 @@ def create_article(user, title, plaintext, url=None):
     # for word_id in all_word_ids - existing_vocab_word_ids:
     for word in words:
         app.db.session.merge(
-            models.VocabWord(user_id=user.id, word_id=word.id, rating=0)
+            models.VocabWord(user_id=user.id, word_id=word.id)
         )
     app.db.session.commit()
 
@@ -309,7 +309,7 @@ def vocab_stats(vocab):
         counts[item.rating] += 1
 
     total = len(vocab)
-    total_significant = total - counts['ignored']
+    total_significant = total - counts[-1]
 
     for rating in counts:
         percents[rating] = 100 * counts[rating] / (total_significant or 1)
@@ -368,7 +368,16 @@ def _record_rating(vocab_word, rating):
     vocab_word.srs_num_repetitions = num_repetitions
 
 
-def update_user_words(user, words, rating, force=False):
+def update_user_words(user, words, rating, force=False, rated=False):
+    '''
+
+    :param user: User model
+    :param words: list(Word) for which to update the corresponding VocabWords
+    :param rating: the rating to set each VocabWord to
+    :param force: if True, create Word no matter what
+    :param rated: Specifies whether this was a behind-the-scenes update,
+        or an update due to rating words
+    '''
     updated = 0
     ignored = 0
     num_recorded = 0
@@ -378,12 +387,14 @@ def update_user_words(user, words, rating, force=False):
             if force:
                 app.db.session.add(word)
                 app.db.session.commit()
-            vocab_word = app.db.session.merge(models.VocabWord(
+            fields = dict(
                 user_id=user.id,
                 word_id=word.id,
                 rating=rating,
-                srs_last_rated=util.now(),
-            ))
+            )
+            if rated:
+                fields['srs_last_rated'] = util.now()
+            vocab_word = app.db.session.merge(models.VocabWord(**fields))
             updated_vocab.append(vocab_word)
             updated += 1
         else:

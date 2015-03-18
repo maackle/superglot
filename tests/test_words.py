@@ -111,3 +111,6 @@ class TestWords(SuperglotTestBase):
             ]),
             {(x.lemma, x.reading) for x in models.LemmaReading.query}
         )
+
+    def test_ignored_words(self):
+        ''' TODO: test that nonsense words get treated as such '''

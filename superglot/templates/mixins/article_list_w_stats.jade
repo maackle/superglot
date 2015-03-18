@@ -24,7 +24,7 @@ mixin article_list_w_stats(article_pairs)
 						//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
 					td
 						+vocab_progress_bar(stats)
-					td.align-center= stats.total
+					td.align-center= stats.total_significant
 					td.align-center= "%2.0f%%"|format(stats.percents.known)
 					td.align-center= "%2.0f%%"|format(stats.percents.learning)
 					td

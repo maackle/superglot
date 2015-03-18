@@ -1,5 +1,5 @@
 nav.navbar: .container
-	a(href="/").title: h1.brand superglot
+	a(href="/").title: h1.brand wordcatcher
 	ul.left
 		if current_user.is_authenticated()
 			li: a(href=url_for('frontend.articles.article_list'))= _("texts") | title

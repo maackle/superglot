@@ -46,6 +46,10 @@ def nullint(v):
     return int(v or 0)
 
 
+def nonestr(v):
+    return str(v) or None
+
+
 @blueprint.route('/user/vocab/', methods=['GET'])
 @login_required
 def vocab_search():
@@ -53,8 +57,9 @@ def vocab_search():
     parser.add_argument('prefix', type=str)
     parser.add_argument('size', type=int)
     parser.add_argument('page', type=int)
-    parser.add_argument('rating', type=nullint)  # None or 1,2,3
+    parser.add_argument('rating', type=nonestr)  # None or 1,2,3
     args = parser.parse_args()
+    ratings = args['rating'].split(',')
 
     start = args['page'] * args['size']
     end = start + args['size']
@@ -62,7 +67,7 @@ def vocab_search():
     vocab = core.user_vocab_search(
         user=current_user,
         prefix=args['prefix'],
-        rating=args['rating'],
+        ratings=ratings,
     )
 
     total = vocab.count()

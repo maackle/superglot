@@ -138,28 +138,28 @@ body.study-flashcards {
 
 	&.number {
 		@include border-radius(50%);
-		width: 4.8rem;
-		height: 4.8rem;
+		transition: transform 200ms, color 200ms;
+		width: 4.5rem;
+		height: 4.5rem;
 		text-align: center;
 		border: 2px solid transparent;
 		color: white;
 		color: rgba(black, 0.3);
 
-		&[data-rating="1"] { background: white; border-color: rgba($color-rating-1, 0.3); color: $color-rating-1; }
-		&[data-rating="2"] { background: white; border-color: rgba($color-rating-2, 0.3); color: $color-rating-2; }
-		&[data-rating="3"] { background: white; border-color: rgba($color-rating-3, 0.3); color: $color-rating-3; }
+		&[data-rating="1"] { background: $color-rating-1; color: white; }
+		&[data-rating="2"] { background: $color-rating-2; color: white; }
+		&[data-rating="3"] { background: $color-rating-3; color: white; }
 
 		&:hover {
 			color: rgba(black, 0.9);
-		&[data-rating="1"] { border-color: $color-rating-1; color: $color-rating-1; }
-		&[data-rating="2"] { border-color: $color-rating-2; color: $color-rating-2; }
-		&[data-rating="3"] { border-color: $color-rating-3; color: $color-rating-3; }
+			transform: scale(1.33, 1.33);
 
 			// &[data-rating="1"] { background-color: lighten($color-rating-1, 30%); }
 			// &[data-rating="2"] { background-color: lighten($color-rating-2, 30%); }
 			// &[data-rating="3"] { background-color: lighten($color-rating-3, 40%); }
 		}
 		&.selected {
+			transform: scale(1.33, 1.33);
 			&:not([data-rating="0"]) {
 				color: white;
 			}

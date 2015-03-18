@@ -1,6 +1,6 @@
 
 
-mixin annotated_vocab_word(a_word, reading=None)
+mixin annotated_vocab_word(a_word, reading=None, occurrence=None)
 	if reading
 		- var text = reading
 	elif a_word.reading
@@ -8,10 +8,10 @@ mixin annotated_vocab_word(a_word, reading=None)
 	else
 		- var text = a_word.word.lemma
 	if a_word.rating > 0 and util.now() > a_word.srs_next_repetition
-		li.word.due(data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
+		li.word.due(data-lemma=a_word.word.lemma, data-rating=a_word.rating|int, data-article-position=occurrence.article_position)
 			//- div.due-marker
 				//- = a_word.srs_next_repetition
 			= text
 	else
-		li.word(data-lemma=a_word.word.lemma, data-rating=a_word.rating|int)
+		li.word(data-lemma=a_word.word.lemma, data-rating=a_word.rating|int, data-article-position=occurrence.article_position)
 			= text
