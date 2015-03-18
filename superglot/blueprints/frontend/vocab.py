@@ -34,7 +34,7 @@ def vocab_word(lemma):
         VW.query
         .join(W)
         .filter(W.lemma == lemma)
-        .filter(VW.user_id == WO.word_id)
+        .filter(VW.user_id == current_user.id)
         .first()
     )
 

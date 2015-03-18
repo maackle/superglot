@@ -29,8 +29,8 @@ def article_list():
     )
 
 
-@blueprint.route('/user/texts/<article_id>/read', methods=['GET', 'POST'])
-@blueprint.route('/user/texts/<article_id>/read/location/<article_position>', methods=['GET', 'POST'])
+@blueprint.route('/user/texts/<article_id>/read', methods=['GET'])
+@blueprint.route('/user/texts/<article_id>/read/location/<article_position>', methods=['GET'])
 @login_required
 def article_read(article_id, article_position=None):
     '''

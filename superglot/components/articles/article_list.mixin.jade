@@ -1,12 +1,12 @@
 //- takes a list of (article, stats) tuples
 mixin article_list_w_stats(article_pairs)
 
-	table.table
+	table.table.article-list-table
 		thead
 			tr
-				th= _("title") | capitalize
+				th.article-title= _("title") | capitalize
 				th.center= _("comprehension") | capitalize
-				th.center
+				th.center.totals
 					= _("total") | capitalize
 				th.center: h3.title.color-rating-3(style="font-size: 1.4em; line-height: 1em; margin: 0")!= '\u2778'
 				th.center: h3.title.color-rating-2(style="font-size: 1.4em; line-height: 1em; margin: 0")!= '\u2777'
@@ -17,12 +17,12 @@ mixin article_list_w_stats(article_pairs)
 		tbody
 			for article, stats in article_pairs
 				tr
-					td
+					td.article-title
 						a(href=url_for('frontend.articles.article_read', article_id=article.id))= article.title
 						//- a(href=url_for('frontend.articles.article_edit', article_id=article.id)) edit
 					td
 						+vocab_progress_bar(stats)
-					td.align-center
+					td.align-center.totals
 						= stats.total_significant
 						| &nbsp;
 						span.small(style="color: #999") / #{ stats.total }
@@ -32,7 +32,7 @@ mixin article_list_w_stats(article_pairs)
 					td
 						if article.source
 							a(href=article.source, target="_blank")
-								= _("original")
+								//- = _("original")
 								|  &rarr;
 					td
 						a(href=url_for('frontend.articles.article_delete', article_id=article.id)) &times;

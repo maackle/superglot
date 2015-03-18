@@ -30,6 +30,7 @@ VocabSearch = React.createClass
         vocab: []
         filterArgs: defaultFilter
         doneScrolling: false
+        translationMeanings: {}
         stats:
             total: 0
             hits: 0
@@ -56,6 +57,12 @@ VocabSearch = React.createClass
                     newState.doneScrolling = true
                 @setState newState
 
+                $.post Flask.url_for('api.translate_words'),
+                    word_ids: data.vocab.map (v) => v.word.id
+                    (translations) =>
+                        _.assign newState.translationMeanings, translations.meanings
+                        @setState newState
+
     getMoreVocab: ->
         if not @state.doneScrolling
             args = @state.filterArgs
@@ -77,6 +84,7 @@ VocabSearch = React.createClass
             }
             VocabTable {
                 vocab: @state.vocab
+                meanings: @state.translationMeanings
                 handleInfiniteLoad: @getMoreVocab
             }
 
@@ -184,6 +192,8 @@ VocabTable = React.createClass
                 tr {},
                     th {}
                     th {}, 'Word'
+                    th {}, 'Meaning'
+                    th {}, '# of texts'
             tbody {},
                 @props.vocab.map (vword) =>
                     tr {key:vword.id},
@@ -194,6 +204,8 @@ VocabTable = React.createClass
                                 className: ''
                             },
                                 vword.word.lemma
+                        td {}, @props.meanings[vword.word.lemma]
+                        td {}, "..."
 
 module.exports =
     VocabTable: VocabTable

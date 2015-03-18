@@ -6,7 +6,10 @@ block main_content
 
 		.temp-info
 			img.icon(src="/static/images/info-circled-alt.png")
-			p Either enter a URL or copy and paste your entire text in the "text" box below. Title is optional.
+			p
+				| Either enter a URL <em>or</em> copy and paste your entire text in the "text" box below.
+				br
+				| Title is optional if you specify a URL.
 
 		form(method="post").pure-form
 			!= form.csrf_token

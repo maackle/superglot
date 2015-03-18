@@ -30,10 +30,6 @@ block main_content
 						ul
 							for s in o.sentences
 								li= article.sentence(s)
-
-		if article_position
-			script.
-				var article_position = !{ article_position };
-		else
-			script.
-				var article_position = null;
+	if article_position
+		script.
+			var article_position = !{ article_position };

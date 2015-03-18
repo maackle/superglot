@@ -2,12 +2,23 @@
 $vocab-progress-bar-height: 2.5rem;
 
 .vocab-table {
-	td {
+	td, th {
 		&.rating {
 			width: 3rem;
 		}
 		&.word {
 
+		}
+	}
+}
+
+.article-list-table {
+	td, th {
+		&.article-title {
+			// max-width: 25%;
+		}
+		&.totals {
+			min-width: 10rem;
 		}
 	}
 }

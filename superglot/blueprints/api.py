@@ -110,6 +110,7 @@ def translate_words():
     word_ids = request.form.getlist("word_ids[]")
     lemmata = []
     meanings = {}
+    native_language = current_user.native_language
     for word_id in word_ids:
         word = models.Word.query.filter_by(id=word_id).first()
         if not word:
@@ -128,7 +129,7 @@ def translate_words():
                 meaning = None
             translation = models.WordTranslation(
                 word_id=word_id,
-                language=current_user.native_language,
+                language=native_language,
                 meaning=meaning,
             )
             app.db.session.add(translation)
@@ -138,8 +139,7 @@ def translate_words():
         meanings[word.lemma] = translation.meaning
 
     return jsonify({
-        'source_language': word.language,
-        'target_language': translation.language,
+        'target_language': native_language,
         'lemmata': lemmata,
         'meanings': meanings,
     })
