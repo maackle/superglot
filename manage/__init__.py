@@ -45,6 +45,7 @@ def load_sample_data():
     app.db.session.commit()
     article, created = core.create_article(
         user=user,
+        language='en',
         title='Sample Text',
         plaintext="""
 This is a sample text. Hope you enjoy it.

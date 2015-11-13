@@ -111,24 +111,30 @@ def translate_words():
     lemmata = []
     meanings = {}
     native_language = current_user.native_language
-    for word_id in word_ids:
-        word = models.Word.query.filter_by(id=word_id).first()
-        if not word:
-            raise util.InvalidUsage('Word not found: %s' % word_id)
 
+    if word_ids:
+        words = models.Word.query.filter(
+            models.Word.id.in_(word_ids),
+            models.Word.language != native_language
+        )
+    else:
+        words = []
+    for word in words:
         translation = models.WordTranslation.query.filter_by(
-            word_id=word_id,
-            language=current_user.native_language
+            word_id=word.id,
+            language=native_language
         ).first()
 
         if not translation:
-            try:
-                meaning = nlp.translate_word(
-                    word.lemma, current_user.native_language)
-            except:
-                meaning = None
+            # try:
+            meaning = nlp.translate_word(
+                word.lemma,
+                source_language=word.language,
+                target_language=native_language)
+            # except:
+                # meaning = None
             translation = models.WordTranslation(
-                word_id=word_id,
+                word_id=word.id,
                 language=native_language,
                 meaning=meaning,
             )
@@ -139,7 +145,7 @@ def translate_words():
         meanings[word.lemma] = translation.meaning
 
     return jsonify({
-        'target_language': native_language,
+        'language': native_language,
         'lemmata': lemmata,
         'meanings': meanings,
     })

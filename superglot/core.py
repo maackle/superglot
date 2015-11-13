@@ -182,7 +182,7 @@ def _gen_words_from_readings(readings):
     return reading_words
 
 
-def gen_words_from_tokens(tokens):
+def gen_words_from_tokens(tokens, language):
     '''
     Look up words from token objects. If not in database, create a "non-canonical" word
     '''
@@ -200,7 +200,7 @@ def gen_words_from_tokens(tokens):
             if not word:
                 word = models.Word(
                     lemma=token.lemma,
-                    language='en',
+                    language=language,
                     canonical=False
                 )
                 new_words.append(word)
@@ -213,7 +213,7 @@ def gen_words_from_tokens(tokens):
     return words
 
 
-def create_article(user, title, plaintext, url=None):
+def create_article(user, language, title, plaintext, url=None):
     '''
     TODO: save sentence info?
     '''
@@ -221,9 +221,9 @@ def create_article(user, title, plaintext, url=None):
     sentence_positions = {}
     occurrences = []
 
-    tokens = nlp.tokenize(plaintext)
-    spans = nlp.span_tokenize(plaintext)
-    words = gen_words_from_tokens(tokens)
+    tokens = nlp.tokenize(plaintext, language)
+    spans = nlp.span_tokenize(plaintext, language)
+    words = gen_words_from_tokens(tokens, language)
 
     for word, token, span in zip(words, tokens, spans):
         occ = models.WordOccurrence(
@@ -288,6 +288,7 @@ def _create_article_from_def(user, article_def):
         with util.Timer() as t:
             article, created = create_article(
                 user=user,
+                language='en',
                 title=article_def['title'],
                 plaintext=plaintext[0:]
             )

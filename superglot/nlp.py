@@ -33,7 +33,8 @@ class Token:
     @property
     def lemma(self):
         if not self._lemma:
-            self._lemma = lemmatize(self.reading, self.pos)
+            # self._lemma = lemmatize(self.reading, self.pos)
+            raise Exception("lazy lemma now unsupported")
         return self._lemma
 
     @property
@@ -54,9 +55,10 @@ class Token:
         return "%s|%s (%s)" % (self.reading, self.pos, self.lemma)
 
 
-def translate_word(text, language):
+def translate_word(text, source_language, target_language):
+    print("TRW", text, source_language, target_language)
     blob = textblob.TextBlob(text)
-    return str(blob.translate(to=language))
+    return str(blob.translate(from_lang=source_language, to=target_language))
 
 
 def get_sentences(text):
@@ -66,16 +68,16 @@ def get_sentences(text):
 _re_hyphen = re.compile(r'(\S+)—(\S+)')
 
 
-def _pre_tokenize(text):
+def _pre_tokenize(text, language):
     ''' Fix it up a little
     '''
     text = _re_hyphen.sub(r'\1 — \2', text)
     return text
 
 
-def tokenize(text):
+def tokenize(text, language):
     # TODO: keep track of occurence positions
-    text = _pre_tokenize(text)
+    text = _pre_tokenize(text, language)
     words = pw_tokenizer.tokenize(text)
     tags = nltk.pos_tag(words)
 
@@ -109,15 +111,11 @@ def tokenize(text):
     return toks
 
 
-def tokenize2(text):
-    return pw_tokenizer.tokenize(text)
-
-
-def span_tokenize(text):
+def span_tokenize(text, language):
     return pw_tokenizer.span_tokenize(text)
 
 
-def tokenize_with_spans(text):
+def tokenize_with_spans(text, language):
     tokens = pw_tokenizer.tokenize(text)
     spans = pw_tokenizer.span_tokenize(text)
     return zip(tokens, spans)
@@ -129,4 +127,3 @@ def get_reading_lemmata(reading):
     '''
     reading = reading.lower()
     return [textblob.Word(reading).lemmatize(pos).lower() for pos in "nva"]
-

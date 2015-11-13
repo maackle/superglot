@@ -84,7 +84,7 @@ setupAnnotation = ->
 			selectWord(this)
 
 	attachAnnotationControls( $('.annotated-words .word:not([data-rating="-1"])') )
-	if article_position or null  # this hack brought to you by article_read.jade
+	if typeof article_position is not 'undefined'  # this hack brought to you by article_read.jade
 		console.warn('article_position hack GO')
 		_.delay =>
 			top = $('[data-article-position='+article_position+']').addClass('highlight-hack').offset().top

@@ -12,7 +12,7 @@ EMAIL_SUPPORT = 'support@superglot.com'
 
 SUPPORTED_NATIVE_LANGUAGES = ('ar', 'en', 'es', 'it', 'ja', 'zh')
 
-SUPPORTED_TARGET_LANGUAGES = ('en',)
+SUPPORTED_TARGET_LANGUAGES = ('en', 'it',)
 
 LANGUAGE_NAMES = {
     'ar': 'العربية',    # Arabic

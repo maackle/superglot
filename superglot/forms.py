@@ -29,9 +29,9 @@ email_field = StringField(u'Email', [
     ])
 
 password_field = PasswordField('Password', [
-        required,
-        validators.Length(min=1, max=32)
-        ])
+    required,
+    validators.Length(min=1, max=32)
+    ])
 
 
 class ModelForm(BaseModelForm):
@@ -47,6 +47,7 @@ class AddArticleForm(Form):
         validators.URL()
         ])
     plaintext = TextAreaField(_('text'))
+    language = TextAreaField(_('language'))
 
 
 class SearchArticleForm(Form):

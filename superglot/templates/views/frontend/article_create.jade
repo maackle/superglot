@@ -16,4 +16,5 @@ block main_content
 			+form_field(form.url)
 			+form_field(form.plaintext)
 			+form_field(form.title)
+			+form_select(form.language, settings.TARGET_LANGUAGE_CHOICES)
 			+form_submit

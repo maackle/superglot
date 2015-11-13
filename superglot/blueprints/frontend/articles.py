@@ -96,6 +96,7 @@ def article_create():
 
     form = AddArticleForm()
     if form.validate_on_submit():
+        language = form.language.data
         url = form.url.data
         title = form.title.data
         plaintext = None
@@ -118,6 +119,7 @@ def article_create():
 
         article, created = core.create_article(
             user=current_user,
+            language=language,
             title=title,
             plaintext=plaintext,
             url=url,
