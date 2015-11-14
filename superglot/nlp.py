@@ -1,11 +1,13 @@
 import re
-
+import logging
 import nltk
 from nltk.tokenize import PunktWordTokenizer
 import textblob
 
 from superglot import util
 
+
+logger = logging.getLogger(__name__)
 
 pw_tokenizer = PunktWordTokenizer()
 
@@ -34,7 +36,8 @@ class Token:
     def lemma(self):
         if not self._lemma:
             # self._lemma = lemmatize(self.reading, self.pos)
-            raise Exception("lazy lemma now unsupported")
+            self._lemma = self.reading
+            logger.warn("lazy lemma now unsupported")
         return self._lemma
 
     @property
@@ -75,7 +78,7 @@ def _pre_tokenize(text, language):
     return text
 
 
-def tokenize(text, language):
+def tokenize_en(text):
     # TODO: keep track of occurence positions
     text = _pre_tokenize(text, language)
     words = pw_tokenizer.tokenize(text)
@@ -111,14 +114,28 @@ def tokenize(text, language):
     return toks
 
 
+def tokenize_it(text):
+    import pattern.it
+    sentences = pattern.it.parsetree(text, lemmata=True)
+    words = (word for s in sentences for word in s)
+    return list(Token(
+        reading=w.string,
+        pos=w.pos,
+        lemma=w.lemma
+    ) for w in words)
+
+
+def tokenize(text, language):
+    try:
+        fn = globals()["tokenize_%s" % language]
+    except KeyError:
+        raise Exception("unsupported language %s" % language)
+
+    return fn(text)
+
+
 def span_tokenize(text, language):
     return pw_tokenizer.span_tokenize(text)
-
-
-def tokenize_with_spans(text, language):
-    tokens = pw_tokenizer.tokenize(text)
-    spans = pw_tokenizer.span_tokenize(text)
-    return zip(tokens, spans)
 
 
 def get_reading_lemmata(reading):
