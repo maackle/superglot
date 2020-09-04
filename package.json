@@ -35,7 +35,7 @@
     "reactify": "~1.0.0"
   },
   "dependencies": {
-    "react": "~0.12.2"
+    "react": "~16.13.1"
   },
   "browserify": {
       "transform": [
