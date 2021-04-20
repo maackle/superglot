@@ -23,7 +23,7 @@ SQLAlchemy-Utils==0.26.17
 WTForms==1.0.5
 WTForms-Alchemy==0.12.9
 WTForms-Components==0.9.6
-Werkzeug==0.9.6
+Werkzeug==0.15.3
 bcrypt==1.1.0
 beautifulsoup4==4.3.2
 blinker==1.3
